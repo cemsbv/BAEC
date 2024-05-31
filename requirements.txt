@@ -126,7 +126,7 @@ pandas-stubs==2.2.2.240514
     # via baec (pyproject.toml)
 parso==0.8.4
     # via jedi
-pathspec==0.11.1
+pathspec==0.12.1
     # via
     #   baec (pyproject.toml)
     #   black
