@@ -13,6 +13,7 @@ dependencies = [
     'cems-nuclei[client]>=0.5,<1',
     'matplotlib>=3.8,<4',
     "tqdm[notebook]>4,<5",
+    "pyproj>3,<4",
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
