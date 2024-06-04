@@ -63,7 +63,7 @@ ensure_newline_before_comments = true
 line_length = 88
 
 [tool.mypy]
-files = ["src/pypilecore"]
+files = ["src/baec"]
 mypy_path = 'src'
 namespace_packages = true
 show_error_codes = true
@@ -85,10 +85,8 @@ module = [
     "matplotlib.*",
     "requests.*",
     "nuclei.*",
-    "pygef.*",
-    "natsort.*",
-    "shapely.*",
     "pytest.*",
     "scipy.*",
+    "pyproj.*",
 ]
 ignore_missing_imports = true
