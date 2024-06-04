@@ -7,52 +7,7 @@ import pyproj
 
 class SettlementRodMeasurement:
     """
-    Represents the measurement of a settlement rod.
-
-    Attributes
-    ----------
-    date_time : datetime.datetime
-        The date and time of the measurement.
-    rod_id : str
-        The ID of the settlement rod.
-    point_id : str
-        The ID of the measurement point.
-    coordinate_epsg_code : int
-        The EPSG code of the coordinate reference system used.
-        EPSG codes can be found in https://epsg.io/ .
-    point_x : float
-        The X-coordinate of the measurement point.
-    point_y : float
-        The Y-coordinate of the measurement point.
-    point_z : float
-        The Z-coordinate of the measurement point.
-        It is the top of the settlement rod.
-    rod_length : float
-        The length of the settlement rod.
-        Note that the settlement rod connects the measurement point with the ground plate,
-        thus this value is in principle the vertical distance between these two points.
-    ground_plate_z : float
-        The corrected Z-coordinate of the ground plate.
-        Note that this plate is in contact with the original ground surface.
-    ground_surface_z : float | None, optional
-        The Z-coordinate of the ground surface, or None if unknown (default: None).
-        Notes:
-            - This value in principle corresponds to the top of the fill, if present.
-            - This value will be typically measured using radar measurements.
-    temperature : float or None, optional
-        The temperature at the time of measurement in [°C], or None if unknown (default: None).
-    voltage : float or None, optional
-        The voltage measured in [mV], or None if unknown (default: None).
-    comment : str, optional
-        Additional comment about the measurement (default: "No comment").
-
-    Properties
-    ----------
-    coordinate_reference_system : pyproj.CRS
-        The coordinate reference system used.
-    ground_plate_z_uncorrected : float
-        The uncorrected Z-coordinate of the ground plate.
-        Computed as the difference between point_z and rod_length.
+    Represents a single settlement rod measurement.
     """
 
     def __init__(
@@ -61,12 +16,12 @@ class SettlementRodMeasurement:
         rod_id: str,
         point_id: str,
         coordinate_epsg_code: int,
-        point_x: float,
-        point_y: float,
-        point_z: float,
-        rod_length: float,
-        ground_plate_z: float,
-        ground_surface_z: float,
+        x: float,
+        y: float,
+        z: float,
+        vertical_offset: float,
+        plate_bottom_z: float,
+        ground_surface_z: float | None = None,
         temperature: float | None = None,
         voltage: float | None = None,
         comment: str = "No comment",
@@ -84,42 +39,46 @@ class SettlementRodMeasurement:
             The ID of the measurement point.
         coordinate_epsg_code : int
             The EPSG code of the coordinate reference system used.
-            EPSG codes can be found in https://epsg.io/ .
-        point_x : float
-            The X-coordinate of the measurement point.
-        point_y : float
-            The Y-coordinate of the measurement point.
-        point_z : float
+            EPSG codes can be found in https://epsg.io/.
+        x : float
+            The X-coordinate of the measurement point. Units are according to the `coordinate_reference_system`.
+        y : float
+            The Y-coordinate of the measurement point. Units are according to the `coordinate_reference_system`.
+        z : float
             The Z-coordinate of the measurement point.
             It is the top of the settlement rod.
-        rod_length : float
-            The length of the settlement rod.
-            Note that the settlement rod connects the measurement point with the ground plate,
-            thus this value is in principle the vertical distance between these two points.
-        ground_plate_z : float
-            The corrected Z-coordinate of the ground plate.
-            Note that this plate is in contact with the original ground surface.
+            Units are according to the `coordinate_reference_system`.
+        vertical_offset : float
+            The vertical offset distance between the measurement point and the bottom of the settlement plate.
+            It is in principle the rod length plus the plate thickness.
+            Units are according to the `coordinate_reference_system`.
+        plate_bottom_z : float
+            The corrected Z-coordinate at the bottom of the settlement plate.
+            Note that the bottom of the plate is in principle the original ground surface.
+            Units are according to the `coordinate_reference_system`.
         ground_surface_z : float | None, optional
-        The Z-coordinate of the ground surface, or None if unknown (default: None).
-        Notes:
-            - This value in principle corresponds to the top of the fill, if present.
-            - This value will be typically measured using radar measurements.
+            The Z-coordinate of the ground surface, or None if unknown (default: None).
+            Notes:
+                - This value in principle corresponds to the top of the fill, if present.
+                - This value will be typically measured using radar measurements.
+            Units are according to the `coordinate_reference_system`.
         temperature : float or None, optional
             The temperature at the time of measurement in [°C], or None if unknown (default: None).
         voltage : float or None, optional
             The voltage measured in [mV], or None if unknown (default: None).
         comment : str, optional
-            Additional comment about the measurement (default: "No comment").
+            Comment about the measurement (default: "No comment").
 
         Raises
         ------
         TypeError
             If the input types are incorrect.
         ValueError
-            - If empty string for `rod_id` or `point_id`.
-            - If negative value for `coordinate_epsg_code` or `rod_length`.
+            If empty string for `rod_id` or `point_id`.
+        ValueError
+            If negative value for `coordinate_epsg_code` or `vertical_offset`.
         pyproj.exceptions.CRSError
-            If no valid coordinate reference system is found for the given EPSG code.
+            If no valid coordinate reference system is found for the given `coordinate_epsg_code`.
         """
 
         # Initialize all attributes using private setters.
@@ -127,11 +86,11 @@ class SettlementRodMeasurement:
         self._set_rod_id(rod_id)
         self._set_point_id(point_id)
         self._set_coordinate_epsg_code(coordinate_epsg_code)
-        self._set_point_x(point_x)
-        self._set_point_y(point_y)
-        self._set_point_z(point_z)
-        self._set_rod_length(rod_length)
-        self._set_ground_plate_z(ground_plate_z)
+        self._set_x(x)
+        self._set_y(y)
+        self._set_z(z)
+        self._set_vertical_offset(vertical_offset)
+        self._set_plate_bottom_z(plate_bottom_z)
         self._set_ground_surface_z(ground_surface_z)
         self._set_temperature(temperature)
         self._set_voltage(voltage)
@@ -182,79 +141,72 @@ class SettlementRodMeasurement:
             )
         self._coordinate_epsg_code = value
 
-    def _set_point_x(self, value: float) -> None:
+    def _set_x(self, value: float) -> None:
         """
-        Private setter for point_x attribute.
+        Private setter for x attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'point_x' attribute.")
-        self._point_x = value
+            raise TypeError("Expected 'float' type for 'x' attribute.")
+        self._x = value
 
-    def _set_point_y(self, value: float) -> None:
+    def _set_y(self, value: float) -> None:
         """
-        Private setter for point_y attribute.
+        Private setter for y attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'point_y' attribute.")
-        self._point_y = value
+            raise TypeError("Expected 'float' type 'y' attribute.")
+        self._y = value
 
-    def _set_point_z(self, value: float) -> None:
+    def _set_z(self, value: float) -> None:
         """
-        Private setter for point_z attribute.
+        Private setter for z attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'point_z' attribute.")
-        self._point_z = value
+            raise TypeError("Expected 'float' type for 'z' attribute.")
+        self._z = value
 
-    def _set_rod_length(self, value: float) -> None:
+    def _set_vertical_offset(self, value: float) -> None:
         """
-        Private setter for rod_length attribute.
+        Private setter for vertical_offset attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'rod_length' attribute.")
+            raise TypeError("Expected 'float' type for 'vertical_offset' attribute.")
         if value < 0:
-            raise ValueError("Negative value not allowed for 'rod_length' attribute.")
-        self._rod_length = value
+            raise ValueError(
+                "Negative value not allowed for 'vertical_offset' attribute."
+            )
+        self._vertical_offset = value
 
-    def _set_ground_surface_z(self, value: float) -> None:
+    def _set_plate_bottom_z(self, value: float) -> None:
+        """
+        Private setter for plate_bottom_z attribute.
+        """
+        if isinstance(value, int):
+            value = float(value)
+        if not isinstance(value, float):
+            raise TypeError("Expected 'float' type for 'plate_bottom_z' attribute.")
+        self._plate_bottom_z = value
+
+    def _set_ground_surface_z(self, value: float | None) -> None:
         """
         Private setter for ground_surface_z attribute.
         """
-        if isinstance(value, int):
-            value = float(value)
-        if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'ground_surface_z' attribute.")
+        if value is not None:
+            if isinstance(value, int):
+                value = float(value)
+            if not isinstance(value, float):
+                raise TypeError(
+                    "Expected 'float' or 'None' type for 'ground_surface_z' attribute."
+                )
         self._ground_surface_z = value
-
-    def _set_ground_plate_z(self, value: float) -> None:
-        """
-        Private setter for ground_plate_z attribute.
-        """
-        if isinstance(value, int):
-            value = float(value)
-        if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'ground_plate_z' attribute.")
-        self._ground_plate_z = value
-
-    def _set_ground_plate_z_uncorrected(self, value: float) -> None:
-        """
-        Private setter for ground_plate_z_uncorrected attribute.
-        """
-        if isinstance(value, int):
-            value = float(value)
-        if not isinstance(value, float):
-            raise TypeError(
-                "Expected 'float' type for 'ground_plate_z_uncorrected' attribute."
-            )
-        self._ground_plate_z_uncorrected = value
 
     def _set_temperature(self, value: float | None) -> None:
         """
@@ -315,7 +267,7 @@ class SettlementRodMeasurement:
     def coordinate_epsg_code(self) -> int:
         """
         The EPSG code of the coordinate reference system used.
-        EPSG codes can be found in https://epsg.io/ .
+        EPSG codes can be found in https://epsg.io/.
         """
         return self._coordinate_epsg_code
 
@@ -323,50 +275,62 @@ class SettlementRodMeasurement:
     def coordinate_reference_system(self) -> pyproj.CRS:
         """
         The coordinate reference system used.
+        It is a `pyproj.CRS` object (see https://pyproj4.github.io/pyproj/stable/api/crs/crs.html).
+        It is determined based on the `coordinate_epsg_code`.
         """
         return self._coordinate_reference_system
 
     @property
-    def point_x(self) -> float:
+    def x(self) -> float:
         """
         The X-coordinate of the measurement point.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self._point_x
+        return self._x
 
     @property
-    def point_y(self) -> float:
+    def y(self) -> float:
         """
         The Y-coordinate of the measurement point.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self._point_y
+        return self._y
 
     @property
-    def point_z(self) -> float:
+    def z(self) -> float:
         """
         The Z-coordinate of the measurement point.
+        It is the top of the settlement rod.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self._point_z
+        return self._z
 
     @property
-    def rod_length(self) -> float:
+    def vertical_offset(self) -> float:
         """
-        The length of the settlement rod.
+        The vertical offset distance between the measurement point and the bottom of the settlement plate.
+        It is in principle the rod length plus the plate thickness.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self._rod_length
+        return self._vertical_offset
 
     @property
-    def ground_plate_z(self) -> float:
+    def plate_bottom_z(self) -> float:
         """
-        The corrected Z-coordinate of the ground plate.
+        The corrected Z-coordinate at the bottom of the settlement plate.
+        Note that the bottom of the plate is in principle the original ground surface.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self._ground_plate_z
+        return self._plate_bottom_z
 
     @property
-    def ground_plate_z_uncorrected(self) -> float:
+    def plate_bottom_z_uncorrected(self) -> float:
         """
-        The uncorrected Z-coordinate of the ground plate.
+        The uncorrected Z-coordinate at the bottom of the settlement plate.
+        It is computed as the difference beteen the Z-coordinate of the measurement point and the vertical offset.
+        Units are according to the `coordinate_reference_system`.
         """
-        return self.point_z - self.rod_length
+        return self.z - self.vertical_offset
 
     @property
     def ground_surface_z(self) -> float | None:
@@ -392,6 +356,6 @@ class SettlementRodMeasurement:
     @property
     def comment(self) -> str:
         """
-        Additional comment about the measurement.
+        Comment about the measurement.
         """
         return self._comment

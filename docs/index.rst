@@ -14,4 +14,4 @@ Indices and tables
 
    tree/getting_started.rst
 
-
+   tree/reference.rst
