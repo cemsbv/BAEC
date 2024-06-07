@@ -82,7 +82,6 @@ def measurements_from_zbase(
     )
     # parse datatime string
     df["date_time"] = pd.to_datetime(df["date_time"], dayfirst=False, yearfirst=False)
-    offset = df["surface_level_z"][0]
     # create SettlementRodMeasurement objects
     measurements = []
     for _, row in df.iterrows():
@@ -95,8 +94,7 @@ def measurements_from_zbase(
                 coordinate_reference_system=pyproj.CRS.from_user_input(28992),
                 x=row["x"],
                 y=row["y"],
-                z=offset
-                - row["z"],  # Transform depth to depth with respect to reference level
+                z=row["rod_top"],
                 rod_length=abs(row["rod_bottom"] - row["rod_top"]),
                 plate_bottom_z=row["rod_bottom"],
                 ground_surface_z=row["surface_level_z"],
