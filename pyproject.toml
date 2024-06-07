@@ -89,5 +89,6 @@ module = [
     "pytest.*",
     "scipy.*",
     "pyproj.*",
+    "pandas.*",
 ]
 ignore_missing_imports = true

@@ -25,6 +25,17 @@ The class `SettlementRodMeasurement` presented below stores the data of a single
 .. autoenum:: baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus
     :members:
 
+.. _measuredSettlement:
+
+Measured Settlement
+-------------------
+
+.. autoclass:: baec.measurements.measured_settlement.MeasuredSettlement
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
 
 .. _settlementRodMeasurementSeries:
 
@@ -38,7 +49,18 @@ Settlement Rod Measurement Series
 
     .. automethod:: __init__
 
+.. _measuredSettlementSeries:
 
+Measured Settlement Series
+--------------------------
+
+.. autoclass:: baec.measurements.measured_settlement_series.MeasuredSettlementSeries
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
+        
 .. _measurementDevice:
 
 Measurement Device
@@ -63,10 +85,10 @@ Project
 
     .. automethod:: __init__
 
+.. _coordinateReferenceSystems:
+
 CoordinateReferenceSystems
 --------------------------
-
-.. _coordinateReferenceSystems:
 
 .. autoclass:: baec.coordinates.CoordinateReferenceSystems
     :members:
@@ -74,6 +96,7 @@ CoordinateReferenceSystems
     :member-order: bysource
 
     .. automethod:: __init__
+
 
 
 .. _IO:
