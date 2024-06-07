@@ -55,8 +55,6 @@ class SettlementRodMeasurement:
             The project which the measurement belongs to.
         device : MeasurementDevice
             The measurement device.
-        date_time : datetime.datetime
-            The date and time of the measurement.
         object_id : str
             The ID of the measured object.
         date_time : datetime.datetime
@@ -178,7 +176,7 @@ class SettlementRodMeasurement:
             value = float(value)
         if not isinstance(value, float):
             raise TypeError("Expected 'float' type for 'rod_top_x' attribute.")
-        self._x = value
+        self._rod_top_x = value
 
     def _set_rod_top_y(self, value: float) -> None:
         """
@@ -188,7 +186,7 @@ class SettlementRodMeasurement:
             value = float(value)
         if not isinstance(value, float):
             raise TypeError("Expected 'float' type 'rod_top_y' attribute.")
-        self._y = value
+        self._rod_top_y = value
 
     def _set_rod_top_z(self, value: float) -> None:
         """
@@ -198,7 +196,7 @@ class SettlementRodMeasurement:
             value = float(value)
         if not isinstance(value, float):
             raise TypeError("Expected 'float' type for 'rod_top_z' attribute.")
-        self._z = value
+        self._rod_top_z = value
 
     def _set_rod_length(self, value: float) -> None:
         """
@@ -318,7 +316,7 @@ class SettlementRodMeasurement:
         The horizontal X-coordinate of the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
-        return self._x
+        return self._rod_top_x
 
     @property
     def rod_top_y(self) -> float:
@@ -326,7 +324,7 @@ class SettlementRodMeasurement:
         The horizontal Y-coordinate of the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
-        return self._y
+        return self._rod_top_y
 
     @property
     def rod_top_z(self) -> float:
@@ -335,7 +333,7 @@ class SettlementRodMeasurement:
         It is the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
-        return self._z
+        return self._rod_top_z
 
     @property
     def rod_length(self) -> float:
