@@ -99,7 +99,7 @@ def measurements_from_zbase(
                 - row["z"],  # Transform depth to depth with respect to reference level
                 rod_length=abs(row["rod_bottom"] - row["rod_top"]),
                 plate_bottom_z=row["rod_bottom"],
-                ground_surface_z=row["ground_surface_z"],
+                ground_surface_z=row["surface_level_z"],
                 status=SettlementRodMeasurementStatus(
                     _map.get(row["status"], "unknown")
                 ),
