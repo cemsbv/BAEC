@@ -137,7 +137,7 @@ mccabe==0.7.0
     # via
     #   baec (pyproject.toml)
     #   flake8
-more-itertools==10.2.0
+more-itertools==10.3.0
     # via cssutils
 msgpack==1.0.8
     # via cachecontrol
