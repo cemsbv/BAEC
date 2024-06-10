@@ -51,7 +51,7 @@ Measurement Device
 
     .. automethod:: __init__
 
-.. _measurementProject:
+.. _project:
 
 Project
 -------
@@ -63,3 +63,14 @@ Project
 
     .. automethod:: __init__
 
+CoordinateReferenceSystems
+--------------------------
+
+.. _coordinateReferenceSystems:
+
+.. autoclass:: baec.coordinates.CoordinateReferenceSystems
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
