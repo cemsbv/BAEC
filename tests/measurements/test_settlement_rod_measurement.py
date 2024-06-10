@@ -3,7 +3,6 @@ import datetime
 import pyproj
 import pytest
 
-from baec.coordinates import CoordinateReferenceSystems
 from baec.measurements.measurement_device import MeasurementDevice
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
@@ -18,12 +17,12 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
     device = MeasurementDevice(id_="BR_003", qr_code="QR-003")
     object_id = "ZB-02"
     date_time = datetime.datetime(2024, 4, 9, 4, 0, 0)
-    coordinate_reference_systems = CoordinateReferenceSystems.from_epsg(28992, 5709)
-    rod_top_x = 123340.266
-    rod_top_y = 487597.154
-    rod_top_z = 0.807
+    coordinate_reference_system = pyproj.CRS.from_user_input(28992)
+    x = 123340.266
+    y = 487597.154
+    z = 0.807
     rod_length = 2.0
-    rod_bottom_z = -1.193
+    plate_bottom_z = -1.193
     ground_surface_z = 0.419
     status = SettlementRodMeasurementStatus.OK
     temperature = 12.0
@@ -36,12 +35,12 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
         device=device,
         object_id=object_id,
         date_time=date_time,
-        coordinate_reference_systems=coordinate_reference_systems,
-        rod_top_x=rod_top_x,
-        rod_top_y=rod_top_y,
-        rod_top_z=rod_top_z,
+        coordinate_reference_system=coordinate_reference_system,
+        x=x,
+        y=y,
+        z=z,
         rod_length=rod_length,
-        rod_bottom_z=rod_bottom_z,
+        plate_bottom_z=plate_bottom_z,
         ground_surface_z=ground_surface_z,
         status=status,
         temperature=temperature,
@@ -53,15 +52,15 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
     assert measurement.device == device
     assert measurement.object_id == object_id
     assert measurement.date_time == date_time
-    assert measurement.coordinate_reference_systems == coordinate_reference_systems
-    assert measurement.rod_top_x == rod_top_x
-    assert measurement.rod_top_y == rod_top_y
-    assert measurement.rod_top_z == rod_top_z
+    assert measurement.coordinate_reference_system == coordinate_reference_system
+    assert measurement.x == x
+    assert measurement.y == y
+    assert measurement.z == z
     assert measurement.rod_length == rod_length
     assert measurement.ground_surface_z == ground_surface_z
-    assert measurement.rod_bottom_z == rod_bottom_z
+    assert measurement.plate_bottom_z == plate_bottom_z
     assert measurement.status == status
-    assert measurement.rod_bottom_z_uncorrected == plate_bottom_z_uncorrected
+    assert measurement.plate_bottom_z_uncorrected == plate_bottom_z_uncorrected
     assert measurement.temperature == temperature
     assert measurement.voltage == voltage
     assert measurement.comment == comment
@@ -76,14 +75,12 @@ def test_settlement_rod_measurement_init_with_invalid_project() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -101,14 +98,12 @@ def test_settlement_rod_measurement_init_with_invalid_device() -> None:
             device=None,
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -126,14 +121,12 @@ def test_settlement_rod_measurement_init_with_invalid_object_id() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id=None,
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -148,14 +141,12 @@ def test_settlement_rod_measurement_init_with_invalid_object_id() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -173,14 +164,12 @@ def test_settlement_rod_measurement_init_with_invalid_date_time() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=None,
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -189,23 +178,23 @@ def test_settlement_rod_measurement_init_with_invalid_date_time() -> None:
         )
 
 
-def test_settlement_rod_measurement_init_with_invalid_coordinate_reference_systems() -> (
+def test_settlement_rod_measurement_init_with_invalid_coordinate_reference_system() -> (
     None
 ):
-    """Test initialization of settlement rod measurement with invalid coordinate reference systems."""
+    """Test initialization of settlement rod measurement with invalid coordinate reference system."""
     # Invalid coordinate_reference_system: None
-    with pytest.raises(TypeError, match="coordinate_reference_systems"):
+    with pytest.raises(TypeError, match="coordinate_reference_system"):
         SettlementRodMeasurement(
             project=Project(id_="P-001", name="Project 1"),
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=None,
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=None,
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -214,23 +203,21 @@ def test_settlement_rod_measurement_init_with_invalid_coordinate_reference_syste
         )
 
 
-def test_settlement_rod_measurement_init_with_invalid_rod_top_x() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_x."""
-    # Invalid rod_top_x: String value
-    with pytest.raises(TypeError, match="rod_top_x"):
+def test_settlement_rod_measurement_init_with_invalid_x() -> None:
+    """Test initialization of settlement rod measurement with invalid x."""
+    # Invalid x: String value
+    with pytest.raises(TypeError, match="x"):
         SettlementRodMeasurement(
             project=Project(id_="P-001", name="Project 1"),
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x="123340.266",
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x="123340.266",
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -239,23 +226,21 @@ def test_settlement_rod_measurement_init_with_invalid_rod_top_x() -> None:
         )
 
 
-def test_settlement_rod_measurement_init_with_invalid_rod_top_y() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_y."""
-    # Invalid rod_top_y: None
-    with pytest.raises(TypeError, match="rod_top_y"):
+def test_settlement_rod_measurement_init_with_invalid_y() -> None:
+    """Test initialization of settlement rod measurement with invalid y."""
+    # Invalid y: None
+    with pytest.raises(TypeError, match="y"):
         SettlementRodMeasurement(
             project=Project(id_="P-001", name="Project 1"),
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=None,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=None,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -264,23 +249,21 @@ def test_settlement_rod_measurement_init_with_invalid_rod_top_y() -> None:
         )
 
 
-def test_settlement_rod_measurement_init_with_rod_top_z() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_z."""
-    # Invalid rod_top_z: String value
-    with pytest.raises(TypeError, match="rod_top_z"):
+def test_settlement_rod_measurement_init_with_z() -> None:
+    """Test initialization of settlement rod measurement with invalid z."""
+    # Invalid z: String value
+    with pytest.raises(TypeError, match="z"):
         SettlementRodMeasurement(
             project=Project(id_="P-001", name="Project 1"),
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z="0.807",
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z="0.807",
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -298,14 +281,12 @@ def test_settlement_rod_measurement_init_with_invalid_rod_length() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length="2.0",
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -320,14 +301,12 @@ def test_settlement_rod_measurement_init_with_invalid_rod_length() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=-2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -345,14 +324,12 @@ def test_settlement_rod_measurement_init_with_invalid_ground_surface_z() -> None
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z="0.419",
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -361,23 +338,21 @@ def test_settlement_rod_measurement_init_with_invalid_ground_surface_z() -> None
         )
 
 
-def test_settlement_rod_measurement_init_with_invalid_rod_bottom_z() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_bottom_z."""
-    # Invalid rod_bottom_z: String value
-    with pytest.raises(TypeError, match="rod_bottom_z"):
+def test_settlement_rod_measurement_init_with_invalid_plate_bottom_z() -> None:
+    """Test initialization of settlement rod measurement with invalid plate_bottom_z."""
+    # Invalid plate_bottom_z: String value
+    with pytest.raises(TypeError, match="plate_bottom_z"):
         SettlementRodMeasurement(
             project=Project(id_="P-001", name="Project 1"),
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z="-1.193",
+            plate_bottom_z="-1.193",
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -395,14 +370,12 @@ def test_settlement_rod_measurement_init_with_invalid_temperature() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature="12.0",
@@ -420,14 +393,12 @@ def test_settlement_rod_measurement_init_with_invalid_voltage() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
@@ -445,14 +416,12 @@ def test_settlement_rod_measurement_init_with_invalid_comment() -> None:
             device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
             object_id="ZB-02",
             date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
+            coordinate_reference_system=pyproj.CRS.from_user_input(28992),
+            x=123340.266,
+            y=487597.154,
+            z=0.807,
             rod_length=2.0,
-            rod_bottom_z=-1.193,
+            plate_bottom_z=-1.193,
             ground_surface_z=0.419,
             status=SettlementRodMeasurementStatus.OK,
             temperature=12.0,
