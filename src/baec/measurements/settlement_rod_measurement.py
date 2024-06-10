@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import datetime
 from enum import Enum
+from functools import cache
 
-import pyproj
-
+from baec.coordinates import CoordinateReferenceSystems
 from baec.measurements.measurement_device import MeasurementDevice
 from baec.project import Project
 
@@ -34,12 +34,12 @@ class SettlementRodMeasurement:
         device: MeasurementDevice,
         object_id: str,
         date_time: datetime.datetime,
-        coordinate_reference_system: pyproj.CRS,
-        x: float,
-        y: float,
-        z: float,
+        coordinate_reference_systems: CoordinateReferenceSystems,
+        rod_top_x: float,
+        rod_top_y: float,
+        rod_top_z: float,
         rod_length: float,
-        plate_bottom_z: float,
+        rod_bottom_z: float,
         ground_surface_z: float,
         status: SettlementRodMeasurementStatus,
         temperature: float | None = None,
@@ -61,29 +61,32 @@ class SettlementRodMeasurement:
             The ID of the measured object.
         date_time : datetime.datetime
             The date and time of the measurement.
-        coordinate_reference_system : pyproj.CRS
-            The coordinate reference system of the spatial measurements.
-            It is a `pyproj.CRS` object (see https://pyproj4.github.io/pyproj/stable/api/crs/crs.html).
-        x : float
-            The X-coordinate of the measurement point. Units are according to the `coordinate_reference_system`.
-        y : float
-            The Y-coordinate of the measurement point. Units are according to the `coordinate_reference_system`.
-        z : float
-            The Z-coordinate of the measurement point.
+        coordinate_reference_systems : CoordinateReferenceSystems
+            The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the
+            spatial measurements.
+        rod_top_x : float
+            The horizontal X-coordinate of the top of the settlement rod.
+            Units are according to the `coordinate_reference_systems`.
+        rod_top_y : float
+            The horizontal Y-coordinate of the top of the settlement rod.
+            Units are according to the `coordinate_reference_systems`.
+        rod_top_z : float
+            The vertical Z-coordinate of the top of the settlement rod.
             It is the top of the settlement rod.
-            Units are according to the `coordinate_reference_system`.
+            Units and datum are according to the `coordinate_reference_systems`.
         rod_length : float
             The length of the settlement rod including the thickness of the settlement plate.
-            It is in principle the vertical distance between the measurement point and the bottom of the settlement plate.
-            Units are according to the `coordinate_reference_system`.
-        plate_bottom_z : float
-            The corrected Z-coordinate at the bottom of the settlement plate.
+            It is in principle the vertical distance between the top of the settlement rod and
+            the bottom of the settlement plate.
+            Units are according to the `coordinate_reference_systems`.
+        rod_bottom_z : float
+            The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
             Note that the bottom of the plate is in principle the original ground surface.
-            Units are according to the `coordinate_reference_system`.
+            Units and datum according to the `coordinate_reference_systems`.
         ground_surface_z : float
             The Z-coordinate of the ground surface.
             It is in principle the top of the fill, if present.
-            Units are according to the `coordinate_reference_system`.
+            Units and datum according to the `coordinate_reference_systems`.
         status: SettlementRodMeasurementStatus
             The status of the measurement.
         temperature : float or None, optional
@@ -107,12 +110,12 @@ class SettlementRodMeasurement:
         self._set_device(device)
         self._set_object_id(object_id)
         self._set_date_time(date_time)
-        self._set_coordinate_reference_system(coordinate_reference_system)
-        self._set_x(x)
-        self._set_y(y)
-        self._set_z(z)
+        self._set_coordinate_reference_systems(coordinate_reference_systems)
+        self._set_rod_top_x(rod_top_x)
+        self._set_rod_top_y(rod_top_y)
+        self._set_rod_top_z(rod_top_z)
         self._set_rod_length(rod_length)
-        self._set_plate_bottom_z(plate_bottom_z)
+        self._set_rod_bottom_z(rod_bottom_z)
         self._set_ground_surface_z(ground_surface_z)
         self._set_status(status)
         self._set_temperature(temperature)
@@ -155,44 +158,46 @@ class SettlementRodMeasurement:
             )
         self._date_time = value
 
-    def _set_coordinate_reference_system(self, value: pyproj.CRS) -> None:
+    def _set_coordinate_reference_systems(
+        self, value: CoordinateReferenceSystems
+    ) -> None:
         """
-        Private setter for coordinate_reference_system attribute.
+        Private setter for coordinate_reference_systems attribute.
         """
-        if not isinstance(value, pyproj.CRS):
+        if not isinstance(value, CoordinateReferenceSystems):
             raise TypeError(
-                "Expected 'pyproj.CRS' type for 'coordinate_reference_system' attribute."
+                "Expected 'CoordinateReferenceSystems' type for 'coordinate_reference_systems' attribute."
             )
-        self._coordinate_reference_system = value
+        self._coordinate_reference_systems = value
 
-    def _set_x(self, value: float) -> None:
+    def _set_rod_top_x(self, value: float) -> None:
         """
-        Private setter for x attribute.
+        Private setter for rod_top_x attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'x' attribute.")
+            raise TypeError("Expected 'float' type for 'rod_top_x' attribute.")
         self._x = value
 
-    def _set_y(self, value: float) -> None:
+    def _set_rod_top_y(self, value: float) -> None:
         """
-        Private setter for y attribute.
+        Private setter for rod_top_y attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type 'y' attribute.")
+            raise TypeError("Expected 'float' type 'rod_top_y' attribute.")
         self._y = value
 
-    def _set_z(self, value: float) -> None:
+    def _set_rod_top_z(self, value: float) -> None:
         """
-        Private setter for z attribute.
+        Private setter for rod_top_z attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'z' attribute.")
+            raise TypeError("Expected 'float' type for 'rod_top_z' attribute.")
         self._z = value
 
     def _set_rod_length(self, value: float) -> None:
@@ -207,15 +212,15 @@ class SettlementRodMeasurement:
             raise ValueError("Negative value not allowed for 'rod_length' attribute.")
         self._rod_length = value
 
-    def _set_plate_bottom_z(self, value: float) -> None:
+    def _set_rod_bottom_z(self, value: float) -> None:
         """
-        Private setter for plate_bottom_z attribute.
+        Private setter for rod_bottom_z attribute.
         """
         if isinstance(value, int):
             value = float(value)
         if not isinstance(value, float):
-            raise TypeError("Expected 'float' type for 'plate_bottom_z' attribute.")
-        self._plate_bottom_z = value
+            raise TypeError("Expected 'float' type for 'rod_bottom_z' attribute.")
+        self._rod_bottom_z = value
 
     def _set_ground_surface_z(self, value: float) -> None:
         """
@@ -300,33 +305,33 @@ class SettlementRodMeasurement:
         return self._date_time
 
     @property
-    def coordinate_reference_system(self) -> pyproj.CRS:
+    def coordinate_reference_systems(self) -> CoordinateReferenceSystems:
         """
-        The coordinate reference system of the spatial measurements.
-        It is a `pyproj.CRS` object (see https://pyproj4.github.io/pyproj/stable/api/crs/crs.html).
+        The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the
+        spatial measurements.
         """
-        return self._coordinate_reference_system
+        return self._coordinate_reference_systems
 
     @property
-    def x(self) -> float:
+    def rod_top_x(self) -> float:
         """
-        The X-coordinate of the measurement point.
+        The horizontal X-coordinate of the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
         return self._x
 
     @property
-    def y(self) -> float:
+    def rod_top_y(self) -> float:
         """
-        The Y-coordinate of the measurement point.
+        The horizontal Y-coordinate of the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
         return self._y
 
     @property
-    def z(self) -> float:
+    def rod_top_z(self) -> float:
         """
-        The Z-coordinate of the measurement point.
+        The vertical Z-coordinate of the top of the settlement rod.
         It is the top of the settlement rod.
         Units are according to the `coordinate_reference_system`.
         """
@@ -336,28 +341,28 @@ class SettlementRodMeasurement:
     def rod_length(self) -> float:
         """
         The length of the settlement rod including the thickness of the settlement plate.
-        It is in principle the vertical distance between the measurement point and the bottom of the settlement plate.
+        It is in principle the vertical distance between the top of the settlement rod and the bottom of the settlement plate.
         Units are according to the `coordinate_reference_system`.
         """
         return self._rod_length
 
     @property
-    def plate_bottom_z(self) -> float:
+    def rod_bottom_z(self) -> float:
         """
-        The corrected Z-coordinate at the bottom of the settlement plate.
+        The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
         Note that the bottom of the plate is in principle the original ground surface.
         Units are according to the `coordinate_reference_system`.
         """
-        return self._plate_bottom_z
+        return self._rod_bottom_z
 
     @property
-    def plate_bottom_z_uncorrected(self) -> float:
+    def rod_bottom_z_uncorrected(self) -> float:
         """
-        The uncorrected Z-coordinate at the bottom of the settlement plate.
-        It is computed as the difference beteen the Z-coordinate of the measurement point and the vertical offset.
+        The uncorrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
+        It is computed as the difference beteen the Z-coordinate of the top of the settlement rod and the rod length.
         Units are according to the `coordinate_reference_system`.
         """
-        return self.z - self.rod_length
+        return self.rod_top_z - self.rod_length
 
     @property
     def ground_surface_z(self) -> float:
@@ -394,3 +399,33 @@ class SettlementRodMeasurement:
         Additional comment about the measurement.
         """
         return self._comment
+
+    @cache
+    def to_dict(self) -> dict:
+        """
+        Convert the measurement to a dictionary.
+        """
+        return {
+            "project_id": self.project.id,
+            "project_name": self.project.name,
+            "device_id": self.device.id,
+            "device_qr_code": self.device.qr_code,
+            "object_id": self.object_id,
+            "coordinate_horizontal_epsg_code": self.coordinate_reference_systems.horizontal.to_epsg(),
+            "coordinate_vertical_epsg_code": self.coordinate_reference_systems.vertical.to_epsg(),
+            "coordinate_horizontal_units": self.coordinate_reference_systems.horizontal_units,
+            "coordinate_vertical_units": self.coordinate_reference_systems.vertical_units,
+            "coordinate_vertical_datum": self.coordinate_reference_systems.vertical_datum,
+            "date_time": self.date_time,
+            "rod_top_x": self.rod_top_x,
+            "rod_top_y": self.rod_top_y,
+            "rod_top_z": self.rod_top_z,
+            "rod_length": self.rod_length,
+            "rod_bottom_z": self.rod_bottom_z,
+            "rod_bottom_z_uncorrected": self.rod_bottom_z_uncorrected,
+            "ground_surface_z": self.ground_surface_z,
+            "status": self.status.value,
+            "temperature": self.temperature,
+            "voltage": self.voltage,
+            "comment": self.comment,
+        }

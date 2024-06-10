@@ -8,8 +8,8 @@ Reference
 Settlement Rod Measurement
 ----------------------------
 
-A settlement rod device consists of a rod and a (bottom) settlement plate (see figure below). The measurements are taken at the top of the rod (i.e. the `measurement_point`) 
-and at the `ground surface` and since the `rod length` is known, the settlement of at the bottom of the plate (i.e. `plate_bottom_z`) can be also derived.
+A settlement rod device consists of a rod and a (bottom) settlement plate (see figure below). The measurements are taken at the top of the rod (i.e. `rod_top`) 
+and at the `ground surface` and since the `rod length` is known, the settlement of at the bottom of the rod (i.e. `rod_bottom`) can be also derived.
 
 .. image:: figures/settlement_rod.png
 
