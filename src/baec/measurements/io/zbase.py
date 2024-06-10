@@ -18,7 +18,7 @@ from baec.measurements.settlement_rod_measurement_series import (
 )
 from baec.project import Project
 
-_map = {
+_STATUS_MAP = {
     0: "ok",
     1: "ok",
     2: "disturbed",
@@ -61,6 +61,8 @@ def measurements_from_zbase(
         If the measurements are not for the same project, device or object.
     IOError
         If ZBASE file cannot be parsed by Pandas
+    FileNotFoundError:
+        If filepath_or_buffer is requested but doesn’t exist.
     """
     # create dummy uuid string
     id_ = str(uuid.uuid4())
@@ -73,19 +75,24 @@ def measurements_from_zbase(
                 "object_id",
                 "date_time",
                 "status",
-                "rod_top",
-                "rod_bottom",
+                "rod_top_z",
+                "rod_bottom_z",
                 "ground_surface_z",
-                "z",
-                "surface_level_z",
-                "settlement",
-                "x",
-                "y",
+                # rod_bottom_z[0] - rod_bottom_z[i]
+                "ground_surface_displacement",
+                # ground_surface_z[0] - ground_surface_z[i] - ground_surface_displacement[i]
+                "fill_thickness",
+                # ?
+                "rod_top_displacement",
+                "rod_top_x",
+                "rod_top_y",
             ],
             header=None,
         )
     except pd.errors.ParserError as e:
         raise IOError(f"Errors encountered while parsing contents of a file: \n {e}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(e)
     # parse datatime string
     df["date_time"] = pd.to_datetime(df["date_time"], dayfirst=False, yearfirst=False)
     # create SettlementRodMeasurement objects
@@ -100,14 +107,14 @@ def measurements_from_zbase(
                 coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
                     28992, 5709
                 ),
-                rod_top_x=row.get("x", 0),
-                rod_top_y=row.get("y", 0),
-                rod_top_z=row.get("rod_top", 0),
-                rod_length=abs(row.get("rod_bottom", 0) - row.get("rod_top", 0)),
-                rod_bottom_z=row.get("rod_bottom", 0),
+                rod_top_x=row.get("rod_top_x", 0),
+                rod_top_y=row.get("rod_top_y", 0),
+                rod_top_z=row.get("rod_top_z", 0),
+                rod_length=row.get("rod_top_z", 0) - row.get("rod_bottom_z", 0),
+                rod_bottom_z=row.get("rod_bottom_z", 0),
                 ground_surface_z=row.get("ground_surface_z", 0),
                 status=SettlementRodMeasurementStatus(
-                    _map.get(row.get("status", 10), "unknown")
+                    _STATUS_MAP.get(row.get("status", 10), "unknown")
                 ),
             )
         )
