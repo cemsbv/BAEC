@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import uuid
 from os import PathLike
 
@@ -94,19 +95,19 @@ def measurements_from_zbase(
             SettlementRodMeasurement(
                 project=Project(id_=id_, name=project_name),
                 device=MeasurementDevice(id_=id_),
-                object_id=row.get("object_id"),
-                date_time=row.get("date_time"),
+                object_id=row.get("object_id", ""),
+                date_time=row.get("date_time", datetime.datetime.now()),
                 coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
                     28992, 5709
                 ),
-                rod_top_x=row.get("x"),
-                rod_top_y=row.get("y"),
-                rod_top_z=row.get("rod_top"),
-                rod_length=abs(row.get("rod_bottom") - row.get("rod_top")),
-                rod_bottom_z=row.get("rod_bottom"),
-                ground_surface_z=row.get("ground_surface_z"),
+                rod_top_x=row.get("x", 0),
+                rod_top_y=row.get("y", 0),
+                rod_top_z=row.get("rod_top", 0),
+                rod_length=abs(row.get("rod_bottom", 0) - row.get("rod_top", 0)),
+                rod_bottom_z=row.get("rod_bottom", 0),
+                ground_surface_z=row.get("ground_surface_z", 0),
                 status=SettlementRodMeasurementStatus(
-                    _map.get(row.get("status"), "unknown")
+                    _map.get(row.get("status", 10), "unknown")
                 ),
             )
         )
