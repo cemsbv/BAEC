@@ -42,6 +42,9 @@ class CoordinateReferenceSystems:
     def from_epsg(cls, horizontal: int, vertical: int) -> CoordinateReferenceSystems:
         """
         Creates a CoordinateReferenceSystems object from the EPSG codes of the horizontal and vertical CRS.
+Notes:
+-----------
+If your settlement rod is located in the Netherlands the horizontal coordinate reference systems is likely `28992` (Amersfoort / RD New) and the vertical `5709` (NAP height). To combine use `7415` (Amersfoort / RD New + NAP height).
 
         Parameters:
         ----------
