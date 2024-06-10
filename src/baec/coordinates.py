@@ -14,7 +14,7 @@ class CoordinateReferenceSystems:
         """
         Initializes a CoordinateReferenceSystems object.
 
-        Parameters:
+        Parameters
         ----------
         horizontal : pyproj.CRS
             The coordinate reference system of the X and Y-coordinates.
@@ -42,18 +42,20 @@ class CoordinateReferenceSystems:
     def from_epsg(cls, horizontal: int, vertical: int) -> CoordinateReferenceSystems:
         """
         Creates a CoordinateReferenceSystems object from the EPSG codes of the horizontal and vertical CRS.
-Notes:
------------
-If your settlement rod is located in the Netherlands the horizontal coordinate reference systems is likely `28992` (Amersfoort / RD New) and the vertical `5709` (NAP height). To combine use `7415` (Amersfoort / RD New + NAP height).
 
-        Parameters:
+        Note
+        ----
+        If your settlement rod is located in the Netherlands the horizontal coordinate reference systems is likely `28992`
+        (Amersfoort / RD New) and the vertical `5709` (NAP height). To combine use `7415` (Amersfoort / RD New + NAP height).
+
+        Parameters
         ----------
         horizontal : int
             The EPSG code of the horizontal CRS.
         vertical : int
             The EPSG code of the vertical CRS.
 
-        Returns:
+        Returns
         -------
         CoordinateReferenceSystems
             A CoordinateReferenceSystems object with the horizontal and vertical CRS.
