@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from functools import cache, wraps
+from functools import wraps
 from typing import Any, Callable, Dict, List, Literal, Tuple
 
 import pandas as pd
@@ -10,8 +10,8 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.ticker import ScalarFormatter
 
+from baec.coordinates import CoordinateReferenceSystems
 from baec.measurements.measured_settlement import MeasuredSettlement
-from baec.measurements.settlement_rod_measurement import SettlementRodMeasurementStatus
 from baec.measurements.settlement_rod_measurement_series import (
     SettlementRodMeasurementSeries,
 )
@@ -93,59 +93,12 @@ class MeasuredSettlementSeries:
     Represents a series of MeasuredSettlement objects, derived for a single settlement rod.
     """
 
-    def __init__(self, items: List[MeasuredSettlement]) -> None:
-        """
-        Initializes a MeasuredSettlementSeries object.
-
-        Parameters
-        ----------
-        items : List[MeasuredSettlement]
-            The list of MeasuredSettlement objects.
-
-        Raises
-        ------
-        TypeError
-            If the input types are incorrect.
-        ValueError
-            If the list of measurements is empty.
-            If the measurements are not for the same project, object, horizontal or
-            vertical units.
-        """
-
-        # Initialize all attributes using private setters.
-        self._set_items(items)
-
-        # Set properties common to all measured settlements
-        self._project = self.items[0].project
-        self._object_id = self.items[0].object_id
-        self._start_date_time = self.items[0].start_date_time
-        self._horizontal_units = self.items[0].horizontal_units
-        self._vertical_units = self.items[0].vertical_units
-
-        # Set properties that are lists
-        self._date_times = []
-        self._days = []
-        self._fill_thicknesses = []
-        self._settlements = []
-        self._x_displacements = []
-        self._y_displacements = []
-        self._statuses = []
-        for item in self.items:
-            self._date_times.append(item.date_time)
-            self._days.append(item.days)
-            self._fill_thicknesses.append(item.fill_thickness)
-            self._settlements.append(item.settlement)
-            self._x_displacements.append(item.x_displacement)
-            self._y_displacements.append(item.y_displacement)
-            self._statuses.append(item.status)
-
-    @classmethod
-    def from_settlement_rod_measurement_series(
-        cls,
+    def __init__(
+        self,
         series: SettlementRodMeasurementSeries,
         start_index: int | None = None,
         start_date_time: datetime.datetime | None = None,
-    ) -> MeasuredSettlementSeries:
+    ) -> None:
         """
         Create a MeasuredSettlementSeries object from a SettlementRodMeasurementSeries object.
 
@@ -184,12 +137,47 @@ class MeasuredSettlementSeries:
         IndexError
             If the `start_index` is out of range for the series.
         """
+
         # Check the types of the input parameters.
         if not isinstance(series, SettlementRodMeasurementSeries):
             raise TypeError(
                 "Expected 'SettlementRodMeasurementSeries' type for 'series' parameter."
             )
 
+        # set SettlementRodMeasurementSeries
+        self._series = series
+
+        # set start of settlement
+        self._set_start_index_or_start_date_time(start_index, start_date_time)
+
+    def _set_start_index_or_start_date_time(
+        self,
+        start_index: int | None = None,
+        start_date_time: datetime.datetime | None = None,
+    ) -> None:
+        """
+        Private setter for measurements attribute.
+
+        Parameters
+        ----------
+        start_index: int | None, optional
+            The index of the item of the series to consider as the start or zero measurement of the series, or None.
+            Default is None.
+        start_date_time: int | None, optional
+            The date at which the start or zero measurement is taken place, or None.
+            Default is None.
+
+
+        Raises
+        ------
+        TypeError
+            If the input types are incorrect.
+        ValueError
+            If both `start_index` and `start_date_time` are provided.
+            If the `start_date_time` is out of range for the series.
+        IndexError
+            If the `start_index` is out of range for the series.
+        """
         if start_index is not None and not isinstance(start_index, int):
             raise TypeError("Expected 'int' type or None for 'start_index' parameter.")
 
@@ -209,30 +197,30 @@ class MeasuredSettlementSeries:
         # Check that the start_index is within the range of the series.
         if start_index is not None:
             try:
-                series.measurements[start_index]
+                self.series.measurements[start_index]
             except IndexError:
                 raise IndexError(
                     f"start_index = {start_index} is out of range for the series. Length of series "
-                    + f"is {len(series.measurements)}."
+                    + f"is {len(self.series.measurements)}."
                 )
 
         # Check that the start_date_time is within the range of the series.
         if (
             start_date_time is not None
-            and not series.measurements[0].date_time
+            and not self.series.measurements[0].date_time
             <= start_date_time
-            <= series.measurements[-1].date_time
+            <= self.series.measurements[-1].date_time
         ):
             raise ValueError(
                 f"start_date_time = {start_date_time} is out of range for the series. "
-                + f"Valid range is {series.measurements[0].date_time} to "
-                + f"{series.measurements[-1].date_time}."
+                + f"Valid range is {self.series.measurements[0].date_time} to "
+                + f"{self.series.measurements[-1].date_time}."
             )
 
         # Get start index from the start_date_time.
         if start_index is None:
             if start_date_time is not None:
-                for start_index, measurement in enumerate(series.measurements):
+                for start_index, measurement in enumerate(self.series.measurements):
                     if measurement.date_time >= start_date_time:
                         break
             # Else, both the start_index and start_date_time are None and thus
@@ -240,17 +228,21 @@ class MeasuredSettlementSeries:
             else:
                 start_index = 0
 
+        # set start data info
+        self._start_index = start_index
+        self._start_date_time = self.series.measurements[start_index].date_time
+
         # Create a list of MeasuredSettlement objects from the series of measurements.
         measured_settlements = []
-        for measurement in series.measurements[start_index:]:
+        for measurement in self.series.measurements[self.start_index :]:
             measured_settlements.append(
                 MeasuredSettlement.from_settlement_rod_measurement(
                     measurement=measurement,
-                    zero_measurement=series.measurements[start_index],
+                    zero_measurement=self.series.measurements[self.start_index],
                 )
             )
 
-        return cls(measured_settlements)
+        self._set_items(measured_settlements)
 
     def _set_items(self, value: List[MeasuredSettlement]) -> None:
         """Private setter for items attribute."""
@@ -324,6 +316,13 @@ class MeasuredSettlementSeries:
         self._items = sorted(value, key=lambda x: x.date_time)
 
     @property
+    def series(self) -> SettlementRodMeasurementSeries:
+        """
+        Represents a series of measurements for a single settlement rod.
+        """
+        return self._series
+
+    @property
     def items(self) -> List[MeasuredSettlement]:
         """
         The list of measured settlements in the series.
@@ -336,14 +335,14 @@ class MeasuredSettlementSeries:
         """
         The project the measured settlements belong to.
         """
-        return self._project
+        return self.series.project
 
     @property
     def object_id(self) -> str:
         """
         The ID of the object the measured settlements belong to.
         """
-        return self._object_id
+        return self.series.object_id
 
     @property
     def start_date_time(self) -> datetime.datetime:
@@ -352,27 +351,40 @@ class MeasuredSettlementSeries:
         """
         return self._start_date_time
 
-    @property
-    def horizontal_units(self) -> str:
+    @start_date_time.setter
+    def start_date_time(self, value: datetime.datetime) -> None:
         """
-        The units of the horizontal XY displacements of the measured settlements.
+        The date and time of the start of measurements (zero measurement).
         """
-        return self._horizontal_units
+        self._set_start_index_or_start_date_time(start_date_time=value)
 
     @property
-    def vertical_units(self) -> str:
+    def start_index(self) -> int:
         """
-        The units of the measurements and distances in the vertical direction
-        of the measured settlements.
+        The date and time of the start of measurements (zero measurement).
         """
-        return self._vertical_units
+        return self._start_index
+
+    @start_index.setter
+    def start_index(self, value: int) -> None:
+        """
+        The date and time of the start of measurements (zero measurement).
+        """
+        self._set_start_index_or_start_date_time(start_index=value)
+
+    @property
+    def coordinate_reference_systems(self) -> CoordinateReferenceSystems:
+        """
+        The horizontal (X, Y) and vertical (Z) coordinate reference systems of the measurements.
+        """
+        return self.series.coordinate_reference_systems
 
     @property
     def date_times(self) -> List[datetime.datetime]:
         """
         The list of date and times for each measured settlement.
         """
-        return self._date_times
+        return [item.date_time for item in self.items]
 
     @property
     def days(self) -> List[float]:
@@ -380,7 +392,7 @@ class MeasuredSettlementSeries:
         The list of time elapsed in [days] since the start of measurements
         for each measured settlement.
         """
-        return self._days
+        return [item.days for item in self.items]
 
     @property
     def fill_thicknesses(self) -> List[float]:
@@ -388,7 +400,7 @@ class MeasuredSettlementSeries:
         The list of fill thicknesses for each measured settlement.
         Units are according to `vertical_units`.
         """
-        return self._fill_thicknesses
+        return [item.fill_thickness for item in self.items]
 
     @property
     def settlements(self) -> List[float]:
@@ -397,7 +409,7 @@ class MeasuredSettlementSeries:
         A positive (+) settlement value represents a downward movement.
         Units are according to `vertical_units`.
         """
-        return self._settlements
+        return [item.settlement for item in self.items]
 
     @property
     def x_displacements(self) -> List[float]:
@@ -405,7 +417,7 @@ class MeasuredSettlementSeries:
         The list of horizontal X-displacements at the rod top relative to the zero measurement.
         Units are according to the `horizontal_units`.
         """
-        return self._x_displacements
+        return [item.x_displacement for item in self.items]
 
     @property
     def y_displacements(self) -> List[float]:
@@ -413,17 +425,8 @@ class MeasuredSettlementSeries:
         The list of horizontal Y-displacements at the rod top relative to the zero measurement.
         Units are according to the `horizontal_units`.
         """
-        return self._y_displacements
+        return [item.y_displacement for item in self.items]
 
-    @property
-    def statuses(self) -> List[SettlementRodMeasurementStatus]:
-        """
-        The list of status objects of the settlement rod measurement from which the measured settlement
-        is derived.
-        """
-        return self._statuses
-
-    @cache
     def to_dataframe(self) -> pd.DataFrame:
         """
         Convert the MeasuredSettlementSeries to a pandas DataFrame.
@@ -725,8 +728,8 @@ class MeasuredSettlementSeries:
         axes.set_aspect("equal")
         axes.grid()
 
-        axes.set_xlabel(f"X [{self.horizontal_units}]")
-        axes.set_ylabel(f"Y [{self.horizontal_units}]")
+        axes.set_xlabel(f"X [{self.coordinate_reference_systems.horizontal_units}]")
+        axes.set_ylabel(f"Y [{self.coordinate_reference_systems.horizontal_units}]")
         axes.set_title(
             f"Plan view of horizonal measurements at rod top for object: {self.object_id}"
         )
@@ -782,10 +785,10 @@ class MeasuredSettlementSeries:
         }
 
         units = {
-            "fill_thicknesses": self.vertical_units,
-            "settlements": self.vertical_units,
-            "x_displacements": self.horizontal_units,
-            "y_displacements": self.horizontal_units,
+            "fill_thicknesses": self.coordinate_reference_systems.vertical_units,
+            "settlements": self.coordinate_reference_systems.vertical_units,
+            "x_displacements": self.coordinate_reference_systems.horizontal_units,
+            "y_displacements": self.coordinate_reference_systems.horizontal_units,
         }
 
         # If axes is None create new Axes.
