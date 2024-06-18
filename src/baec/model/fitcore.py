@@ -83,7 +83,7 @@ class FitCoreModelGenerator:
         }
 
         response = self._client.session.post(
-            url=BASE_URL + f"simpleKoppejan/fit",
+            url=BASE_URL + "simpleKoppejan/fit",
             json=serialize_jsonifyable_object(payload),
         )
 
@@ -112,7 +112,7 @@ class FitCoreModelGenerator:
         payload = {"days": days} | self.fit().__dict__
 
         response = self._client.session.post(
-            url=BASE_URL + f"simpleKoppejan/predict",
+            url=BASE_URL + "simpleKoppejan/predict",
             json=serialize_jsonifyable_object(payload),
         )
 

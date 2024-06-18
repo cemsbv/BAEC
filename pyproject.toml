@@ -90,5 +90,6 @@ module = [
     "scipy.*",
     "pyproj.*",
     "pandas.*",
+    "numpy.*",
 ]
 ignore_missing_imports = true
