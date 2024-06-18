@@ -1,14 +1,8 @@
 from __future__ import annotations
 
 import datetime
-from functools import wraps
-from typing import Any, Callable, Dict, List, Literal, Tuple
 
-import pandas as pd
-from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
-from matplotlib.figure import Figure
-from matplotlib.ticker import ScalarFormatter
 
 
 def validate_plot_parameter_axes(axes: Axes | None) -> None:
