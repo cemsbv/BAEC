@@ -137,6 +137,6 @@ def example_measured_settlements(
 
 @pytest.fixture
 def example_measured_settlement_series(
-    example_measured_settlements: List[MeasuredSettlement],
+    example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
 ) -> MeasuredSettlementSeries:
-    return MeasuredSettlementSeries(items=example_measured_settlements)
+    return MeasuredSettlementSeries(series=example_settlement_rod_measurement_series)
