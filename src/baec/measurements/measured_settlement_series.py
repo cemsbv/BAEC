@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import ScalarFormatter
 
 from baec.coordinates import CoordinateReferenceSystems
+from baec.measurements import plot_utils
 from baec.measurements.measured_settlement import MeasuredSettlement
 from baec.measurements.settlement_rod_measurement_series import (
     SettlementRodMeasurementSeries,
@@ -479,7 +480,7 @@ class MeasuredSettlementSeries:
             The days since the start of the measurements. Note that the days can be a decimal.
         """
         # Check that date_time is datetime.datetime
-        if not isinstance(date_time, (datetime.datetime)):
+        if not isinstance(date_time, datetime.datetime):
             raise TypeError(
                 f"Expected 'date_time.date_time' type for 'date_time' parameter, but got {type(date_time)}."
             )
@@ -499,7 +500,7 @@ class MeasuredSettlementSeries:
         zero measurement over time.
         """
         return self._plot_property_time(
-            property="x_displacements",
+            attribute="x_displacements",
             axes=axes,
             log_time=log_time,
             min_log_time=min_log_time,
@@ -521,7 +522,7 @@ class MeasuredSettlementSeries:
         zero measurement over time.
         """
         return self._plot_property_time(
-            property="y_displacements",
+            attribute="y_displacements",
             axes=axes,
             log_time=log_time,
             min_log_time=min_log_time,
@@ -542,7 +543,7 @@ class MeasuredSettlementSeries:
         Plot the settlement of the initial ground profile rod over time.
         """
         return self._plot_property_time(
-            property="settlements",
+            attribute="settlements",
             axes=axes,
             log_time=log_time,
             min_log_time=min_log_time,
@@ -563,7 +564,7 @@ class MeasuredSettlementSeries:
         Plot the fill thickness over time.
         """
         return self._plot_property_time(
-            property="fill_thicknesses",
+            attribute="fill_thicknesses",
             axes=axes,
             log_time=log_time,
             min_log_time=min_log_time,
@@ -687,7 +688,7 @@ class MeasuredSettlementSeries:
         -------
         plt.Axes
         """
-        self._validate_plot_parameter_axes(axes)
+        plot_utils.validate_plot_parameter_axes(axes)
 
         # If axes is None create new Axes.
         if axes is None:
@@ -739,7 +740,7 @@ class MeasuredSettlementSeries:
     @add_docstring_plot_time(return_type="axes")
     def _plot_property_time(
         self,
-        property: Literal[
+        attribute: Literal[
             "fill_thicknesses",
             "settlements",
             "x_displacements",
@@ -755,19 +756,19 @@ class MeasuredSettlementSeries:
         Private method to plot the requested property over time.
         """
         # Assert the requested property is one accepted one.
-        assert property in [
+        assert attribute in [
             "fill_thicknesses",
             "settlements",
             "x_displacements",
             "y_displacements",
-        ], "Expected 'fill_thicknesses', 'settlements', 'x_displacements' or 'y_displacements' for 'property' parameter."
+        ], "Expected 'fill_thicknesses', 'settlements', 'x_displacements' or 'y_displacements' for 'attribute' parameter."
 
         # Validate input plot parameters
-        self._validate_plot_parameter_axes(axes)
-        self._validate_plot_parameter_log_time(log_time)
-        self._validate_plot_parameter_min_log_time(min_log_time)
-        self._validate_plot_parameter_add_date_time(add_date_time)
-        self._validate_plot_parameter_datetime_format(datetime_format)
+        plot_utils.validate_plot_parameter_axes(axes)
+        plot_utils.validate_plot_parameter_log_time(log_time)
+        plot_utils.validate_plot_parameter_min_log_time(min_log_time)
+        plot_utils.validate_plot_parameter_add_date_time(add_date_time)
+        plot_utils.validate_plot_parameter_datetime_format(datetime_format)
 
         # Map y_label, titles and units per property
         y_labels = {
@@ -797,25 +798,25 @@ class MeasuredSettlementSeries:
             axes = plt.gca()
 
         # Plot the property data over time
-        axes.plot(self.days, getattr(self, property))
+        axes.plot(self.days, getattr(self, attribute))
 
         if log_time:
             axes.set_xlim(min_log_time, max(self.days) + 1.0)
             axes.set_xscale("log")
 
         axes.set_ylim(
-            min(getattr(self, property)) - 0.5, max(getattr(self, property)) + 0.5
+            min(getattr(self, attribute)) - 0.5, max(getattr(self, attribute)) + 0.5
         )
-        if property == "settlements":
+        if attribute == "settlements":
             axes.invert_yaxis()
 
         axes.xaxis.set_major_formatter(ScalarFormatter())
         axes.xaxis.set_minor_formatter(ScalarFormatter())
-        axes.grid(which="both")
+        axes.grid(visible=True, which="both")
 
-        axes.set_ylabel(f"{y_labels[property]} [{units[property]}]")
+        axes.set_ylabel(f"{y_labels[attribute]} [{units[attribute]}]")
         axes.set_xlabel("Time [days]")
-        axes.set_title(f"{titles[property]} for object: {self.object_id}")
+        axes.set_title(f"{titles[attribute]} for object: {self.object_id}")
 
         # Add secondary xaxis with the date_time
         if add_date_time:
@@ -856,8 +857,8 @@ class MeasuredSettlementSeries:
             datetime.datetime class.
         """
         # Validate input plot parameters
-        self._validate_plot_parameter_axes(axes)
-        self._validate_plot_parameter_datetime_format(datetime_format)
+        plot_utils.validate_plot_parameter_axes(axes)
+        plot_utils.validate_plot_parameter_datetime_format(datetime_format)
 
         # Add secondary xaxis with the date_time
         axes2 = axes.twiny()
@@ -881,64 +882,3 @@ class MeasuredSettlementSeries:
         axes2.set_xlabel("Date and Time")
 
         return axes
-
-    @staticmethod
-    def _validate_plot_parameter_axes(axes: Axes | None) -> None:
-        """
-        Private method to validate the 'axes' parameter of the plot methods.
-        """
-        if axes is not None and not isinstance(axes, Axes):
-            raise TypeError(
-                "Expected 'Axes' type or None for 'axes' parameter, but got {type(axes)}."
-            )
-
-    @staticmethod
-    def _validate_plot_parameter_log_time(log_time: bool) -> None:
-        """
-        Private method to validate the 'log_time' parameter of the plot methods.
-        """
-        if not isinstance(log_time, bool):
-            raise TypeError(
-                f"Expected 'bool' type for 'log_time' parameter, but got {type(log_time)}."
-            )
-
-    @staticmethod
-    def _validate_plot_parameter_min_log_time(min_log_time: float) -> None:
-        """
-        Private method to validate the 'min_log_time' parameter of the plot methods.
-        """
-        if not isinstance(min_log_time, (int, float)):
-            raise TypeError(
-                f"Expected 'float' type for 'min_log_time' parameter, but got {type(min_log_time)}."
-            )
-
-        if min_log_time <= 0.0:
-            raise ValueError("The 'min_log_time' parameter must be greater than 0.0.")
-
-    @staticmethod
-    def _validate_plot_parameter_add_date_time(add_date_time: bool) -> None:
-        """
-        Private method to validate the 'add_date_time' parameter of the plot methods.
-        """
-        if not isinstance(add_date_time, bool):
-            raise TypeError(
-                f"Expected 'bool' type for 'add_date_time' parameter, but got {type(add_date_time)}."
-            )
-
-    @staticmethod
-    def _validate_plot_parameter_datetime_format(datetime_format: str) -> None:
-        """
-        Private method to validate the 'datetime_format' parameter of the plot methods.
-        """
-        if not isinstance(datetime_format, str):
-            raise TypeError(
-                f"Expected 'str' type for 'datetime_format' parameter, but got {type(datetime_format)}."
-            )
-
-        try:
-            datetime.datetime.now().strftime(datetime_format)
-        except ValueError:
-            raise ValueError(
-                "The 'datetime_format' parameter is not a valid format for the strftime method "
-                + "of the datetime.datetime class."
-            )
