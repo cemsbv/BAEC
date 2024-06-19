@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import datetime
+import logging
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Sequence
 
@@ -59,13 +61,15 @@ class FitCoreModelGenerator:
 
         self._series = series
         self._client = client
+        self._hash_settlements_ = deepcopy(tuple(self.series.settlements).__hash__())
+        self._model = self.fit(force=True)
 
     @property
     def series(self) -> MeasuredSettlementSeries:
         """Represents a series of measurements for a single settlement rod."""
         return self._series
 
-    def fit(self) -> FitCoreModel:
+    def fit(self, force: bool = True) -> FitCoreModel:
         """
         Fit the settlement measurements for a single settlement rod on
         a simplification of the Koppejan formula based on Arcadis
@@ -76,6 +80,16 @@ class FitCoreModelGenerator:
         model : FitCoreModel
         """
 
+        # check if the __hash__ of the MeasuredSettlementSeries has changed
+        # if not no need to refit the series
+        if (
+            not force
+            and self._hash_settlements_ == tuple(self.series.settlements).__hash__()
+        ):
+            logging.info("Series has not changed. Use cached FitCoreModel")
+            return self._model
+
+        # create payload for the fit API call
         payload = {
             "timeSeries": [
                 isoparse(x.isoformat()) for x in self.series.to_dataframe()["date_time"]
@@ -84,6 +98,7 @@ class FitCoreModelGenerator:
             "startDay": 0,
         }
 
+        # call endpoint
         response = self._client.session.post(
             url=BASE_URL + "simpleKoppejan/fit",
             json=serialize_jsonifyable_object(payload),
@@ -92,7 +107,11 @@ class FitCoreModelGenerator:
         if not response.ok:
             raise RuntimeError(response.text)
 
-        return FitCoreModel(**response.json()["popt"])
+        # update cache properties
+        self._hash_settlements_ = deepcopy(tuple(self.series.settlements).__hash__())
+        self._model = FitCoreModel(**response.json()["popt"])
+
+        return self._model
 
     def predict(self, days: Sequence[int]) -> FitCoreResult:
         """
@@ -111,7 +130,7 @@ class FitCoreModelGenerator:
         result : FitCoreResult
         """
 
-        payload = {"days": days} | self.fit().__dict__
+        payload = {"days": days} | self.fit(force=False).__dict__
 
         response = self._client.session.post(
             url=BASE_URL + "simpleKoppejan/predict",
@@ -239,7 +258,7 @@ class FitCoreModelGenerator:
 
         # Add text to the Axes.
         if add_model_parameters:
-            model = self.fit()
+            model = self.fit(force=False)
             label = """FitCore model parameters:
                 \n final settlement = {:.2f}
                 \n hydrodynamic period = {:.2f}
