@@ -33,12 +33,6 @@ def test_fitcore_model_generator() -> None:
         + datetime.timedelta(days=80),
     )
 
-    # generate fitcore model
-    model = FitCoreModelGenerator(
-        series=series,
-        client=client,
-    )
-
     # mock API calls
     if not real_http:
         with requests_mock.Mocker() as m:
@@ -55,8 +49,20 @@ def test_fitcore_model_generator() -> None:
             )
             m.post(BASE_URL + f"simpleKoppejan/predict", json={"settlement": [0] * 500})
 
+            # generate fitcore model
+            model = FitCoreModelGenerator(
+                series=series,
+                client=client,
+            )
+
             model.plot_fill_settlement_time(log_time=False)
     else:
+        # generate fitcore model
+        model = FitCoreModelGenerator(
+            series=series,
+            client=client,
+        )
+
         model.plot_fill_settlement_time(log_time=False)
 
     # Show the plots
