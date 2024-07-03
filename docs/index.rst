@@ -1,5 +1,5 @@
 Welcome to BAEC Model Generator SDK documentation!
-=======================================
+==================================================
 
 The `baec` library is created by `CEMS BV <https://cemsbv.nl/>`_ .
 

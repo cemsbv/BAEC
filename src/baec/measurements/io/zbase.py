@@ -11,7 +11,8 @@ from baec.coordinates import CoordinateReferenceSystems
 from baec.measurements.measurement_device import MeasurementDevice
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
-    SettlementRodMeasurementStatus,
+    StatusMessage,
+    StatusMessageLevel,
 )
 from baec.measurements.settlement_rod_measurement_series import (
     SettlementRodMeasurementSeries,
@@ -19,18 +20,57 @@ from baec.measurements.settlement_rod_measurement_series import (
 from baec.project import Project
 
 _STATUS_MAP = {
-    0: "ok",
-    1: "ok",
-    2: "disturbed",
-    3: "expired",
-    4: "relocated",
-    5: "rod_is_extended",
-    6: "crooked",
-    7: "deselected",
-    8: "deselected",
-    9: "fictional",
-    10: "unknown",
+    0: StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+    1: StatusMessage(code=1, description="OK", level=StatusMessageLevel.OK),
+    2: StatusMessage(code=2, description="Disturbed", level=StatusMessageLevel.WARNING),
+    3: StatusMessage(code=3, description="Expired", level=StatusMessageLevel.WARNING),
+    4: StatusMessage(code=4, description="Relocated", level=StatusMessageLevel.WARNING),
+    5: StatusMessage(
+        code=5, description="Rod is extended", level=StatusMessageLevel.INFO
+    ),
+    6: StatusMessage(code=6, description="Crooked", level=StatusMessageLevel.WARNING),
+    7: StatusMessage(
+        code=7, description="Deselected", level=StatusMessageLevel.WARNING
+    ),
+    8: StatusMessage(
+        code=8, description="Deselected", level=StatusMessageLevel.WARNING
+    ),
+    9: StatusMessage(code=9, description="Fictional", level=StatusMessageLevel.WARNING),
 }
+
+
+def _zbase_status_to_message(status: int) -> StatusMessage:
+    """
+    Convert a ZBase status code to a StatusMessage object.
+    If the status code is not recognized, a default StatusMessage object is returned
+    with level set to StatusMessageLevel.ERROR.
+
+    Parameters
+    ----------
+    status : int
+        The ZBase status code.
+
+    Returns
+    -------
+    status_message : StatusMessage
+        The corresponding StatusMessage object.
+
+    Raises
+    ------
+    TypeError
+        If status is not of type int.
+    """
+    if not isinstance(status, int):
+        raise TypeError(f"status must be of type `int`, but got {type(status)}.")
+
+    status_message = _STATUS_MAP.get(status)
+    if status_message is None:
+        status_message = StatusMessage(
+            code=status,
+            description="Unrecognized status code",
+            level=StatusMessageLevel.ERROR,
+        )
+    return status_message
 
 
 def measurements_from_zbase(
@@ -98,6 +138,7 @@ def measurements_from_zbase(
     # create SettlementRodMeasurement objects
     measurements = []
     for _, row in df.iterrows():
+        status = row.get("status")
         measurements.append(
             SettlementRodMeasurement(
                 project=Project(id_=id_, name=project_name),
@@ -113,9 +154,9 @@ def measurements_from_zbase(
                 rod_length=row.get("rod_top_z", 0) - row.get("rod_bottom_z", 0),
                 rod_bottom_z=row.get("rod_bottom_z", 0),
                 ground_surface_z=row.get("ground_surface_z", 0),
-                status=SettlementRodMeasurementStatus(
-                    _STATUS_MAP.get(row.get("status", 10), "unknown")
-                ),
+                status_messages=[]
+                if status is None
+                else [_zbase_status_to_message(status)],
             )
         )
 

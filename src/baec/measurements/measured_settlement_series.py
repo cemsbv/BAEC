@@ -139,17 +139,19 @@ class MeasuredSettlementSeries:
             If the `start_index` is out of range for the series.
         """
 
-        # Check the types of the input parameters.
-        if not isinstance(series, SettlementRodMeasurementSeries):
-            raise TypeError(
-                "Expected 'SettlementRodMeasurementSeries' type for 'series' parameter."
-            )
-
         # set SettlementRodMeasurementSeries
-        self._series = series
+        self._set_series(series)
 
         # set start of settlement
         self._set_start_index_or_start_date_time(start_index, start_date_time)
+
+    def _set_series(self, value: SettlementRodMeasurementSeries) -> None:
+        """Private setter for series attribute."""
+        if not isinstance(value, SettlementRodMeasurementSeries):
+            raise TypeError(
+                "Expected 'SettlementRodMeasurementSeries' type for 'series' attribute."
+            )
+        self._series = value
 
     def _set_start_index_or_start_date_time(
         self,
@@ -438,7 +440,7 @@ class MeasuredSettlementSeries:
             A pandas DataFrame with the measured settlements. The columns of the DataFrame are:
             project_id, project_name, object_id, start_date_time
             date_time, days, fill_thickness, settlement, x_displacement, y_displacement
-            horizontal_units, vertical_units, status
+            horizontal_units, vertical_units, status, status_messages
         """
         return pd.DataFrame.from_records(
             [measurement.to_dict() for measurement in self.items]
