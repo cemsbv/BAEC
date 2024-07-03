@@ -149,8 +149,8 @@ class SettlementRodMeasurementSeries:
             project_id, project_name, device_id, device_qr_code, object_id,
             coordinate_horizontal_epsg_code, coordinate_vertical_epsg_code,
             date_time, rod_top_x, rod_top_y, rod_top_z, rod_length, rod_bottom_z
-            rod_bottom_z_uncorrected, ground_surface_z, status, temperature,
-            voltage, comment.
+            rod_bottom_z_uncorrected, ground_surface_z, status, status_messages, temperature,
+            voltage.
         """
         return pd.DataFrame.from_records(
             [measurement.to_dict() for measurement in self.measurements]

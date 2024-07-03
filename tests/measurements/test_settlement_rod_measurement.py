@@ -1,4 +1,5 @@
 import datetime
+from typing import Any, Type
 
 import pyproj
 import pytest
@@ -8,8 +9,79 @@ from baec.measurements.measurement_device import MeasurementDevice
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
     SettlementRodMeasurementStatus,
+    StatusMessage,
+    StatusMessageLevel,
 )
 from baec.project import Project
+
+
+def test_status_message_level_comparison() -> None:
+    """Test comparison of status message levels."""
+    # OK
+    assert StatusMessageLevel.OK == StatusMessageLevel.OK
+    assert StatusMessageLevel.OK < StatusMessageLevel.INFO
+    assert StatusMessageLevel.OK < StatusMessageLevel.WARNING
+    assert StatusMessageLevel.OK < StatusMessageLevel.ERROR
+
+    # INFO
+    assert StatusMessageLevel.INFO > StatusMessageLevel.OK
+    assert StatusMessageLevel.INFO == StatusMessageLevel.INFO
+    assert StatusMessageLevel.INFO < StatusMessageLevel.WARNING
+    assert StatusMessageLevel.INFO < StatusMessageLevel.ERROR
+
+    # WARNING
+    assert StatusMessageLevel.WARNING > StatusMessageLevel.OK
+    assert StatusMessageLevel.WARNING > StatusMessageLevel.INFO
+    assert StatusMessageLevel.WARNING == StatusMessageLevel.WARNING
+    assert StatusMessageLevel.WARNING < StatusMessageLevel.ERROR
+
+    # ERROR
+    assert StatusMessageLevel.ERROR > StatusMessageLevel.OK
+    assert StatusMessageLevel.ERROR > StatusMessageLevel.INFO
+    assert StatusMessageLevel.ERROR > StatusMessageLevel.WARNING
+    assert StatusMessageLevel.ERROR == StatusMessageLevel.ERROR
+
+    # Different types
+    assert StatusMessageLevel.OK != 0
+
+
+def test_status_message_init_with_valid_input() -> None:
+    """Test initialization of status message with valid input."""
+    code = 0
+    description = "OK"
+    level = StatusMessageLevel.OK
+
+    status_message = StatusMessage(code=code, description=description, level=level)
+
+    assert status_message.code == code
+    assert status_message.description == description
+    assert status_message.level == level
+
+
+def test_status_message_init_with_invalid_input() -> None:
+    """Test initialization of status message with invalid input."""
+    with pytest.raises(TypeError):
+        StatusMessage(code="0", description="OK", level=StatusMessageLevel.OK)
+
+    with pytest.raises(TypeError):
+        StatusMessage(code=0, description=0, level=StatusMessageLevel.OK)
+
+    with pytest.raises(ValueError):
+        StatusMessage(code=0, description="", level=StatusMessageLevel.OK)
+
+    with pytest.raises(TypeError):
+        StatusMessage(code=0, description="OK", level=0)
+
+
+def test_status_message_to_string() -> None:
+    """Test string representation of status message."""
+    code = 0
+    description = "No comment"
+    level = StatusMessageLevel.OK
+
+    status_message = StatusMessage(code=code, description=description, level=level)
+
+    assert status_message.to_string() == "(code=0, description=No comment, level=OK)"
 
 
 def test_settlement_rod_measurement_init_with_valid_input() -> None:
@@ -25,10 +97,11 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
     rod_length = 2.0
     rod_bottom_z = -1.193
     ground_surface_z = 0.419
-    status = SettlementRodMeasurementStatus.OK
+    status_messages = [
+        StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+    ]
     temperature = 12.0
     voltage = 4232
-    comment = "No comment"
     plate_bottom_z_uncorrected = -1.193
 
     measurement = SettlementRodMeasurement(
@@ -43,10 +116,9 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
         rod_length=rod_length,
         rod_bottom_z=rod_bottom_z,
         ground_surface_z=ground_surface_z,
-        status=status,
+        status_messages=status_messages,
         temperature=temperature,
         voltage=voltage,
-        comment=comment,
     )
 
     assert measurement.project == project
@@ -60,402 +132,85 @@ def test_settlement_rod_measurement_init_with_valid_input() -> None:
     assert measurement.rod_length == rod_length
     assert measurement.ground_surface_z == ground_surface_z
     assert measurement.rod_bottom_z == rod_bottom_z
-    assert measurement.status == status
+    assert measurement.status_messages == status_messages
+    assert measurement.status == SettlementRodMeasurementStatus.OK
     assert measurement.rod_bottom_z_uncorrected == plate_bottom_z_uncorrected
     assert measurement.temperature == temperature
     assert measurement.voltage == voltage
-    assert measurement.comment == comment
 
 
-def test_settlement_rod_measurement_init_with_invalid_project() -> None:
-    """Test initialization of settlement rod measurement with invalid project."""
-    # Invalid project: None
-    with pytest.raises(TypeError, match="project"):
-        SettlementRodMeasurement(
-            project=None,
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
+@pytest.mark.parametrize(
+    "parameter,invalid_input,expected_error",
+    [
+        ("project", None, TypeError),
+        ("device", None, TypeError),
+        ("object_id", None, TypeError),
+        ("object_id", "", ValueError),
+        ("date_time", None, TypeError),
+        ("coordinate_reference_systems", None, TypeError),
+        ("rod_top_x", "123340.266", TypeError),
+        ("rod_top_y", None, TypeError),
+        ("rod_top_z", "0.807", TypeError),
+        ("rod_length", "2.0", TypeError),
+        ("rod_length", -2.0, ValueError),
+        ("ground_surface_z", "0.419", TypeError),
+        ("rod_bottom_z", "-1.193", TypeError),
+        ("temperature", "12.0", TypeError),
+        ("voltage", "4232", TypeError),
+        ("status_messages", None, TypeError),
+        ("status_messages", ["OK"], TypeError),
+    ],
+)
+def test_settlement_rod_measurement_init_with_invalid_input(
+    valid_settlement_rod_measurement_input: dict,
+    parameter: str,
+    invalid_input: Any,
+    expected_error: Type[Exception],
+) -> None:
+    """Test initialization of SettlementRodMeasurement with invalid input."""
+    valid_settlement_rod_measurement_input[parameter] = invalid_input
+    with pytest.raises(expected_error, match=parameter):
+        SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
 
 
-def test_settlement_rod_measurement_init_with_invalid_device() -> None:
-    """Test initialization of settlement rod measurement with invalid device."""
-    # Invalid device: None
-    with pytest.raises(TypeError, match="device"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=None,
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
+def test_settlement_rod_measurement_status(
+    valid_settlement_rod_measurement_input: dict,
+) -> None:
+    """Test status property of SettlementRodMeasurement."""
 
+    # No status messages
+    valid_settlement_rod_measurement_input["status_messages"] = []
+    measurement = SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
+    assert measurement.status == SettlementRodMeasurementStatus.OK
 
-def test_settlement_rod_measurement_init_with_invalid_object_id() -> None:
-    """Test initialization of settlement rod measurement with invalid object_id."""
-    # Invalid point_id: None
-    with pytest.raises(TypeError, match="object_id"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id=None,
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
+    # Different status messages with OK as highest level.
+    valid_settlement_rod_measurement_input["status_messages"] = [
+        StatusMessage(code=5, description="OK", level=StatusMessageLevel.OK),
+        StatusMessage(code=1, description="No comments", level=StatusMessageLevel.OK),
+    ]
+    measurement = SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
+    assert measurement.status == SettlementRodMeasurementStatus.OK
 
-    # Invalid rod_id: Empty string
-    with pytest.raises(ValueError, match="object_id"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
+    # Different status messages with INFO as highest level.
+    valid_settlement_rod_measurement_input["status_messages"] = [
+        StatusMessage(code=5, description="OK", level=StatusMessageLevel.OK),
+        StatusMessage(code=1, description="INFO", level=StatusMessageLevel.INFO),
+    ]
+    measurement = SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
+    assert measurement.status == SettlementRodMeasurementStatus.INFO
 
+    # Different status messages with WARNING as highest level.
+    valid_settlement_rod_measurement_input["status_messages"] = [
+        StatusMessage(code=5, description="WARNING", level=StatusMessageLevel.WARNING),
+        StatusMessage(code=2, description="INFO", level=StatusMessageLevel.INFO),
+    ]
+    measurement = SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
+    assert measurement.status == SettlementRodMeasurementStatus.WARNING
 
-def test_settlement_rod_measurement_init_with_invalid_date_time() -> None:
-    """Test initialization of settlement rod measurement with invalid date_time."""
-    # Invalid date_time: None
-    with pytest.raises(TypeError, match="date_time"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=None,
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_coordinate_reference_systems() -> (
-    None
-):
-    """Test initialization of settlement rod measurement with invalid coordinate reference systems."""
-    # Invalid coordinate_reference_system: None
-    with pytest.raises(TypeError, match="coordinate_reference_systems"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=None,
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_rod_top_x() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_x."""
-    # Invalid rod_top_x: String value
-    with pytest.raises(TypeError, match="rod_top_x"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x="123340.266",
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_rod_top_y() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_y."""
-    # Invalid rod_top_y: None
-    with pytest.raises(TypeError, match="rod_top_y"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=None,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_rod_top_z() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_top_z."""
-    # Invalid rod_top_z: String value
-    with pytest.raises(TypeError, match="rod_top_z"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z="0.807",
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_rod_length() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_length."""
-    # Invalid point_z: String value
-    with pytest.raises(TypeError, match="rod_length"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length="2.0",
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-    # Invalid rod_length: Negative value
-    with pytest.raises(ValueError, match="rod_length"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=-2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_ground_surface_z() -> None:
-    """Test initialization of settlement rod measurement with invalid ground_surface_z."""
-    # Invalid ground_surface_z: String value
-    with pytest.raises(TypeError, match="ground_surface_z"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z="0.419",
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_rod_bottom_z() -> None:
-    """Test initialization of settlement rod measurement with invalid rod_bottom_z."""
-    # Invalid rod_bottom_z: String value
-    with pytest.raises(TypeError, match="rod_bottom_z"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z="-1.193",
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_temperature() -> None:
-    """Test initialization of settlement rod measurement with invalid temperature."""
-    # Invalid temperature: String value
-    with pytest.raises(TypeError, match="temperature"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature="12.0",
-            voltage=4232,
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_voltage() -> None:
-    """Test initialization of settlement rod measurement with invalid voltage."""
-    # Invalid voltage: String value
-    with pytest.raises(TypeError, match="voltage"):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage="4232",
-            comment="No comment",
-        )
-
-
-def test_settlement_rod_measurement_init_with_invalid_comment() -> None:
-    """Test initialization of settlement rod measurement with invalid comment."""
-    # Invalid comment: Integer value
-    with pytest.raises(TypeError):
-        SettlementRodMeasurement(
-            project=Project(id_="P-001", name="Project 1"),
-            device=MeasurementDevice(id_="BR_003", qr_code="QR-003"),
-            object_id="ZB-02",
-            date_time=datetime.datetime(2024, 4, 9, 4, 0, 0),
-            coordinate_reference_systems=CoordinateReferenceSystems.from_epsg(
-                28992, 5709
-            ),
-            rod_top_x=123340.266,
-            rod_top_y=487597.154,
-            rod_top_z=0.807,
-            rod_length=2.0,
-            rod_bottom_z=-1.193,
-            ground_surface_z=0.419,
-            status=SettlementRodMeasurementStatus.OK,
-            temperature=12.0,
-            voltage=4232,
-            comment=123,
-        )
+    # Different status messages with ERROR as highest level.
+    valid_settlement_rod_measurement_input["status_messages"] = [
+        StatusMessage(code=5, description="WARNING", level=StatusMessageLevel.WARNING),
+        StatusMessage(code=10, description="ERROR", level=StatusMessageLevel.ERROR),
+    ]
+    measurement = SettlementRodMeasurement(**valid_settlement_rod_measurement_input)
+    assert measurement.status == SettlementRodMeasurementStatus.ERROR

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import datetime
 from enum import Enum
-from functools import cache
+from functools import cache, cached_property, total_ordering
+from typing import List
 
 from baec.coordinates import CoordinateReferenceSystems
 from baec.measurements.measurement_device import MeasurementDevice
@@ -12,15 +13,142 @@ from baec.project import Project
 class SettlementRodMeasurementStatus(Enum):
     """Represents the status of a settlement rod measurement."""
 
-    OK = "ok"
-    DISTURBED = "disturbed"
-    EXPIRED = "expired"
-    RELOCATED = "relocated"
-    ROD_IS_EXTENDED = "rod_is_extended"
-    CROOKED = "crooked"
-    DESELECTED = "deselected"
-    FICTIONAL = "fictional"
-    UNKNOWN = "unknown"
+    """If the highest severity level of the status messages is "OK".
+    This will indicate that the measurement is correct."""
+    OK = "OK"
+
+    """If the highest severity level of the status messages is "INFO".
+    This will indicate that there is still at least one informative comment about the measurement. The measurement is still correct."""
+    INFO = "INFO"
+
+    """If the highest severity level of the status messages is "WARNING".
+    This will indicate that there is still at least one warning about the measurement. The measurement may not be correct or accurate enough."""
+    WARNING = "WARNING"
+
+    """If the highest severity level of the status messages is "ERROR".
+    This will indicate that there is still at least one error about the measurement. The measurement is most probably incorrect."""
+    ERROR = "ERROR"
+
+
+@total_ordering
+class StatusMessageLevel(Enum):
+    """Represents the severity level of a status message."""
+
+    """Measurement is correct."""
+    OK = "OK"
+
+    """Measurement has an informative comment. The measurement is still correct."""
+    INFO = "INFO"
+
+    """Measurement has a warning. The measurement may not be correct or accurate enough."""
+    WARNING = "WARNING"
+
+    """Measurement has an error. The measurement is most probably incorrect."""
+    ERROR = "ERROR"
+
+    def __lt__(self, other: object) -> bool:
+        """
+        Compares the order of the status message level.
+        """
+        if isinstance(other, StatusMessageLevel):
+            return self.order() < other.order()
+        return False
+
+    def order(self) -> int:
+        """
+        Returns the order of the status message level.
+        """
+        order = {
+            StatusMessageLevel.OK: 0,
+            StatusMessageLevel.INFO: 1,
+            StatusMessageLevel.WARNING: 2,
+            StatusMessageLevel.ERROR: 3,
+        }
+        return order[self]
+
+
+class StatusMessage:
+    """
+    Represents a status message of a single settlement rod measurement.
+    """
+
+    def __init__(
+        self,
+        code: int,
+        description: str,
+        level: StatusMessageLevel,
+    ):
+        """
+        Initializes a StatusMessage object.
+
+        Parameters
+        ----------
+        code : int
+            The code of the status message.
+        description : str
+            The description of the status message.
+        level : StatusMessageLevel
+            The severity level of the status message.
+        """
+
+        # Initialize all attributes using private setters.
+        self._set_code(code)
+        self._set_description(description)
+        self._set_level(level)
+
+    def _set_code(self, value: int) -> None:
+        """
+        Private setter for code attribute.
+        """
+        if not isinstance(value, int):
+            raise TypeError("Expected 'int' type for 'code' attribute.")
+        self._code = value
+
+    def _set_description(self, value: str) -> None:
+        """
+        Private setter for description attribute.
+        """
+        if not isinstance(value, str):
+            raise TypeError("Expected 'str' type for 'description' attribute.")
+        if value == "":
+            raise ValueError("Empty string not allowed for 'description' attribute.")
+        self._description = value
+
+    def _set_level(self, value: StatusMessageLevel) -> None:
+        """
+        Private setter for level attribute.
+        """
+        if not isinstance(value, StatusMessageLevel):
+            raise TypeError("Expected 'StatusMessageLevel' type for 'level' attribute.")
+        self._level = value
+
+    @cache
+    def to_string(self) -> str:
+        """
+        Convert the status message to a string.
+        """
+        return f"(code={self.code}, description={self.description}, level={self.level.value})"
+
+    @property
+    def code(self) -> int:
+        """
+        The code of the status message.
+        """
+        return self._code
+
+    @property
+    def description(self) -> str:
+        """
+        The description of the status message.
+        """
+        return self._description
+
+    @property
+    def level(self) -> StatusMessageLevel:
+        """
+        The severity level of the status message.
+        """
+        return self._level
 
 
 class SettlementRodMeasurement:
@@ -41,10 +169,9 @@ class SettlementRodMeasurement:
         rod_length: float,
         rod_bottom_z: float,
         ground_surface_z: float,
-        status: SettlementRodMeasurementStatus,
+        status_messages: List[StatusMessage],
         temperature: float | None = None,
         voltage: float | None = None,
-        comment: str = "",
     ) -> None:
         """
         Initializes a SettlementRodMeasurement object.
@@ -85,14 +212,12 @@ class SettlementRodMeasurement:
             The Z-coordinate of the ground surface.
             It is in principle the top of the fill, if present.
             Units and datum according to the `coordinate_reference_systems`.
-        status: SettlementRodMeasurementStatus
-            The status of the measurement.
+        status_messages: List[StatusMessage]
+            The list of status messages about the measurement.
         temperature : float or None, optional
             The temperature at the time of measurement in [°C], or None if unknown (default: None).
         voltage : float or None, optional
             The voltage measured in [mV], or None if unknown (default: None).
-        comment : str, optional
-            Additional comment about the measurement (default: "").
 
         Raises
         ------
@@ -115,10 +240,9 @@ class SettlementRodMeasurement:
         self._set_rod_length(rod_length)
         self._set_rod_bottom_z(rod_bottom_z)
         self._set_ground_surface_z(ground_surface_z)
-        self._set_status(status)
+        self._set_status_messages(status_messages)
         self._set_temperature(temperature)
         self._set_voltage(voltage)
-        self._set_comment(comment)
 
     def _set_project(self, value: Project) -> None:
         """
@@ -230,15 +354,20 @@ class SettlementRodMeasurement:
             raise TypeError("Expected 'float' type for 'ground_surface_z' attribute.")
         self._ground_surface_z = value
 
-    def _set_status(self, value: SettlementRodMeasurementStatus) -> None:
+    def _set_status_messages(self, value: List[StatusMessage]) -> None:
         """
         Private setter for status attribute.
         """
-        if not isinstance(value, SettlementRodMeasurementStatus):
+        if not isinstance(value, list):
             raise TypeError(
-                "Expected 'SettlementRodMeasurementStatus' type for 'status' attribute."
+                "Expected 'List[StatusMessage]' type for 'status_messages' attribute."
             )
-        self._status = value
+        # Check if the input is a list of StatusMessage objects.
+        if not all(isinstance(item, StatusMessage) for item in value):
+            raise TypeError(
+                "Expected 'List[StatusMessage]' type for 'status_messages' attribute."
+            )
+        self._status_messages = value
 
     def _set_temperature(self, value: float | None) -> None:
         """
@@ -265,14 +394,6 @@ class SettlementRodMeasurement:
                     "Expected 'float' or 'None' type for 'voltage' attribute."
                 )
         self._voltage = value
-
-    def _set_comment(self, value: str) -> None:
-        """
-        Private setter for comment attribute.
-        """
-        if not isinstance(value, str):
-            raise TypeError("Expected 'str' type for 'comment' attribute.")
-        self._comment = value
 
     @property
     def project(self) -> Project:
@@ -371,11 +492,38 @@ class SettlementRodMeasurement:
         return self._ground_surface_z
 
     @property
+    def status_messages(self) -> List[StatusMessage]:
+        """
+        The list of status messages about the measurement.
+        """
+        return self._status_messages
+
+    @cached_property
     def status(self) -> SettlementRodMeasurementStatus:
         """
         The status of the measurement.
         """
-        return self._status
+
+        # If no status messages are available, return OK.
+        if len(self.status_messages) == 0:
+            return SettlementRodMeasurementStatus.OK
+
+        # Get the highest severity level of the status messages.
+        highest_level = max([message.level for message in self.status_messages])
+
+        # Return the corresponding status.
+        if highest_level == StatusMessageLevel.OK:
+            return SettlementRodMeasurementStatus.OK
+        elif highest_level == StatusMessageLevel.INFO:
+            return SettlementRodMeasurementStatus.INFO
+        elif highest_level == StatusMessageLevel.WARNING:
+            return SettlementRodMeasurementStatus.WARNING
+        elif highest_level == StatusMessageLevel.ERROR:
+            return SettlementRodMeasurementStatus.ERROR
+        else:
+            raise ValueError(
+                f"No corresponding SettlementRodMeasurementStatus is available for {highest_level}."
+            )
 
     @property
     def temperature(self) -> float | None:
@@ -390,13 +538,6 @@ class SettlementRodMeasurement:
         The voltage measured in [mV], or None if unknown.
         """
         return self._voltage
-
-    @property
-    def comment(self) -> str:
-        """
-        Additional comment about the measurement.
-        """
-        return self._comment
 
     @cache
     def to_dict(self) -> dict:
@@ -423,7 +564,7 @@ class SettlementRodMeasurement:
             "rod_bottom_z_uncorrected": self.rod_bottom_z_uncorrected,
             "ground_surface_z": self.ground_surface_z,
             "status": self.status.value,
+            "status_messages": "\n".join([m.to_string() for m in self.status_messages]),
             "temperature": self.temperature,
             "voltage": self.voltage,
-            "comment": self.comment,
         }

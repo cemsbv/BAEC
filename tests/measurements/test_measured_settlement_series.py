@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import datetime
+from typing import Type
 
 import pytest
 from matplotlib import pyplot as plt
@@ -9,16 +12,36 @@ from baec.measurements.settlement_rod_measurement_series import (
 )
 
 
-def test_from_settlement_rod_measurement_series_with_valid_input(
+@pytest.mark.parametrize(
+    "start_index,start_date_time,expected_start_index",
+    [
+        (None, None, 0),  # default start index and start date time
+        (5, None, 5),
+        (-2, None, -2),
+        (None, datetime.datetime(2024, 4, 11, 0, 0, 0), 2),
+        (None, datetime.datetime(2024, 4, 11, 4, 0, 0), 3),
+    ],
+)
+def test_measured_settlement_series_init_with_valid_input(
     example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
+    start_index: int,
+    start_date_time: datetime.datetime,
+    expected_start_index: int,
 ) -> None:
-    """Test constructor method from_settlement_rod_measurement_series with valid input."""
+    """Test initialization method of MeasuredSettlementSeries with valid input."""
     measurement_series = example_settlement_rod_measurement_series
 
-    # Valid input with default start_index and start_date_time.
-    series = MeasuredSettlementSeries(
-        series=measurement_series,
-    )
+    # Create series
+    if start_index is None and start_date_time is None:
+        series = MeasuredSettlementSeries(
+            series=measurement_series,
+        )
+    else:
+        series = MeasuredSettlementSeries(
+            series=measurement_series,
+            start_index=start_index,
+            start_date_time=start_date_time,
+        )
 
     assert isinstance(series, MeasuredSettlementSeries)
     assert series.project == measurement_series.project
@@ -33,131 +56,8 @@ def test_from_settlement_rod_measurement_series_with_valid_input(
     )
 
     df = measurement_series.to_dataframe()
-    idx = 0  # expected start index
-    assert len(series.items) == len(df.iloc[idx:])
-    assert series.start_date_time == measurement_series.measurements[idx].date_time
-    assert series.date_times == df["date_time"].to_list()[idx:]
-    assert series.days == list(
-        [
-            (d - series.start_date_time).total_seconds() / 86400.0
-            for d in df["date_time"].to_list()[idx:]
-        ]
-    )
-    assert (
-        series.fill_thicknesses
-        == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
-    )
-    assert (
-        series.settlements
-        == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
-    )
-    assert (
-        series.x_displacements
-        == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
-    )
-    assert (
-        series.y_displacements
-        == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
-    )
 
-    # Valid input using start_index = 5.
-    series.start_index = 5
-
-    df = measurement_series.to_dataframe()
-    idx = 5  # expected start index
-    assert len(series.items) == len(df.iloc[idx:])
-    assert series.start_date_time == measurement_series.measurements[idx].date_time
-    assert series.date_times == df["date_time"].to_list()[idx:]
-    assert series.days == list(
-        [
-            (d - series.start_date_time).total_seconds() / 86400.0
-            for d in df["date_time"].to_list()[idx:]
-        ]
-    )
-    assert (
-        series.fill_thicknesses
-        == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
-    )
-    assert (
-        series.settlements
-        == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
-    )
-    assert (
-        series.x_displacements
-        == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
-    )
-    assert (
-        series.y_displacements
-        == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
-    )
-
-    # Valid input using start_index = -2.
-    series.start_index = -2
-
-    df = measurement_series.to_dataframe()
-    idx = -2  # expected start index
-    assert len(series.items) == len(df.iloc[idx:])
-    assert series.start_date_time == measurement_series.measurements[idx].date_time
-    assert series.date_times == df["date_time"].to_list()[idx:]
-    assert series.days == list(
-        [
-            (d - series.start_date_time).total_seconds() / 86400.0
-            for d in df["date_time"].to_list()[idx:]
-        ]
-    )
-    assert (
-        series.fill_thicknesses
-        == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
-    )
-    assert (
-        series.settlements
-        == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
-    )
-    assert (
-        series.x_displacements
-        == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
-    )
-    assert (
-        series.y_displacements
-        == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
-    )
-
-    # Valid input using start_date_time = 2024-04-11 00:00:00.
-    series.start_date_time = datetime.datetime(2024, 4, 11, 0, 0, 0)
-
-    df = measurement_series.to_dataframe()
-    idx = 2  # expected start index
-    assert len(series.items) == len(df.iloc[idx:])
-    assert series.start_date_time == datetime.datetime(2024, 4, 11, 0, 0, 0)
-    assert series.date_times == df["date_time"].to_list()[idx:]
-    assert series.days == list(
-        [
-            (d - series.start_date_time).total_seconds() / 86400.0
-            for d in df["date_time"].to_list()[idx:]
-        ]
-    )
-    assert (
-        series.fill_thicknesses
-        == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
-    )
-    assert (
-        series.settlements
-        == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
-    )
-    assert (
-        series.x_displacements
-        == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
-    )
-    assert (
-        series.y_displacements
-        == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
-    )
-
-    # Valid input using start_date_time = 2024-04-11 04:00:00.
-    series.start_date_time = datetime.datetime(2024, 4, 11, 4, 0, 0)
-
-    df = measurement_series.to_dataframe()
-    idx = 3  # expected start index
+    idx = expected_start_index  # expected start index
     assert len(series.items) == len(df.iloc[idx:])
     assert series.start_date_time == measurement_series.measurements[idx].date_time
     assert series.date_times == df["date_time"].to_list()[idx:]
@@ -185,10 +85,10 @@ def test_from_settlement_rod_measurement_series_with_valid_input(
     )
 
 
-def test_from_settlement_rod_measurement_series_with_invalid_input(
+def test_measured_settlement_series_with_invalid_input(
     example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
 ) -> None:
-    """Test constructor method from_settlement_rod_measurement_series with invalid input."""
+    """Test initialization method of MeasuredSettlementSeries with invalid input."""
 
     measurement_series = example_settlement_rod_measurement_series
 
@@ -249,6 +149,132 @@ def test_from_settlement_rod_measurement_series_with_invalid_input(
         )
 
 
+@pytest.mark.parametrize(
+    "start_index,expected_start_index_or_error",
+    [
+        (0, 0),
+        (5, 5),
+        (-2, -2),
+        (5.0, TypeError),
+        (20, IndexError),  # out of range with positive value
+        (-20, IndexError),  # out of range with negative value
+    ],
+)
+def test_measured_settlement_series_start_index_setter(
+    example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
+    start_index: int,
+    expected_start_index_or_error: int | Type[Exception],
+) -> None:
+    """Test the start_index setter method of MeasuredSettlementSeries."""
+
+    # Create the series
+    measurement_series = example_settlement_rod_measurement_series
+
+    series = MeasuredSettlementSeries(
+        series=measurement_series,
+    )
+
+    # Set the start_index and check whether the expected error is
+    # raised or the expected output is obtained.
+    if isinstance(expected_start_index_or_error, Exception):
+        with pytest.raises(expected_start_index_or_error):
+            series.start_index = start_index
+
+    elif isinstance(expected_start_index_or_error, int):
+        series.start_index = start_index
+
+        # Check the output
+        df = measurement_series.to_dataframe()
+        idx = expected_start_index_or_error
+        assert len(series.items) == len(df.iloc[idx:])
+        assert series.start_date_time == measurement_series.measurements[idx].date_time
+        assert series.date_times == df["date_time"].to_list()[idx:]
+        assert series.days == list(
+            [
+                (d - series.start_date_time).total_seconds() / 86400.0
+                for d in df["date_time"].to_list()[idx:]
+            ]
+        )
+        assert (
+            series.fill_thicknesses
+            == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
+        )
+        assert (
+            series.settlements
+            == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
+        )
+        assert (
+            series.x_displacements
+            == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
+        )
+        assert (
+            series.y_displacements
+            == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
+        )
+
+
+@pytest.mark.parametrize(
+    "start_date_time,expected_start_index_or_error",
+    [
+        (datetime.datetime(2024, 4, 11, 0, 0, 0), 2),
+        (datetime.datetime(2024, 4, 11, 4, 0, 0), 3),
+        ("2024-04-11 00:00:00", TypeError),
+        (datetime.datetime(2024, 4, 1, 0, 0, 0), ValueError),  # date before series
+    ],
+)
+def test_measured_settlement_series_start_datetime_setter(
+    example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
+    start_date_time: datetime.datetime,
+    expected_start_index_or_error: int | Type[Exception],
+) -> None:
+    """Test the start_datetime setter method of MeasuredSettlementSeries."""
+
+    # Create the series
+    measurement_series = example_settlement_rod_measurement_series
+
+    series = MeasuredSettlementSeries(
+        series=measurement_series,
+    )
+
+    # Set the start_datetime and check whether the expected error is
+    # raised or the expected output is obtained.
+    if isinstance(expected_start_index_or_error, Exception):
+        with pytest.raises(expected_start_index_or_error):
+            series.start_date_time = start_date_time
+
+    elif isinstance(expected_start_index_or_error, int):
+        series.start_date_time = start_date_time
+
+        # Check the output
+        df = measurement_series.to_dataframe()
+        idx = expected_start_index_or_error
+        assert len(series.items) == len(df.iloc[idx:])
+        assert series.start_date_time == measurement_series.measurements[idx].date_time
+        assert series.date_times == df["date_time"].to_list()[idx:]
+        assert series.days == list(
+            [
+                (d - series.start_date_time).total_seconds() / 86400.0
+                for d in df["date_time"].to_list()[idx:]
+            ]
+        )
+        assert (
+            series.fill_thicknesses
+            == (df["ground_surface_z"] - df["rod_bottom_z"]).to_list()[idx:]
+        )
+        assert (
+            series.settlements
+            == (df["rod_bottom_z"].iloc[idx] - df["rod_bottom_z"].iloc[idx:]).to_list()
+        )
+        assert (
+            series.x_displacements
+            == (df["rod_top_x"].iloc[idx:] - df["rod_top_x"].iloc[idx]).to_list()
+        )
+        assert (
+            series.y_displacements
+            == (df["rod_top_y"].iloc[idx:] - df["rod_top_y"].iloc[idx]).to_list()
+        )
+
+
 def test_days_to_date_time(
     example_measured_settlement_series: MeasuredSettlementSeries,
 ) -> None:
@@ -299,6 +325,40 @@ def test_date_time_to_days(
     # 2. Test with invalid input: str
     with pytest.raises(TypeError, match="date_time"):
         series.date_time_to_days(date_time="2024-04-24 00:00:00")
+
+
+def test_measured_settlement_series_to_dataframe_method(
+    example_settlement_rod_measurement_series: SettlementRodMeasurementSeries,
+) -> None:
+    """Test the to_dataframe method of MeasuredSettlementSeries."""
+    measurement_series = example_settlement_rod_measurement_series
+
+    # Valid input with default start_index and start_date_time.
+    series = MeasuredSettlementSeries(
+        series=measurement_series,
+    )
+
+    df = series.to_dataframe()
+
+    # Check that the DataFrame has the correct number of rows.
+    assert len(df) == len(measurement_series.measurements)
+
+    # Check that the DataFrame has the correct data.
+    for i, item in enumerate(series.items):
+        assert df.iloc[i]["project_id"] == item.project.id
+        assert df.iloc[i]["project_name"] == item.project.name
+        assert df.iloc[i]["object_id"] == item.object_id
+        assert df.iloc[i]["start_date_time"] == item.start_date_time
+        assert df.iloc[i]["date_time"] == item.date_time
+        assert df.iloc[i]["days"] == item.days
+        assert df.iloc[i]["fill_thickness"] == item.fill_thickness
+        assert df.iloc[i]["settlement"] == item.settlement
+        assert df.iloc[i]["x_displacement"] == item.x_displacement
+        assert df.iloc[i]["y_displacement"] == item.y_displacement
+        assert df.iloc[i]["horizontal_units"] == item.horizontal_units
+        assert df.iloc[i]["vertical_units"] == item.vertical_units
+        assert df.iloc[i]["status"] == item.status.value
+        assert df.iloc[i]["status_messages"] == "(code=0, description=OK, level=OK)"
 
 
 def test_plot_x_displacement_time(

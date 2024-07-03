@@ -142,9 +142,9 @@ def test_settlement_rod_measurement_series_to_dataframe_method(
         )
         assert df.iloc[i]["ground_surface_z"] == measurement.ground_surface_z
         assert df.iloc[i]["status"] == measurement.status.value
+        assert df.iloc[i]["status_messages"] == "(code=0, description=OK, level=OK)"
         assert df.iloc[i]["temperature"] == measurement.temperature
         assert df.iloc[i]["voltage"] == measurement.voltage
-        assert df.iloc[i]["comment"] == measurement.comment
 
 
 def test_plot_x_time(

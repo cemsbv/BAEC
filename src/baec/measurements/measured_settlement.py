@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import datetime
 from functools import cache, cached_property
+from typing import List
 
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
     SettlementRodMeasurementStatus,
+    StatusMessage,
 )
 from baec.project import Project
 
@@ -29,6 +31,7 @@ class MeasuredSettlement:
         horizontal_units: str,
         vertical_units: str,
         status: SettlementRodMeasurementStatus,
+        status_messages: List[StatusMessage],
     ) -> None:
         """
         Initializes a MeasuredSettlement object.
@@ -63,6 +66,9 @@ class MeasuredSettlement:
         status: SettlementRodMeasurementStatus
             The status of the settlement rod measurement from which the measured settlement
             is derived.
+        status_messages: List[StatusMessage]
+            The list of status messages about the settlement rod measurement from which the
+            measured settlement is derived.
 
         Raises
         ------
@@ -86,6 +92,7 @@ class MeasuredSettlement:
         self._set_horizontal_units(horizontal_units)
         self._set_vertical_units(vertical_units)
         self._set_status(status)
+        self._set_status_messages(status_messages)
 
     @classmethod
     def from_settlement_rod_measurement(
@@ -156,6 +163,7 @@ class MeasuredSettlement:
             horizontal_units=measurement.coordinate_reference_systems.horizontal_units,
             vertical_units=measurement.coordinate_reference_systems.vertical_units,
             status=measurement.status,
+            status_messages=measurement.status_messages,
         )
 
     def _set_project(self, value: Project) -> None:
@@ -274,6 +282,21 @@ class MeasuredSettlement:
             )
         self._status = value
 
+    def _set_status_messages(self, value: List[StatusMessage]) -> None:
+        """
+        Private setter for status attribute.
+        """
+        if not isinstance(value, list):
+            raise TypeError(
+                "Expected 'List[StatusMessage]' type for 'status_messages' attribute."
+            )
+        # Check if the input is a list of StatusMessage objects.
+        if not all(isinstance(item, StatusMessage) for item in value):
+            raise TypeError(
+                "Expected 'List[StatusMessage]' type for 'status_messages' attribute."
+            )
+        self._status_messages = value
+
     @property
     def project(self) -> Project:
         """
@@ -364,6 +387,14 @@ class MeasuredSettlement:
         """
         return self._status
 
+    @property
+    def status_messages(self) -> List[StatusMessage]:
+        """
+        The list of status messages about the settlement rod measurement from which the
+        measured settlement is derived.
+        """
+        return self._status_messages
+
     @cache
     def to_dict(self) -> dict:
         """
@@ -383,4 +414,5 @@ class MeasuredSettlement:
             "horizontal_units": self.horizontal_units,
             "vertical_units": self.vertical_units,
             "status": self.status.value,
+            "status_messages": "\n".join([m.to_string() for m in self.status_messages]),
         }

@@ -10,6 +10,8 @@ from baec.measurements.measurement_device import MeasurementDevice
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
     SettlementRodMeasurementStatus,
+    StatusMessage,
+    StatusMessageLevel,
 )
 from baec.measurements.settlement_rod_measurement_series import (
     SettlementRodMeasurementSeries,
@@ -31,10 +33,11 @@ def valid_settlement_rod_measurement_input() -> dict:
         rod_length=2.0,
         rod_bottom_z=-1.193,
         ground_surface_z=0.419,
-        status=SettlementRodMeasurementStatus.OK,
+        status_messages=[
+            StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+        ],
         temperature=12.0,
         voltage=4232,
-        comment="No comment",
     )
 
 
@@ -58,10 +61,11 @@ def example_settlement_rod_measurements() -> List[SettlementRodMeasurement]:
     rod_length = 2.0
     rod_bottom_z_start = -1.193
     ground_surface_z_start = 0.419
-    status = SettlementRodMeasurementStatus.OK
+    status_messages = [
+        StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+    ]
     temperature = 12.0
     voltage = 4232
-    comment = "No comment"
 
     measurements = []
     for i in range(10):
@@ -84,10 +88,9 @@ def example_settlement_rod_measurements() -> List[SettlementRodMeasurement]:
                 rod_length=rod_length,
                 rod_bottom_z=rod_bottom_z,
                 ground_surface_z=ground_surface_z,
-                status=status,
+                status_messages=status_messages,
                 temperature=temperature,
                 voltage=voltage,
-                comment=comment,
             )
         )
 
@@ -117,6 +120,9 @@ def valid_measured_settlement_input() -> dict:
         x_displacement=0.25,
         y_displacement=0.75,
         status=SettlementRodMeasurementStatus.OK,
+        status_messages=[
+            StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+        ],
     )
 
 

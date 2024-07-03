@@ -9,6 +9,8 @@ from baec.measurements.measured_settlement import MeasuredSettlement
 from baec.measurements.settlement_rod_measurement import (
     SettlementRodMeasurement,
     SettlementRodMeasurementStatus,
+    StatusMessage,
+    StatusMessageLevel,
 )
 from baec.project import Project
 
@@ -26,6 +28,9 @@ def test_measured_settlement_init_with_valid_input() -> None:
     x_displacement = 0.25
     y_displacement = 0.75
     status = SettlementRodMeasurementStatus.OK
+    status_messages = [
+        StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+    ]
 
     measured_settlement = MeasuredSettlement(
         project=project,
@@ -39,6 +44,7 @@ def test_measured_settlement_init_with_valid_input() -> None:
         x_displacement=x_displacement,
         y_displacement=y_displacement,
         status=status,
+        status_messages=status_messages,
     )
 
     assert measured_settlement.project == project
@@ -52,6 +58,7 @@ def test_measured_settlement_init_with_valid_input() -> None:
     assert measured_settlement.x_displacement == x_displacement
     assert measured_settlement.y_displacement == y_displacement
     assert measured_settlement.status == status
+    assert measured_settlement.status_messages == status_messages
 
     assert measured_settlement.days == pytest.approx(8.51, abs=0.001)
 
@@ -91,10 +98,10 @@ def test_measured_settlement_with_invalid_input(
         MeasuredSettlement(**valid_measured_settlement_input)
 
 
-def test_from_settlement_rod_settlement_with_valid_input(
+def test_from_settlement_rod_settlement(
     valid_settlement_rod_measurement: SettlementRodMeasurement,
 ) -> None:
-    """Test constructor method from_measured_settlement_rod_measurement with valid input."""
+    """Test constructor method from_measured_settlement_rod_measurement."""
     zero_measurement = deepcopy(valid_settlement_rod_measurement)
     measurement = deepcopy(zero_measurement)
     measurement._date_time = datetime.datetime(2024, 4, 10, 0, 0, 0)
@@ -126,7 +133,8 @@ def test_from_settlement_rod_settlement_with_valid_input(
         measured_settlement.vertical_units
         == measurement.coordinate_reference_systems.vertical_units
     )
-    assert measured_settlement.status == measured_settlement.status
+    assert measured_settlement.status == measurement.status
+    assert measured_settlement.status_messages == measurement.status_messages
 
     # Invalid measurement: None
     with pytest.raises(TypeError, match="measurement"):
@@ -189,6 +197,9 @@ def test_measured_settlement_to_dict() -> None:
     x_displacement = 0.25
     y_displacement = 0.75
     status = SettlementRodMeasurementStatus.OK
+    status_messages = [
+        StatusMessage(code=0, description="OK", level=StatusMessageLevel.OK),
+    ]
 
     measured_settlement = MeasuredSettlement(
         project=project,
@@ -201,7 +212,8 @@ def test_measured_settlement_to_dict() -> None:
         settlement=settlement,
         x_displacement=x_displacement,
         y_displacement=y_displacement,
-        status=SettlementRodMeasurementStatus.OK,
+        status=status,
+        status_messages=status_messages,
     )
 
     assert measured_settlement.to_dict() == {
@@ -218,4 +230,5 @@ def test_measured_settlement_to_dict() -> None:
         "horizontal_units": horizontal_units,
         "vertical_units": vertical_units,
         "status": status.value,
+        "status_messages": "(code=0, description=OK, level=OK)",
     }

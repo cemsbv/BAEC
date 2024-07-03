@@ -60,7 +60,22 @@ Measured Settlement Series
     :member-order: bysource
 
     .. automethod:: __init__
-        
+
+.. _statusMessage:
+
+Status Message
+--------------
+
+.. autoclass:: baec.measurements.settlement_rod_measurement.StatusMessage
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
+
+.. autoenum:: baec.measurements.settlement_rod_measurement.StatusMessageLevel
+    :members:
+
 .. _measurementDevice:
 
 Measurement Device
