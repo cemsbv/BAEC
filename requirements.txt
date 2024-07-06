@@ -34,7 +34,7 @@ cems-nuclei[client]==0.5.5
     # via
     #   baec (pyproject.toml)
     #   cems-nuclei
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   pyproj
     #   requests
