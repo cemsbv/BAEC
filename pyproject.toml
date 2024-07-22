@@ -94,7 +94,5 @@ module = [
     "pyproj.*",
     "pandas.*",
     "numpy.*",
-    "boto3.*",
-    "botocore.*",
 ]
 ignore_missing_imports = true
