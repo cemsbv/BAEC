@@ -26,10 +26,6 @@ black[jupyter]==23.10.1
     # via
     #   baec (pyproject.toml)
     #   black
-boto3==1.34.143
-    # via baec (pyproject.toml)
-botocore====1.34.143
-    # via boto3
 cachecontrol[filecache]==0.14.0
     # via
     #   cachecontrol
