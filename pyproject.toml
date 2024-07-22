@@ -32,6 +32,12 @@ docs = [
     "sphinx_rtd_theme>1.2,<2",
     "enum-tools[sphinx]>=0.12,<0.13",
 ]
+aws = [
+    "boto3==1.34.145",
+    "boto3-stubs==1.34.145",
+    "botocore==1.34.145",
+    "botocore-stubs==1.34.145",
+]
 # lint dependencies from github super-linter v5
 # See https://github.com/super-linter/super-linter/tree/main/dependencies/python
 lint = [
