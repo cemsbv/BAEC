@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import getpass
 import json
+import os
 import re
 from datetime import datetime
 from os import PathLike
@@ -25,35 +27,115 @@ from baec.measurements.settlement_rod_measurement_series import (
 from baec.project import Project
 
 
-class ProjectsIDs:
+class Credentials:
+    def __init__(
+        self,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+    ) -> None:
+        """
+        Credentials needs to refer to the AWS credential file given by Basetime.
+
+        Parameters
+        ----------
+        aws_access_key_id: str, optional
+            The access key to use when creating the client.This is entirely optional, and if not provided,
+            the credentials configured for the session will automatically be used. You only need to provide
+            this argument if you want to override the credentials used for this specific client.
+        aws_secret_access_key: : str, optional
+            The secret key to use when creating the client.  Same semantics as aws_access_key_id above.
+        """
+        if aws_access_key_id is None:
+            if "BASETIME_KEY_ID" not in os.environ:
+                self.aws_access_key_id = input(
+                    "Authentication is needed. What is your BaseTime key ID?"
+                )
+            else:
+                self.aws_access_key_id = os.environ["BASETIME_KEY_ID"]
+        else:
+            self.aws_access_key_id = aws_access_key_id
+
+        if aws_secret_access_key is None:
+            if "BASETIME_ACCESS_KEY" not in os.environ:
+                self.aws_secret_access_key = getpass.getpass("What is your access key?")
+            else:
+                self.aws_secret_access_key = os.environ["BASETIME_ACCESS_KEY"]
+        else:
+            self.aws_secret_access_key = aws_secret_access_key
+
+    @classmethod
+    def from_csv(
+        cls,
+        filepath_or_buffer: str
+        | PathLike[str]
+        | ReadCsvBuffer[bytes]
+        | ReadCsvBuffer[str],
+    ) -> "Credentials":
+        """
+        Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.
+
+        Parameters
+        ----------
+        filepath_or_buffer: filepath_or_buffer: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+
+        Returns
+        -------
+        Credentials
+
+        Raises
+        ------
+        ValueError/ClientError
+            If the provided credential file does not contain the correct credentials.
+            If the wrong type of value is given for the credential file.
+        TypeError
+            If the credential file does not contain credentials.
+        ValueError
+            If the list of measurements is empty.
+            If the measurements are not for the same project, device or object.
+        IOError
+            If ZBASE file cannot be parsed by Pandas
+        FileNotFoundError
+            If filepath_or_buffer is requested but doesn't exist.
+
+        """
+        # Read the credentials file
+        try:
+            dict_credentials = pd.read_csv(filepath_or_buffer).to_dict("records")[0]
+        except pd.errors.ParserError as e:
+            raise IOError(
+                f"Errors encountered while parsing contents of the credentials file: \n {e}"
+            )
+        except FileNotFoundError as e:
+            raise FileNotFoundError(e)
+        except ValueError:
+            raise ValueError(
+                "Wrong type of credentials file given, str | PathLike[str] | ReadCsvBuffer[bytes] | "
+                "ReadCsvBuffer[str], Any valid string path is acceptable."
+            )
+        return cls(
+            dict_credentials["Access key ID"], dict_credentials["Secret access key"]
+        )
+
+
+class BaseTimeBucket:
     """
     Class object to get a list of projects and Point IDs or to import measurements as a SettlementRodMeasurementSeries.
     """
 
     def __init__(
         self,
-        credentials: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
+        credentials: Credentials,
         s3bucket: str = "baec",
-    ):
+    ) -> None:
         """
         Initializes a ProjectsIDs object.
 
         Parameters
         ----------
-        credentials : str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+        credentials : Credentials
             Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.
         s3bucket : str
             Name of the bucket where data is stored. DEFAULT is 'baec'
-
-        Returns
-        -------
-        series : ProjectsIDs [dict]
-            A overview of all the available projects and connected settlement rods within every project. [dict]
-            <Keys> : project names
-            <Values> : list of Point IDs inside every project.
-
-        series : SettlementRodMeasurementSeries
-            A SettlementRodMeasurementSeries object for every available rod measurement, to be called within the class
 
         Raises
         ------
@@ -74,32 +156,18 @@ class ProjectsIDs:
 
         dic_user_projects_points = {}
 
-        # Read the credentials file
-        try:
-            dict_credentials = pd.read_csv(credentials).to_dict("records")[0]
-        except pd.errors.ParserError as e:
-            raise IOError(
-                f"Errors encountered while parsing contents of the credentials file: \n {e}"
-            )
-        except FileNotFoundError as e:
-            raise FileNotFoundError(e)
-        except ValueError:
-            raise ValueError(
-                "Wrong type of credentials file given, str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str], Any valid string path is acceptable."
-            )
-
         # Create boto3 client and resource for connecting to AWS S3
         s3c = boto3.client(
             service_name="s3",
             region_name="ca-central-1",
-            aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"],
+            aws_access_key_id=credentials.aws_access_key_id,
+            aws_secret_access_key=credentials.aws_secret_access_key,
         )
         s3r = boto3.resource(
             service_name="s3",
             region_name="ca-central-1",
-            aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"],
+            aws_access_key_id=credentials.aws_access_key_id,
+            aws_secret_access_key=credentials.aws_secret_access_key,
         )
 
         # Create the dictionary to translate the error codes. Get the error_codes file from the AWS S3 bucket
@@ -133,15 +201,13 @@ class ProjectsIDs:
                 "The AWS Access Key ID or Access Key Password you provided does not exist in our records."
             )
 
-        """
-        Iterate through all the folders in the S3 environment. The environment has the following folder structure:
-        - Company name
-            - Folder with years in YYYY
-                - Folder with days in MMDD
-                    - Measurements for each project.
-
-        Read each object and write down the Point ID and Project name.
-        """
+        # Iterate through all the folders in the S3 environment. The environment has the following folder structure:
+        # - Company name
+        #     - Folder with years in YYYY
+        #         - Folder with days in MMDD
+        #             - Measurements for each project.
+        #
+        # Read each object and write down the Point ID and Project name.
         for project in list_projects:
             dic_projects_ids: Dict[str, List[str]]
             dic_projects_ids = {}
@@ -189,7 +255,7 @@ class ProjectsIDs:
         """
         return self.dic_projects
 
-    def make_SettlementRodMeasurementSeries(
+    def make_settlement_rod_measurement_series(
         self, company: str, project: str, rod_id: str
     ) -> SettlementRodMeasurementSeries:
         """
@@ -207,13 +273,26 @@ class ProjectsIDs:
             - Split Basetime EPSG code to list of EPSG numbers to add to CoordinateReferenceSystems
             - Split error codes into multiple StatusMessage classes
             - Add all values to the SettlementRodMeasurement class
+
+        Parameters
+        ----------
+        company: str
+            company name
+        project: str
+            project name
+        rod_id: str
+            settlement rod id as found in BaseTime platform.
+
+        Returns
+        -------
+        SettlementRodMeasurementSeries
         """
         if (
             company in self.dic_projects
             and project in self.dic_projects[company]
             and rod_id in self.dic_projects[company][project]
         ):
-            list_SettlementRodMeasurement = []
+            list_settlement_rod_measurement = []
 
             year_folders = self.s3c.list_objects(
                 Bucket=self.s3bucket, Prefix=company + "/", Delimiter="/"
@@ -364,7 +443,7 @@ class ProjectsIDs:
                                     or float("nan"),
                                 )
 
-                                list_SettlementRodMeasurement.append(test_measurement)
+                                list_settlement_rod_measurement.append(test_measurement)
 
         elif company in self.dic_projects and project in self.dic_projects[company]:
             raise ValueError(
@@ -377,20 +456,25 @@ class ProjectsIDs:
         else:
             raise ValueError(f"{company} is not in the user list")
 
-        return SettlementRodMeasurementSeries(list_SettlementRodMeasurement)
+        return SettlementRodMeasurementSeries(list_settlement_rod_measurement)
 
     @staticmethod
     def convert_epsg_string_to_list_int(epsg_string: str) -> list:
         """
         Converts a Basetime coordinate projection to a list of string containing the EPSG codes.
 
-        Input: Basetime coordinate string (for example: "RDNAPTrans (28992,5709)")
-
-        Output: list of EPSG numbers (for example: [28992,5709])
-
         If list has a length of 2, XY and Z projection are present.
         If the list has a length of 1, only the XY projection is present.
         If the list is empty, no projection could be transformed.
+
+        Parameters
+        ----------
+        epsg_string: str
+            Basetime coordinate string (for example: "RDNAPTrans (28992,5709)")
+
+        Returns
+        -------
+        list of EPSG numbers (for example: [28992,5709])
         """
         pattern = r"\((\d+)(?:,(\d+))?\)"
         matches = re.findall(pattern, epsg_string)
