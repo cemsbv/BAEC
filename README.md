@@ -76,6 +76,7 @@ To run the linters locally, run the `run_super_linters.sh` bash script from the 
 Test the software with the use of coverage:
 
 ```bash
+set -a; source ./*.env; set +a
 python -m pip install --upgrade pip setuptools
 pip install -r requirements.txt
 pip install -e .
