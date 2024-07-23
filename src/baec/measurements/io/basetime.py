@@ -8,8 +8,6 @@ from datetime import datetime
 from os import PathLike
 from typing import Dict, List
 
-import boto3
-import botocore
 import pandas as pd
 import pyproj
 from pandas._typing import ReadCsvBuffer
@@ -25,6 +23,15 @@ from baec.measurements.settlement_rod_measurement_series import (
     SettlementRodMeasurementSeries,
 )
 from baec.project import Project
+
+try:
+    import boto3
+    from botocore import exceptions
+except ImportError as e:
+    raise ImportError(
+        "Please make sure that you installed baec with the correct extension. "
+        f"Use pip install baec[aws] to use this model. {e}"
+    )
 
 
 class Credentials:
@@ -186,7 +193,7 @@ class BaseTimeBucket:
                     "description": error_line[2],
                     "status message level": error_line[3],
                 }
-        except botocore.exceptions.ClientError:
+        except exceptions.ClientError:
             raise ValueError(
                 "The AWS Access Key ID you provided does not exist in our records."
             )
@@ -196,7 +203,7 @@ class BaseTimeBucket:
             list_projects = s3c.list_objects(Bucket=s3bucket, Prefix="", Delimiter="/")[
                 "CommonPrefixes"
             ]
-        except botocore.exceptions.ClientError:
+        except exceptions.ClientError:
             raise ValueError(
                 "The AWS Access Key ID or Access Key Password you provided does not exist in our records."
             )
