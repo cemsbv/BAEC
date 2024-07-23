@@ -4,6 +4,7 @@ import datetime
 from functools import wraps
 from typing import Any, Callable, Dict, List, Literal, Tuple
 
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
@@ -719,11 +720,13 @@ class MeasuredSettlementSeries:
 
         axes.legend(loc="upper right")
 
-        abs_max = max(
-            -min(self.x_displacements),
-            max(self.x_displacements),
-            -min(self.y_displacements),
-            max(self.y_displacements),
+        abs_max = np.nanmax(
+            [
+                -np.nanmin(self.x_displacements),
+                np.nanmax(self.x_displacements),
+                -np.nanmin(self.y_displacements),
+                np.nanmax(self.y_displacements),
+            ]
         )
         axes.set_xlim(-abs_max - 0.5, abs_max + 0.5)
         axes.set_ylim(-abs_max - 0.5, abs_max + 0.5)
@@ -799,6 +802,10 @@ class MeasuredSettlementSeries:
             plt.figure()
             axes = plt.gca()
 
+        # check if there is valid data to plot
+        if np.isnan(getattr(self, attribute)).all():
+            return axes
+
         # Plot the property data over time
         axes.plot(self.days, getattr(self, attribute))
 
@@ -807,7 +814,8 @@ class MeasuredSettlementSeries:
             axes.set_xscale("log")
 
         axes.set_ylim(
-            min(getattr(self, attribute)) - 0.5, max(getattr(self, attribute)) + 0.5
+            np.nanmin(getattr(self, attribute)) - 0.5,
+            np.nanmax(getattr(self, attribute)) + 0.5,
         )
         if attribute == "settlements":
             axes.invert_yaxis()
