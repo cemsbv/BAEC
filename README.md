@@ -61,8 +61,8 @@ sphinx-build -b html docs public
 We format our code with black and isort.
 
 ```bash
-black --config "pyproject.toml" src/baec tests
-isort --settings-path "pyproject.toml" src/baec tests
+black --config "pyproject.toml" src/baec tests example
+isort --settings-path "pyproject.toml" src/baec tests example
 ```
 
 ## Lint
