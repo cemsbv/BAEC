@@ -18,11 +18,7 @@ def test_io_basetime() -> None:
     show = False
 
     # get AWS credentials
-    filepath = os.path.join(os.path.dirname(__file__), "cems_accessKeys.csv")
-    if os.path.isfile(filepath):
-        credentials = Credentials.from_csv(filepath)
-    else:
-        credentials = Credentials()
+    credentials = Credentials()
 
     manage_project = BaseTimeBucket(credentials)
 
