@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import cache
 from typing import List
 
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
@@ -263,7 +264,9 @@ class SettlementRodMeasurementSeries:
             legend=True,
         )
 
-        axes.set_ylim(df[z_cols].values.min() - 0.5, df[z_cols].values.max() + 0.5)
+        axes.set_ylim(
+            np.nanmin(df[z_cols].values) - 0.5, np.nanmax(df[z_cols].values) + 0.5
+        )
         axes.grid()
 
         axes.set_ylabel(self.coordinate_reference_systems.vertical_datum_and_units)

@@ -61,8 +61,8 @@ sphinx-build -b html docs public
 We format our code with black and isort.
 
 ```bash
-black --config "pyproject.toml" src/baec tests notebooks
-isort --settings-path "pyproject.toml" src/baec tests notebooks
+black --config "pyproject.toml" src/baec tests example
+isort --settings-path "pyproject.toml" src/baec tests example
 ```
 
 ## Lint
@@ -76,6 +76,7 @@ To run the linters locally, run the `run_super_linters.sh` bash script from the 
 Test the software with the use of coverage:
 
 ```bash
+set -a; source ./*.env; set +a
 python -m pip install --upgrade pip setuptools
 pip install -r requirements.txt
 pip install -e .
@@ -95,11 +96,11 @@ pip install pip-tools
 Generate requirements.txt file with:
 
 ```bash
-pip-compile --extra=test --extra=lint --extra=docs --output-file=requirements.txt pyproject.toml
+pip-compile --extra=test --extra=lint --extra=docs --extra=aws --output-file=requirements.txt pyproject.toml
 ```
 
 Update the requirements within the defined ranges with:
 
 ```bash
-pip-compile --upgrade --extra=test --extra=lint --extra=docs --output-file=requirements.txt pyproject.toml
+pip-compile --upgrade --extra=test --extra=lint --extra=docs --extra=aws --output-file=requirements.txt pyproject.toml
 ```

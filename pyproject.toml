@@ -32,6 +32,9 @@ docs = [
     "sphinx_rtd_theme>1.2,<2",
     "enum-tools[sphinx]>=0.12,<0.13",
 ]
+aws = [
+    "boto3>1.34,<2",
+]
 # lint dependencies from github super-linter v5
 # See https://github.com/super-linter/super-linter/tree/main/dependencies/python
 lint = [
@@ -91,5 +94,7 @@ module = [
     "pyproj.*",
     "pandas.*",
     "numpy.*",
+    "boto3.*",
+    "botocore.*",
 ]
 ignore_missing_imports = true

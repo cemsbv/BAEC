@@ -21,6 +21,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
     steps:
       - uses: actions/checkout@v3
 
@@ -33,12 +34,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools
           # shellcheck disable=SC2102
-          pip install -e .[test]
+          pip install -e .[test,aws]
 
       - name: Test
         run: coverage run -m pytest
         env:
           NUCLEI_TOKEN: ${{ secrets.NUCLEI_TOKEN }}
+          BASETIME_ACCESS_KEY: ${{ secrets.BASETIME_ACCESS_KEY }}
+          BASETIME_KEY_ID: ${{ secrets.BASETIME_KEY_ID }}
 
   #     - name: Post coverage results
   #       uses: coverallsapp/github-action@v2
@@ -94,10 +97,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install python 3.9
+      - name: Install python 3.12
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -109,3 +112,5 @@ jobs:
         run: sphinx-build -b html docs public
         env:
           NUCLEI_TOKEN: ${{ secrets.NUCLEI_TOKEN }}
+          BASETIME_ACCESS_KEY: ${{ secrets.BASETIME_ACCESS_KEY }}
+          BASETIME_KEY_ID: ${{ secrets.BASETIME_KEY_ID }}
