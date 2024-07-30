@@ -341,17 +341,6 @@ class FitCoreModelGenerator:
         axes[0].set_xlabel("")
 
         # add settlement prediction secondary axes
-        self.plot_settlement_time(
-            axes=axes[1],
-            log_time=False,
-            min_log_time=min_log_time,
-            add_date_time=False,
-            datetime_format=datetime_format,
-            end_date_time=end_date_time,
-            invert_yaxis=False,
-            add_model_parameters=True,
-        )
-
         self.series.plot_settlement_time(
             axes=axes[1],
             log_time=log_time,
@@ -359,7 +348,20 @@ class FitCoreModelGenerator:
             add_date_time=False,
             datetime_format=datetime_format,
         )
+
+        self.plot_settlement_time(
+            axes=axes[1],
+            log_time=False,
+            min_log_time=min_log_time,
+            add_date_time=False,
+            datetime_format=datetime_format,
+            end_date_time=end_date_time,
+            invert_yaxis=True,
+            add_model_parameters=True,
+        )
+
         axes[1].set_title("")
+        axes[1].legend(["measured", "fitted_model"])
 
         if add_date_time:
             fig.subplots_adjust(top=0.825, hspace=0.075)
