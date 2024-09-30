@@ -16,6 +16,6 @@ with open("cems_accessKeys.csv") as credfile:
 
 print(manage_project.get_users_projects_ids())
 test_series = manage_project.make_SettlementRodMeasurementSeries(
-    company="Demo", project="Hansweert", rod_id="277-2"
+    company="Van Oord", project="Voorbelasting Wilderszijde Lansingerland", rod_id="ZB1001"
 )
 print(test_series.to_dataframe())
