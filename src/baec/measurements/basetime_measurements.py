@@ -134,6 +134,7 @@ class ProjectsIDs:
         self.credentials = dict_credentials["Access key ID"] + ',' + dict_credentials["Secret access key"]
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
+        self.settlement_cache = {}
 
     def get_users_projects_ids(self) -> dict:
         """
@@ -179,6 +180,10 @@ class ProjectsIDs:
             - Split error codes into multiple StatusMessage classes
             - Add all values to the SettlementRodMeasurement class
         """
+
+        if (project,rod_id,) in self.settlement_cache:
+            return self.settlement_cache[(project,rod_id,)]
+
         if (
             project in self.dic_projects
             and rod_id in self.dic_projects[project]
@@ -304,6 +309,10 @@ class ProjectsIDs:
         else:
             raise ValueError(f"{project} is not in the project list")
 
+        if (project,rod_id,) not in self.settlement_cache:
+            self.settlement_cache[(project,rod_id,)] = SettlementRodMeasurementSeries(
+                list_SettlementRodMeasurement
+                )
         return SettlementRodMeasurementSeries(list_SettlementRodMeasurement)
 
     @staticmethod
