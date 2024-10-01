@@ -4,7 +4,7 @@ import json
 import re
 from datetime import datetime
 from os import PathLike
-from typing import Dict, List
+from typing import Dict, Tuple
 
 import boto3
 import botocore
@@ -32,7 +32,8 @@ class ProjectsIDs:
 
     def __init__(
         self,
-        credentials: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+        credentials: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
+    ):
         """
         Initializes a ProjectsIDs object.
 
@@ -68,8 +69,6 @@ class ProjectsIDs:
             If filepath_or_buffer is requested but doesn't exist.
         """
 
-        dic_user_projects_points = {}
-
         # Read the credentials file
         try:
             dict_credentials = pd.read_csv(credentials).to_dict("records")[0]
@@ -100,17 +99,17 @@ class ProjectsIDs:
 
         # Create boto3 client for using the lamdba functions
         lambda_client = boto3.client(
-            service_name='lambda',
-            region_name='eu-west-1',
+            service_name="lambda",
+            region_name="eu-west-1",
             aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"]
-            )
+            aws_secret_access_key=dict_credentials["Secret access key"],
+        )
 
         # Create the dictionary to translate the error codes. Get the error_codes file from the AWS S3 bucket
         dict_errors = {}
         try:
             for line in (
-                s3r.Object('basetime-general', "error_codes.txt")
+                s3r.Object("basetime-general", "error_codes.txt")
                 .get()["Body"]
                 .read()
                 .decode("utf-8")
@@ -131,10 +130,16 @@ class ProjectsIDs:
         self.s3c = s3c
         self.s3r = s3r
         self.lambda_c = lambda_client
-        self.credentials = dict_credentials["Access key ID"] + ',' + dict_credentials["Secret access key"]
+        self.credentials = (
+            dict_credentials["Access key ID"]
+            + ","
+            + dict_credentials["Secret access key"]
+        )
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
-        self.settlement_cache = {}
+        self.settlement_cache: Dict[
+            Tuple[str, str], SettlementRodMeasurementSeries
+        ] = {}
 
     def get_users_projects_ids(self) -> dict:
         """
@@ -146,19 +151,24 @@ class ProjectsIDs:
                 - point IDs
         """
 
-        function_name = 'api-gateway-project_get'
+        function_name = "api-gateway-project_get"
         payload = {
-            "headers" : {"Authorization" : self.credentials},
+            "headers": {"Authorization": self.credentials},
         }
 
         response = self.lambda_c.invoke(
             FunctionName=function_name,
-            InvocationType='RequestResponse',
-            Payload=json.dumps(payload)
+            InvocationType="RequestResponse",
+            Payload=json.dumps(payload),
         )
 
-        response_ids = json.loads(response['Payload'].read())
-        self.dic_projects = json.loads(response_ids['body'])
+        response_ids = json.loads(response["Payload"].read())
+        try:
+            self.dic_projects = json.loads(response_ids["body"])
+        except KeyError:
+            raise KeyError(
+                "Credentials are not registrated. Contact Basetime to grant access to the projects."
+            )
         return self.dic_projects
 
     def make_SettlementRodMeasurementSeries(
@@ -181,62 +191,68 @@ class ProjectsIDs:
             - Add all values to the SettlementRodMeasurement class
         """
 
-        if (project,rod_id,) in self.settlement_cache:
-            return self.settlement_cache[(project,rod_id,)]
-
         if (
-            project in self.dic_projects
-            and rod_id in self.dic_projects[project]
-        ):
+            project,
+            rod_id,
+        ) in self.settlement_cache:
+            return self.settlement_cache[
+                (
+                    project,
+                    rod_id,
+                )
+            ]
+
+        if project in self.dic_projects and rod_id in self.dic_projects[project]:
             list_SettlementRodMeasurement = []
 
-            function_name = 'api-gateway-get-data'
+            function_name = "api-gateway-get-data"
 
             payload = {
-                "headers" : {
-                    "Authorization" : self.credentials,
-                    "Project" : project,
-                    "Point_ID" : rod_id
-                    },
+                "headers": {
+                    "Authorization": self.credentials,
+                    "Project": project,
+                    "Point_ID": rod_id,
+                },
             }
 
             response = self.lambda_c.invoke(
                 FunctionName=function_name,
-                InvocationType='RequestResponse',
-                Payload=json.dumps(payload)
+                InvocationType="RequestResponse",
+                Payload=json.dumps(payload),
             )
-            response_payload = json.loads(response['Payload'].read())
+            response_payload = json.loads(response["Payload"].read())
 
             try:
-                measurement_serie = json.loads(response_payload['body'])
+                measurement_serie = json.loads(response_payload["body"])
             except KeyError:
                 raise KeyError(
                     "Credentials missing for this Rod ID. Contact Basetime to grant access to the project."
                 )
 
-            list_epsg_codes=self.convert_epsg_string_to_list_int(measurement_serie['Coordinate projection'])
-            if len(list_epsg_codes)==2:
+            list_epsg_codes = self.convert_epsg_string_to_list_int(
+                measurement_serie["Coordinate projection"]
+            )
+            if len(list_epsg_codes) == 2:
                 coordinate_reference_systems = CoordinateReferenceSystems(
                     pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                    pyproj.CRS.from_user_input(list_epsg_codes[1])
-                    )
-            elif len(list_epsg_codes)==1:
+                    pyproj.CRS.from_user_input(list_epsg_codes[1]),
+                )
+            elif len(list_epsg_codes) == 1:
                 coordinate_reference_systems = CoordinateReferenceSystems(
                     pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                    pyproj.CRS.from_user_input(list_epsg_codes[0])
-                    )
+                    pyproj.CRS.from_user_input(list_epsg_codes[0]),
+                )
             else:
-                coordinate_reference_systems = CoordinateReferenceSystems(None)
+                coordinate_reference_systems = CoordinateReferenceSystems(None, None)
 
             baec_project = Project(
                 id_=measurement_serie["Project uuid"],
                 name=measurement_serie["Project name"],
-                )
+            )
             object_id = measurement_serie["Object ID"]
 
-            for date_measurement in measurement_serie['Measurements']:
-
-                measurement = measurement_serie['Measurements'][date_measurement]
+            for date_measurement in measurement_serie["Measurements"]:
+                measurement = measurement_serie["Measurements"][date_measurement]
 
                 if measurement["Error Codes"] == " ":
                     status_messages = [
@@ -251,29 +267,42 @@ class ProjectsIDs:
                     error_string_list = measurement["Error Codes"][1:-1].split(",")
                     error_integer_list = [int(num) for num in error_string_list]
                     for error_code in error_integer_list:
-                        if (self.dict_errors[error_code]["status message level"] == "INFO"):
+                        if (
+                            self.dict_errors[error_code]["status message level"]
+                            == "INFO"
+                        ):
                             status_messages.append(
                                 StatusMessage(
                                     code=error_code,
-                                    description=self.dict_errors[error_code]["description"],
+                                    description=self.dict_errors[error_code][
+                                        "description"
+                                    ],
                                     level=StatusMessageLevel.INFO,
                                 )
                             )
                         elif (
-                            self.dict_errors[error_code]["status message level"] == "WARNING"):
+                            self.dict_errors[error_code]["status message level"]
+                            == "WARNING"
+                        ):
                             status_messages.append(
                                 StatusMessage(
                                     code=error_code,
-                                    description=self.dict_errors[error_code]["description"],
+                                    description=self.dict_errors[error_code][
+                                        "description"
+                                    ],
                                     level=StatusMessageLevel.WARNING,
                                 )
                             )
                         elif (
-                            self.dict_errors[error_code]["status message level"] == "ERROR"):
+                            self.dict_errors[error_code]["status message level"]
+                            == "ERROR"
+                        ):
                             status_messages.append(
                                 StatusMessage(
                                     code=error_code,
-                                    description=self.dict_errors[error_code]["description"],
+                                    description=self.dict_errors[error_code][
+                                        "description"
+                                    ],
                                     level=StatusMessageLevel.ERROR,
                                 )
                             )
@@ -285,16 +314,19 @@ class ProjectsIDs:
                         qr_code=measurement["QR-code"],
                     ),
                     object_id=object_id,
-                    date_time=datetime.strptime(
-                        date_measurement, "%Y-%m-%dT%H:%M:%S"
-                    ),
+                    date_time=datetime.strptime(date_measurement, "%Y-%m-%dT%H:%M:%S"),
                     coordinate_reference_systems=coordinate_reference_systems,
-                    rod_top_x=measurement["Coordinates Local"]["Easting"] or float("nan"),
-                    rod_top_y=measurement["Coordinates Local"]["Northing"] or float("nan"),
-                    rod_top_z=measurement["Coordinates Local"]["Height"] or float("nan"),
+                    rod_top_x=measurement["Coordinates Local"]["Easting"]
+                    or float("nan"),
+                    rod_top_y=measurement["Coordinates Local"]["Northing"]
+                    or float("nan"),
+                    rod_top_z=measurement["Coordinates Local"]["Height"]
+                    or float("nan"),
                     rod_length=measurement["Vertical offset (meters)"] or float("nan"),
-                    rod_bottom_z=measurement["Coordinates Soil"]["Height groundplate"] or float("nan"),
-                    ground_surface_z=measurement["Coordinates Soil"]["Height Soil"] or float("nan"),
+                    rod_bottom_z=measurement["Coordinates Soil"]["Height groundplate"]
+                    or float("nan"),
+                    ground_surface_z=measurement["Coordinates Soil"]["Height Soil"]
+                    or float("nan"),
                     status_messages=status_messages,
                     temperature=measurement["Temperature (Celsius)"] or float("nan"),
                     voltage=measurement["Voltage Locator One (mV)"] or float("nan"),
@@ -309,10 +341,16 @@ class ProjectsIDs:
         else:
             raise ValueError(f"{project} is not in the project list")
 
-        if (project,rod_id,) not in self.settlement_cache:
-            self.settlement_cache[(project,rod_id,)] = SettlementRodMeasurementSeries(
-                list_SettlementRodMeasurement
+        if (
+            project,
+            rod_id,
+        ) not in self.settlement_cache:
+            self.settlement_cache[
+                (
+                    project,
+                    rod_id,
                 )
+            ] = SettlementRodMeasurementSeries(list_SettlementRodMeasurement)
         return SettlementRodMeasurementSeries(list_SettlementRodMeasurement)
 
     @staticmethod
