@@ -28,10 +28,16 @@ black[jupyter]==23.10.1
     #   black
 boto3==1.34.146
     # via baec (pyproject.toml)
+boto3-stubs==1.35.30
+    # via baec (pyproject.toml)
 botocore==1.34.146
     # via
     #   boto3
     #   s3transfer
+botocore-stubs==1.35.30
+    # via
+    #   baec (pyproject.toml)
+    #   boto3-stubs
 cachecontrol[filecache]==0.14.0
     # via
     #   cachecontrol
@@ -316,8 +322,12 @@ traitlets==5.14.3
     #   ipython
     #   ipywidgets
     #   matplotlib-inline
+types-awscrt==0.21.5
+    # via botocore-stubs
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
+types-s3transfer==0.10.2
+    # via boto3-stubs
 types-tqdm==4.66.0.20240417
     # via baec (pyproject.toml)
 typing-extensions==4.7.1
