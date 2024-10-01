@@ -1,7 +1,8 @@
 import pandas as pd
 from datetime import datetime
+import os
 
-from baec.measurements.basetime_measurements import ProjectsIDs
+from baec.measurements.basetime_measurements import ProjectsIDs, Credentials
 
 """
 Test script for the Basetime connection.
@@ -13,8 +14,12 @@ testing:
 """
 print(datetime.now())
 time_start = datetime.now()
-with open("cems_accessKeys.csv") as credfile:
-    manage_project = ProjectsIDs(credfile)
+
+# get AWS credentials
+credentials = Credentials()
+
+manage_project = ProjectsIDs(credentials)
+    
 print(datetime.now()-time_start)
 time_start = datetime.now()
 print(manage_project.get_users_projects_ids())

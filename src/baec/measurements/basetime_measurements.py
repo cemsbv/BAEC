@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import getpass
 import json
+import os
 import re
 from datetime import datetime
 from os import PathLike
@@ -25,6 +27,96 @@ from baec.measurements.settlement_rod_measurement_series import (
 from baec.project import Project
 
 
+class Credentials:
+    def __init__(
+        self,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+    ) -> None:
+        """
+        Credentials needs to refer to the AWS credential file given by Basetime.
+
+        Parameters
+        ----------
+        aws_access_key_id: str, optional
+            The access key to use when creating the client.This is entirely optional, and if not provided,
+            the credentials configured for the session will automatically be used. You only need to provide
+            this argument if you want to override the credentials used for this specific client.
+        aws_secret_access_key: : str, optional
+            The secret key to use when creating the client.  Same semantics as aws_access_key_id above.
+        """
+        if aws_access_key_id is None:
+            if "BASETIME_KEY_ID" not in os.environ:
+                self.aws_access_key_id = input(
+                    "Authentication is needed. What is your BaseTime key ID?"
+                )
+            else:
+                self.aws_access_key_id = os.environ["BASETIME_KEY_ID"]
+        else:
+            self.aws_access_key_id = aws_access_key_id
+
+        if aws_secret_access_key is None:
+            if "BASETIME_ACCESS_KEY" not in os.environ:
+                self.aws_secret_access_key = getpass.getpass("What is your access key?")
+            else:
+                self.aws_secret_access_key = os.environ["BASETIME_ACCESS_KEY"]
+        else:
+            self.aws_secret_access_key = aws_secret_access_key
+
+    @classmethod
+    def from_csv(
+        cls,
+        filepath_or_buffer: str
+        | PathLike[str]
+        | ReadCsvBuffer[bytes]
+        | ReadCsvBuffer[str],
+    ) -> "Credentials":
+        """
+        Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.
+
+        Parameters
+        ----------
+        filepath_or_buffer: filepath_or_buffer: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+
+        Returns
+        -------
+        Credentials
+
+        Raises
+        ------
+        ValueError/ClientError
+            If the provided credential file does not contain the correct credentials.
+            If the wrong type of value is given for the credential file.
+        TypeError
+            If the credential file does not contain credentials.
+        ValueError
+            If the list of measurements is empty.
+            If the measurements are not for the same project, device or object.
+        IOError
+            If ZBASE file cannot be parsed by Pandas
+        FileNotFoundError
+            If filepath_or_buffer is requested but doesn't exist.
+
+        """
+        # Read the credentials file
+        try:
+            dict_credentials = pd.read_csv(filepath_or_buffer).to_dict("records")[0]
+        except pd.errors.ParserError as e:
+            raise IOError(
+                f"Errors encountered while parsing contents of the credentials file: \n {e}"
+            )
+        except FileNotFoundError as e:
+            raise FileNotFoundError(e)
+        except ValueError:
+            raise ValueError(
+                "Wrong type of credentials file given, str | PathLike[str] | ReadCsvBuffer[bytes] | "
+                "ReadCsvBuffer[str], Any valid string path is acceptable."
+            )
+        return cls(
+            dict_credentials["Access key ID"], dict_credentials["Secret access key"]
+        )
+
+
 class ProjectsIDs:
     """
     Class object to get a list of projects and Point IDs or to import measurements as a SettlementRodMeasurementSeries.
@@ -32,7 +124,7 @@ class ProjectsIDs:
 
     def __init__(
         self,
-        credentials: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
+        credentials: Credentials,
     ):
         """
         Initializes a ProjectsIDs object.
@@ -69,40 +161,26 @@ class ProjectsIDs:
             If filepath_or_buffer is requested but doesn't exist.
         """
 
-        # Read the credentials file
-        try:
-            dict_credentials = pd.read_csv(credentials).to_dict("records")[0]
-        except pd.errors.ParserError as e:
-            raise IOError(
-                f"Errors encountered while parsing contents of the credentials file: \n {e}"
-            )
-        except FileNotFoundError as e:
-            raise FileNotFoundError(e)
-        except ValueError:
-            raise ValueError(
-                "Wrong type of credentials file given, str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str], Any valid string path is acceptable."
-            )
-
         # Create boto3 client and resource for connecting to AWS S3
         s3c = boto3.client(
             service_name="s3",
             region_name="eu-west-1",
-            aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"],
+            aws_access_key_id=credentials.aws_access_key_id,
+            aws_secret_access_key=credentials.aws_secret_access_key,
         )
         s3r = boto3.resource(
             service_name="s3",
             region_name="eu-west-1",
-            aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"],
+            aws_access_key_id=credentials.aws_access_key_id,
+            aws_secret_access_key=credentials.aws_secret_access_key,
         )
 
         # Create boto3 client for using the lamdba functions
         lambda_client = boto3.client(
             service_name="lambda",
             region_name="eu-west-1",
-            aws_access_key_id=dict_credentials["Access key ID"],
-            aws_secret_access_key=dict_credentials["Secret access key"],
+            aws_access_key_id=credentials.aws_access_key_id,
+            aws_secret_access_key=credentials.aws_secret_access_key,
         )
 
         # Create the dictionary to translate the error codes. Get the error_codes file from the AWS S3 bucket
@@ -129,19 +207,15 @@ class ProjectsIDs:
         # Initialize all attributes
         self.s3c = s3c
         self.s3r = s3r
+        self.credentials = credentials
         self.lambda_c = lambda_client
-        self.credentials = (
-            dict_credentials["Access key ID"]
-            + ","
-            + dict_credentials["Secret access key"]
-        )
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
         self.settlement_cache: Dict[
             Tuple[str, str], SettlementRodMeasurementSeries
         ] = {}
 
-    def get_users_projects_ids(self) -> dict:
+    def get_users_projects_ids(self) -> Dict:
         """
         Call Lambda function in the Basetime AWS environment, to get the projets and point ID's of the objects the
         user is allow to get.
@@ -153,7 +227,11 @@ class ProjectsIDs:
 
         function_name = "api-gateway-project_get"
         payload = {
-            "headers": {"Authorization": self.credentials},
+            "headers": {
+                "Authorization": self.credentials.aws_access_key_id
+                + ","
+                + self.credentials.aws_secret_access_key
+            }
         }
 
         response = self.lambda_c.invoke(
@@ -209,10 +287,12 @@ class ProjectsIDs:
 
             payload = {
                 "headers": {
-                    "Authorization": self.credentials,
+                    "Authorization": self.credentials.aws_access_key_id
+                    + ","
+                    + self.credentials.aws_secret_access_key,
                     "Project": project,
                     "Point_ID": rod_id,
-                },
+                }
             }
 
             response = self.lambda_c.invoke(
@@ -228,6 +308,8 @@ class ProjectsIDs:
                 raise KeyError(
                     "Credentials missing for this Rod ID. Contact Basetime to grant access to the project."
                 )
+            if "Invalid request" in measurement_serie:
+                raise KeyError("missing headers: Authorization, Projects, Point_ID")
 
             list_epsg_codes = self.convert_epsg_string_to_list_int(
                 measurement_serie["Coordinate projection"]
