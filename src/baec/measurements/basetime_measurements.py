@@ -28,6 +28,7 @@ from baec.project import Project
 
 
 class Credentials:
+
     def __init__(
         self,
         aws_access_key_id: str | None = None,
@@ -66,10 +67,9 @@ class Credentials:
     @classmethod
     def from_csv(
         cls,
-        filepath_or_buffer: str
-        | PathLike[str]
-        | ReadCsvBuffer[bytes]
-        | ReadCsvBuffer[str],
+        filepath_or_buffer: (
+            str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+        ),
     ) -> "Credentials":
         """
         Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.
@@ -136,13 +136,7 @@ class ProjectsIDs:
 
         Returns
         -------
-        series : ProjectsIDs [dict]
-            A overview of all the available projects and connected settlement rods within every project. [dict]
-            <Keys> : project names
-            <Values> : list of Point IDs inside every project.
-
-        series : SettlementRodMeasurementSeries
-            A SettlementRodMeasurementSeries object for every available rod measurement, to be called within the class
+        ProjectsIDs
 
         Raises
         ------
@@ -211,9 +205,9 @@ class ProjectsIDs:
         self.lambda_c = lambda_client
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
-        self.settlement_cache: Dict[
-            Tuple[str, str], SettlementRodMeasurementSeries
-        ] = {}
+        self.settlement_cache: Dict[Tuple[str, str], SettlementRodMeasurementSeries] = (
+            {}
+        )
 
     def get_users_projects_ids(self) -> Dict:
         """

@@ -69,7 +69,7 @@ jobs:
           fetch-depth: 0
 
       - name: Lint
-        uses: github/super-linter@v5
+        uses: super-linter/super-linter@v7
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
