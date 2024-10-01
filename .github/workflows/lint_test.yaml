@@ -11,6 +11,8 @@ on:
       - "**.md"
   workflow_call:
 
+permissions: read-all
+
 jobs:
   test:
     name: Unit test
