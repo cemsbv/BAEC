@@ -205,7 +205,7 @@ class ProjectsIDs:
         self.lambda_c = lambda_client
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
-        self.settlement_cache: Dict[Tuple[str, str], SettlementRodMeasurementSeries] = (
+        self._settlement_cache: Dict[Tuple[str, str], SettlementRodMeasurementSeries] = (
             {}
         )
 
@@ -266,8 +266,8 @@ class ProjectsIDs:
         if (
             project,
             rod_id,
-        ) in self.settlement_cache:
-            return self.settlement_cache[
+        ) in self._settlement_cache:
+            return self._settlement_cache[
                 (
                     project,
                     rod_id,
@@ -305,21 +305,14 @@ class ProjectsIDs:
             if "Invalid request" in measurement_serie:
                 raise KeyError("missing headers: Authorization, Projects, Point_ID")
 
-            list_epsg_codes = self.convert_epsg_string_to_list_int(
-                measurement_serie["Coordinate projection"]
-            )
-            if len(list_epsg_codes) == 2:
-                coordinate_reference_systems = CoordinateReferenceSystems(
-                    pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                    pyproj.CRS.from_user_input(list_epsg_codes[1]),
-                )
-            elif len(list_epsg_codes) == 1:
-                coordinate_reference_systems = CoordinateReferenceSystems(
-                    pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                    pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                )
-            else:
-                coordinate_reference_systems = CoordinateReferenceSystems(None, None)
+            list_epsg_codes = self.convert_epsg_string_to_list_int(measurement_serie["Coordinate projection"])
+
+            coordinate_reference_systems = CoordinateReferenceSystems(
+                pyproj.CRS.from_user_input(list_epsg_codes[0]),
+                pyproj.CRS.from_user_input(list_epsg_codes[1]) if len(list_epsg_codes) == 2
+                else pyproj.CRS.from_user_input(list_epsg_codes[0]) if len(list_epsg_codes)
+                == 1 else None
+            ) if list_epsg_codes else CoordinateReferenceSystems(None, None)
 
             baec_project = Project(
                 id_=measurement_serie["Project uuid"],
@@ -339,49 +332,24 @@ class ProjectsIDs:
                         )
                     ]
                 else:
-                    status_messages = []
-                    error_string_list = measurement["Error Codes"][1:-1].split(",")
-                    error_integer_list = [int(num) for num in error_string_list]
-                    for error_code in error_integer_list:
-                        if (
-                            self.dict_errors[error_code]["status message level"]
-                            == "INFO"
-                        ):
-                            status_messages.append(
-                                StatusMessage(
-                                    code=error_code,
-                                    description=self.dict_errors[error_code][
-                                        "description"
-                                    ],
-                                    level=StatusMessageLevel.INFO,
-                                )
-                            )
-                        elif (
-                            self.dict_errors[error_code]["status message level"]
-                            == "WARNING"
-                        ):
-                            status_messages.append(
-                                StatusMessage(
-                                    code=error_code,
-                                    description=self.dict_errors[error_code][
-                                        "description"
-                                    ],
-                                    level=StatusMessageLevel.WARNING,
-                                )
-                            )
-                        elif (
-                            self.dict_errors[error_code]["status message level"]
-                            == "ERROR"
-                        ):
-                            status_messages.append(
-                                StatusMessage(
-                                    code=error_code,
-                                    description=self.dict_errors[error_code][
-                                        "description"
-                                    ],
-                                    level=StatusMessageLevel.ERROR,
-                                )
-                            )
+                    status_messages = [
+                        StatusMessage(
+                            code=error_code,
+                            description=self.dict_errors[error_code]["description"],
+                            level=(
+                                StatusMessageLevel.INFO
+                                if self.dict_errors[error_code]["status message level"]
+                                == "INFO"
+                                else StatusMessageLevel.WARNING
+                                if self.dict_errors[error_code]["status message level"]
+                                == "WARNING"
+                                else StatusMessageLevel.ERROR
+                            ),
+                        )
+                        for error_code in error_integer_list
+                        if self.dict_errors[error_code]["status message level"]
+                        in ["INFO", "WARNING", "ERROR"]
+                    ]
 
                 test_measurement = SettlementRodMeasurement(
                     project=baec_project,
@@ -420,8 +388,8 @@ class ProjectsIDs:
         if (
             project,
             rod_id,
-        ) not in self.settlement_cache:
-            self.settlement_cache[
+        ) not in self._settlement_cache:
+            self._settlement_cache[
                 (
                     project,
                     rod_id,
