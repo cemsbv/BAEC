@@ -94,7 +94,7 @@ class FitCoreModelGenerator:
             "timeSeries": [
                 isoparse(x.isoformat()) for x in self.series.to_dataframe()["date_time"]
             ],
-            "settlementSeries": self.series.settlements,
+            "settlementSeries": np.clip(self.series.settlements, 0, None).tolist(),
             "startDay": 0,
         }
 
