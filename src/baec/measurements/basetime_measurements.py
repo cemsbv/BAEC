@@ -28,7 +28,6 @@ from baec.project import Project
 
 
 class Credentials:
-
     def __init__(
         self,
         aws_access_key_id: str | None = None,
@@ -205,9 +204,9 @@ class ProjectsIDs:
         self.lambda_c = lambda_client
         self.dict_errors = dict_errors
         self.dic_projects = self.get_users_projects_ids()
-        self._settlement_cache: Dict[Tuple[str, str], SettlementRodMeasurementSeries] = (
-            {}
-        )
+        self._settlement_cache: Dict[
+            Tuple[str, str], SettlementRodMeasurementSeries
+        ] = {}
 
     def get_users_projects_ids(self) -> Dict:
         """
@@ -305,14 +304,22 @@ class ProjectsIDs:
             if "Invalid request" in measurement_serie:
                 raise KeyError("missing headers: Authorization, Projects, Point_ID")
 
-            list_epsg_codes = self.convert_epsg_string_to_list_int(measurement_serie["Coordinate projection"])
+            list_epsg_codes = self.convert_epsg_string_to_list_int(
+                measurement_serie["Coordinate projection"]
+            )
 
-            coordinate_reference_systems = CoordinateReferenceSystems(
-                pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                pyproj.CRS.from_user_input(list_epsg_codes[1]) if len(list_epsg_codes) == 2
-                else pyproj.CRS.from_user_input(list_epsg_codes[0]) if len(list_epsg_codes)
-                == 1 else None
-            ) if list_epsg_codes else CoordinateReferenceSystems(None, None)
+            coordinate_reference_systems = (
+                CoordinateReferenceSystems(
+                    pyproj.CRS.from_user_input(list_epsg_codes[0]),
+                    pyproj.CRS.from_user_input(list_epsg_codes[1])
+                    if len(list_epsg_codes) == 2
+                    else pyproj.CRS.from_user_input(list_epsg_codes[0])
+                    if len(list_epsg_codes) == 1
+                    else None,
+                )
+                if list_epsg_codes
+                else CoordinateReferenceSystems(None, None)
+            )
 
             baec_project = Project(
                 id_=measurement_serie["Project uuid"],
@@ -332,6 +339,9 @@ class ProjectsIDs:
                         )
                     ]
                 else:
+                    error_string_list = measurement["Error Codes"][1:-1].split(",")
+                    error_integer_list = [int(num) for num in error_string_list]
+
                     status_messages = [
                         StatusMessage(
                             code=error_code,
