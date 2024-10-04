@@ -44,6 +44,7 @@ class FitCoreResult:
 
 
 class FitCoreModelGenerator:
+
     def __init__(
         self,
         series: MeasuredSettlementSeries,

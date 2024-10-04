@@ -35,6 +35,7 @@ except ImportError as e:
 
 
 class Credentials:
+
     def __init__(
         self,
         aws_access_key_id: str | None = None,
@@ -73,10 +74,9 @@ class Credentials:
     @classmethod
     def from_csv(
         cls,
-        filepath_or_buffer: str
-        | PathLike[str]
-        | ReadCsvBuffer[bytes]
-        | ReadCsvBuffer[str],
+        filepath_or_buffer: (
+            str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+        ),
     ) -> "Credentials":
         """
         Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.
@@ -319,11 +319,15 @@ class BaseTimeBucket:
             coordinate_reference_systems = (
                 CoordinateReferenceSystems(
                     pyproj.CRS.from_user_input(list_epsg_codes[0]),
-                    pyproj.CRS.from_user_input(list_epsg_codes[1])
-                    if len(list_epsg_codes) == 2
-                    else pyproj.CRS.from_user_input(list_epsg_codes[0])
-                    if len(list_epsg_codes) == 1
-                    else None,
+                    (
+                        pyproj.CRS.from_user_input(list_epsg_codes[1])
+                        if len(list_epsg_codes) == 2
+                        else (
+                            pyproj.CRS.from_user_input(list_epsg_codes[0])
+                            if len(list_epsg_codes) == 1
+                            else None
+                        )
+                    ),
                 )
                 if list_epsg_codes
                 else CoordinateReferenceSystems(None, None)
@@ -358,10 +362,14 @@ class BaseTimeBucket:
                                 StatusMessageLevel.INFO
                                 if self.dict_errors[error_code]["status message level"]
                                 == "INFO"
-                                else StatusMessageLevel.WARNING
-                                if self.dict_errors[error_code]["status message level"]
-                                == "WARNING"
-                                else StatusMessageLevel.ERROR
+                                else (
+                                    StatusMessageLevel.WARNING
+                                    if self.dict_errors[error_code][
+                                        "status message level"
+                                    ]
+                                    == "WARNING"
+                                    else StatusMessageLevel.ERROR
+                                )
                             ),
                         )
                         for error_code in error_integer_list
