@@ -1,16 +1,14 @@
-
-
 .red {
-    color: red;
+  color: red;
 }
 
 .blue {
-    color: blue;
+  color: blue;
 }
 
 .green {
-    color: green;
+  color: green;
 }
 .body {
-    max-width: 1200px !important;
+  max-width: 1200px !important;
 }

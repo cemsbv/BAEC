@@ -20,12 +20,12 @@ manage_project = BaseTimeBucket(credentials)
 
 # get all the rod_id available to the user
 projects_ids = manage_project.get_users_projects_ids()
-for key, items in projects_ids["Demo"].items():
+for key, items in projects_ids.items():
     for item in items:
         try:
             # create settlement rod measurement series from BaseTime Bucket
             measurements = manage_project.make_settlement_rod_measurement_series(
-                company="Demo", project=key, rod_id=item
+                project=key, rod_id=item
             )
 
             # create figures
