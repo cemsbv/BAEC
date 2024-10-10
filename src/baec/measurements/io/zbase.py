@@ -154,9 +154,9 @@ def measurements_from_zbase(
                 rod_length=row.get("rod_top_z", 0) - row.get("rod_bottom_z", 0),
                 rod_bottom_z=row.get("rod_bottom_z", 0),
                 ground_surface_z=row.get("ground_surface_z", 0),
-                status_messages=[]
-                if status is None
-                else [_zbase_status_to_message(status)],
+                status_messages=(
+                    [] if status is None else [_zbase_status_to_message(status)]
+                ),
             )
         )
 

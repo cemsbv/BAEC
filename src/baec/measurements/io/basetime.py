@@ -379,7 +379,7 @@ class BaseTimeBucket:
                         in ["OK", "INFO", "WARNING", "ERROR"]
                     ]
 
-                if measurement_serie['Project type'] == 'SettlementRods':
+                if measurement_serie["Project type"] == "SettlementRods":
                     rod_bottom_z = measurement["Coordinates Soil"]["Height groundplate"]
                     ground_surface_z = measurement["Coordinates Soil"]["Height Soil"]
                 else:
@@ -455,4 +455,3 @@ class BaseTimeBucket:
                 return [num1]
         else:
             return []
-

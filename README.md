@@ -1,11 +1,11 @@
 # BAEC Model Generator SDK
-Python SDK to create Model Generators and add them into the BAEC platform. 
+
+Python SDK to create Model Generators and add them into the BAEC platform.
 
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Coverage Status](https://coveralls.io/repos/github/cemsbv/py-pilecore/badge.svg)](https://coveralls.io/github/cemsbv/py-pilecore)
-
 
 This repository is created by [CEMS BV](https://cemsbv.nl/).
 
@@ -14,7 +14,6 @@ This repository is created by [CEMS BV](https://cemsbv.nl/).
 To install a package in this repository run:
 
 `$ pip install baec`
-
 
 ## ENV VARS
 
@@ -25,7 +24,7 @@ To use `baec` with `FitCore` to fit and predict settlements, add the follow ENV 
     - Your NUCLEI user token
 ```
 
-You can obtain your `NUCLEI_TOKEN` on [NUCLEI](https://nuclei.cemsbv.io/#/). 
+You can obtain your `NUCLEI_TOKEN` on [NUCLEI](https://nuclei.cemsbv.io/#/).
 Go to `personal-access-tokens` and create a new user token.
 
 # Contribution
