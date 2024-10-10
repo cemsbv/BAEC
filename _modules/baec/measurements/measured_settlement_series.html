@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>baec.measurements.measured_settlement_series &mdash; baec 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            baec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">baec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">baec.measurements.measured_settlement_series</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for baec.measurements.measured_settlement_series</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
+
+<span class="kn">from</span> <span class="nn">baec.coordinates</span> <span class="kn">import</span> <span class="n">CoordinateReferenceSystems</span>
+<span class="kn">from</span> <span class="nn">baec.measurements</span> <span class="kn">import</span> <span class="n">plot_utils</span>
+<span class="kn">from</span> <span class="nn">baec.measurements.measured_settlement</span> <span class="kn">import</span> <span class="n">MeasuredSettlement</span>
+<span class="kn">from</span> <span class="nn">baec.measurements.settlement_rod_measurement_series</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SettlementRodMeasurementSeries</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">baec.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+
+<span class="k">def</span> <span class="nf">add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;axes&quot;</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator to add the docstring of the plot methods over time for the MeasuredSettlementSeries class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">return_type</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;axes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;figure&quot;</span><span class="p">,</span>
+    <span class="p">],</span> <span class="s2">&quot;Expected &#39;axes&#39; or &#39;figure&#39; for &#39;return_type&#39; parameter.&quot;</span>
+
+    <span class="n">docstring_plot_time</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Parameters</span>
+<span class="s2">        ----------</span>
+<span class="s2">        axes: plt.Axes | None, optional</span>
+<span class="s2">            Axes to create the figure. If None creates new Axes.</span>
+<span class="s2">            Default is None.</span>
+<span class="s2">        log_time: bool, optional</span>
+<span class="s2">            If True, the time axis is logarithmic (linear otherwise).</span>
+<span class="s2">            Note that time is plotted in days.</span>
+<span class="s2">            Default is True.</span>
+<span class="s2">        min_log_time: float, optional</span>
+<span class="s2">            The minimum value for the time axis in [days] in case of a logarithmic plot.</span>
+<span class="s2">            It must be greater than 0.0.</span>
+<span class="s2">            Default is 1.0.</span>
+<span class="s2">        add_date_time: bool, optional</span>
+<span class="s2">            If True, the date and time are added as a secondary x-axis.</span>
+<span class="s2">            Default is True.</span>
+<span class="s2">        datetime_format: str, optional</span>
+<span class="s2">            The format of the date and time on the x-axis (only used if `add_date_time` is True).</span>
+<span class="s2">            It must be an acceptable format for the strftime method of the datetime.datetime class.</span>
+<span class="s2">            Default is &quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;.</span>
+
+<span class="s2">        Returns</span>
+<span class="s2">        -------</span>
+<span class="s2">        plt.Axes</span>
+
+<span class="s2">        Raises</span>
+<span class="s2">        ------</span>
+<span class="s2">        TypeError</span>
+<span class="s2">            If the types of the input parameters are incorrect.</span>
+<span class="s2">        ValueError</span>
+<span class="s2">            If the `datetime_format` is not a valid format for the strftime method of the</span>
+<span class="s2">            datetime.datetime class.</span>
+<span class="s2">            If the `min_log_time` is not greater than 0.0.</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;figure&quot;</span><span class="p">:</span>
+        <span class="n">docstring_plot_time</span> <span class="o">=</span> <span class="n">docstring_plot_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        axes: plt.Axes | None, optional</span>
+<span class="sd">            Axes to create the figure. If None creates new Axes.</span>
+<span class="sd">            Default is None.&quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">docstring_plot_time</span> <span class="o">=</span> <span class="n">docstring_plot_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;plt.Axes&quot;</span><span class="p">,</span> <span class="s2">&quot;plt.Figure&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="n">docstring_plot_time</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">decorator</span>
+
+
+<div class="viewcode-block" id="MeasuredSettlementSeries"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries">[docs]</a><span class="k">class</span> <span class="nc">MeasuredSettlementSeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a series of MeasuredSettlement objects, derived for a single settlement rod.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.__init__"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">series</span><span class="p">:</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">,</span>
+        <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start_date_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a MeasuredSettlementSeries object from a SettlementRodMeasurementSeries object.</span>
+
+<span class="sd">        The `start_index` and `start_date_time` are used to determine the start (or zero measurement)</span>
+<span class="sd">        from the series of measurements. The following rules are applied:</span>
+<span class="sd">        1. Either `start_index` or `start_date_time` can be provided. If both are provided, an error</span>
+<span class="sd">        is raised.</span>
+<span class="sd">        2. If neither `start_index` not `start_date_time` are provided, the first measurement or the</span>
+<span class="sd">        series in used as the zero measurement. This is the default behaviour.</span>
+<span class="sd">        3. If `start_index` is provided, the measurement at the index is used the zero measurement.</span>
+<span class="sd">        4. If `start_date_time` is provided, the first measurement equal or after this date and time is</span>
+<span class="sd">        considered as the zero measurement.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        series : SettlementRodMeasurementSeries</span>
+<span class="sd">            The series of SettlementRodMeasurement objects.</span>
+<span class="sd">        start_index: int | None, optional</span>
+<span class="sd">            The index of the item of the series to consider as the start or zero measurement of the series, or None.</span>
+<span class="sd">            Default is None.</span>
+<span class="sd">        start_date_time: int | None, optional</span>
+<span class="sd">            The date at which the start or zero measurement is taken place, or None.</span>
+<span class="sd">            Default is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        MeasuredSettlementSeries</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input types are incorrect.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If both `start_index` and `start_date_time` are provided.</span>
+<span class="sd">            If the `start_date_time` is out of range for the series.</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            If the `start_index` is out of range for the series.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set SettlementRodMeasurementSeries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_series</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+        <span class="c1"># set start of settlement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_start_index_or_start_date_time</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="n">start_date_time</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Private setter for series attribute.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;SettlementRodMeasurementSeries&#39; type for &#39;series&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_series</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_start_index_or_start_date_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start_date_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for measurements attribute.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_index: int | None, optional</span>
+<span class="sd">            The index of the item of the series to consider as the start or zero measurement of the series, or None.</span>
+<span class="sd">            Default is None.</span>
+<span class="sd">        start_date_time: int | None, optional</span>
+<span class="sd">            The date at which the start or zero measurement is taken place, or None.</span>
+<span class="sd">            Default is None.</span>
+
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input types are incorrect.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If both `start_index` and `start_date_time` are provided.</span>
+<span class="sd">            If the `start_date_time` is out of range for the series.</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            If the `start_index` is out of range for the series.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;int&#39; type or None for &#39;start_index&#39; parameter.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start_date_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">start_date_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;datetime.datetime&#39; type or None for &#39;start_date_time&#39; parameter.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that either start_index or start_date_time is None.</span>
+        <span class="k">if</span> <span class="n">start_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">start_date_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Only one of &#39;start_index&#39; or &#39;start_date_time&#39; can be provided.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the start_index is within the range of the series.</span>
+        <span class="k">if</span> <span class="n">start_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="n">start_index</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;start_index = </span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2"> is out of range for the series. Length of series &quot;</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Check that the start_date_time is within the range of the series.</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">start_date_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">date_time</span>
+            <span class="o">&lt;=</span> <span class="n">start_date_time</span>
+            <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">date_time</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;start_date_time = </span><span class="si">{</span><span class="n">start_date_time</span><span class="si">}</span><span class="s2"> is out of range for the series. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Valid range is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">date_time</span><span class="si">}</span><span class="s2"> to &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">date_time</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get start index from the start_date_time.</span>
+        <span class="k">if</span> <span class="n">start_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_date_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">date_time</span> <span class="o">&gt;=</span> <span class="n">start_date_time</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="c1"># Else, both the start_index and start_date_time are None and thus</span>
+            <span class="c1"># the start index is set to 0.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># set start data info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_index</span> <span class="o">=</span> <span class="n">start_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_date_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="n">start_index</span><span class="p">]</span><span class="o">.</span><span class="n">date_time</span>
+
+        <span class="c1"># Create a list of MeasuredSettlement objects from the series of measurements.</span>
+        <span class="n">measured_settlements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span> <span class="p">:]:</span>
+            <span class="n">measured_settlements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">MeasuredSettlement</span><span class="o">.</span><span class="n">from_settlement_rod_measurement</span><span class="p">(</span>
+                    <span class="n">measurement</span><span class="o">=</span><span class="n">measurement</span><span class="p">,</span>
+                    <span class="n">zero_measurement</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_items</span><span class="p">(</span><span class="n">measured_settlements</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MeasuredSettlement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Private setter for items attribute.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the input is a list of SettlementRodMeasurement objects.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">MeasuredSettlement</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;List[MeasuredSettlement]&#39; type for &#39;items&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check if the list is not empty.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty list not allowed for &#39;items&#39; attribute.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that the items are for the same project.</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+                <span class="n">projects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All items must be for the same project. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The following projects are found: </span><span class="si">{</span><span class="n">projects</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the items are for the same object.</span>
+        <span class="n">object_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">object_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_ids</span><span class="p">:</span>
+                <span class="n">object_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">object_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All items must be for the same measured object. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The following object IDs are found: </span><span class="si">{</span><span class="n">object_ids</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the items have the same start_date_time.</span>
+        <span class="n">start_date_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">start_date_time</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">start_date_times</span><span class="p">:</span>
+                <span class="n">start_date_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">start_date_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">start_date_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All items must have the same start date time. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The following start date times are found: </span><span class="si">{</span><span class="n">start_date_times</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the items have all the same horizontal units.</span>
+        <span class="n">horizontal_units_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">horizontal_units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">horizontal_units_list</span><span class="p">:</span>
+                <span class="n">horizontal_units_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">horizontal_units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">horizontal_units_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All items must have the same horizontal units. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The following horizontal units are found: </span><span class="si">{</span><span class="n">horizontal_units_list</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the items have all the same vertical units.</span>
+        <span class="n">vertical_units_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measurement</span><span class="o">.</span><span class="n">vertical_units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vertical_units_list</span><span class="p">:</span>
+                <span class="n">vertical_units_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">vertical_units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertical_units_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All items must be in the same vertical units. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The following vertical units are found: </span><span class="si">{</span><span class="n">vertical_units_list</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Organize the list of MeasureSettlement objects in chronological order.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date_time</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents a series of measurements for a single settlement rod.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_series</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">MeasuredSettlement</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of measured settlements in the series.</span>
+<span class="sd">        They are organized in chronological order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The project the measured settlements belong to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">project</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">object_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The ID of the object the measured settlements belong to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">object_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The date and time of the start of measurements (zero measurement).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_date_time</span>
+
+    <span class="nd">@start_date_time</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The date and time of the start of measurements (zero measurement).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_start_index_or_start_date_time</span><span class="p">(</span><span class="n">start_date_time</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The date and time of the start of measurements (zero measurement).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_index</span>
+
+    <span class="nd">@start_index</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The date and time of the start of measurements (zero measurement).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_start_index_or_start_date_time</span><span class="p">(</span><span class="n">start_index</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinate_reference_systems</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CoordinateReferenceSystems</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The horizontal (X, Y) and vertical (Z) coordinate reference systems of the measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">coordinate_reference_systems</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">date_times</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of date and times for each measured settlement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">date_time</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">days</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of time elapsed in [days] since the start of measurements</span>
+<span class="sd">        for each measured settlement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">days</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fill_thicknesses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of fill thicknesses for each measured settlement.</span>
+<span class="sd">        Units are according to `vertical_units`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">fill_thickness</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settlements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of settlements of the initial ground profile relative to the zero measurement.</span>
+<span class="sd">        A positive (+) settlement value represents a downward movement.</span>
+<span class="sd">        Units are according to `vertical_units`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">settlement</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x_displacements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of horizontal X-displacements at the rod top relative to the zero measurement.</span>
+<span class="sd">        Units are according to the `horizontal_units`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">x_displacement</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y_displacements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of horizontal Y-displacements at the rod top relative to the zero measurement.</span>
+<span class="sd">        Units are according to the `horizontal_units`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">y_displacement</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.to_dataframe"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the MeasuredSettlementSeries to a pandas DataFrame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A pandas DataFrame with the measured settlements. The columns of the DataFrame are:</span>
+<span class="sd">            project_id, project_name, object_id, start_date_time</span>
+<span class="sd">            date_time, days, fill_thickness, settlement, x_displacement, y_displacement</span>
+<span class="sd">            horizontal_units, vertical_units, status, status_messages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">measurement</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">measurement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.days_to_date_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days_to_date_time">[docs]</a>    <span class="k">def</span> <span class="nf">days_to_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the days since the start of the measurements to a date and time.</span>
+<span class="sd">        Note that the days can be a decimal.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        days : float</span>
+<span class="sd">            The days since the start of the measurements.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        datetime.datetime</span>
+<span class="sd">            The date and time corresponding to days since the start of measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check that days is float or int</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;days&#39; parameter.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date_time</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.date_time_to_days"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_time_to_days">[docs]</a>    <span class="k">def</span> <span class="nf">date_time_to_days</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the date time to days since the start of measurements.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        date_time : datetime.datetime</span>
+<span class="sd">            The date and time to convert to days since the start of measurements.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The days since the start of the measurements. Note that the days can be a decimal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check that date_time is datetime.datetime</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected &#39;date_time.date_time&#39; type for &#39;date_time&#39; parameter, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">date_time</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">date_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date_time</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mf">86400.0</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_x_displacement_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_x_displacement_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;axes&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_x_displacement_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the horizontal X displacement at the top of the rod relative to the</span>
+<span class="sd">        zero measurement over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_property_time</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;x_displacements&quot;</span><span class="p">,</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_y_displacement_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_y_displacement_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;axes&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_y_displacement_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the horizontal Y displacement at the top of the rod relative to the</span>
+<span class="sd">        zero measurement over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_property_time</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;y_displacements&quot;</span><span class="p">,</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_settlement_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_settlement_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;axes&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_settlement_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the settlement of the initial ground profile rod over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_property_time</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;settlements&quot;</span><span class="p">,</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_fill_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;axes&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_fill_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the fill thickness over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_property_time</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">,</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_fill_settlement_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_settlement_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;figure&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_fill_settlement_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot in a new fill thickness and the settlement of the initial ground profile</span>
+<span class="sd">        relative to the zero measurement over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_fill_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_settlement_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">add_date_time</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.825</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mf">0.075</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fill thickness and settlement for object: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_displacements_time"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_displacements_time">[docs]</a>    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;figure&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">plot_displacements_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot in a new figure the horizontal XY-displacements at the top of rod and the</span>
+<span class="sd">        fill thickness and the settlement of the initial ground profile relative to the</span>
+<span class="sd">        zero measurement over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_x_displacement_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="n">add_date_time</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_y_displacement_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_fill_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_settlement_time</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="n">log_time</span><span class="o">=</span><span class="n">log_time</span><span class="p">,</span>
+            <span class="n">min_log_time</span><span class="o">=</span><span class="n">min_log_time</span><span class="p">,</span>
+            <span class="n">add_date_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">add_date_time</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.825</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fill and displacements for object: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="MeasuredSettlementSeries.plot_xy_displacements_plan_view"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_xy_displacements_plan_view">[docs]</a>    <span class="k">def</span> <span class="nf">plot_xy_displacements_plan_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the plan view of the horizontal XY displacements</span>
+<span class="sd">        at the top of the rod, relative to the zero measurement.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axes: plt.Axes | None, optional</span>
+<span class="sd">            Axes to create the figure. If None, then create new Axes.</span>
+<span class="sd">            Default is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        plt.Axes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_axes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+
+        <span class="c1"># If axes is None create new Axes.</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="c1"># Plot the X and Y displacements</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_displacements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_displacements</span><span class="p">)</span>
+
+        <span class="c1"># Mark the start and end of the measurements.</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_displacements</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_displacements</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_displacements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_displacements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+        <span class="n">abs_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_displacements</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_displacements</span><span class="p">),</span>
+                <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_displacements</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_displacements</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">abs_max</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">abs_max</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">abs_max</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">abs_max</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal_units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Y [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal_units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Plan view of horizonal measurements at rod top for object: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">axes</span></div>
+
+    <span class="nd">@add_docstring_plot_time</span><span class="p">(</span><span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;axes&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_plot_property_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">attribute</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+            <span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;settlements&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x_displacements&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y_displacements&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_log_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">add_date_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method to plot the requested property over time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Assert the requested property is one accepted one.</span>
+        <span class="k">assert</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;settlements&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x_displacements&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y_displacements&quot;</span><span class="p">,</span>
+        <span class="p">],</span> <span class="s2">&quot;Expected &#39;fill_thicknesses&#39;, &#39;settlements&#39;, &#39;x_displacements&#39; or &#39;y_displacements&#39; for &#39;attribute&#39; parameter.&quot;</span>
+
+        <span class="c1"># Validate input plot parameters</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_axes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_log_time</span><span class="p">(</span><span class="n">log_time</span><span class="p">)</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_min_log_time</span><span class="p">(</span><span class="n">min_log_time</span><span class="p">)</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_add_date_time</span><span class="p">(</span><span class="n">add_date_time</span><span class="p">)</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_datetime_format</span><span class="p">(</span><span class="n">datetime_format</span><span class="p">)</span>
+
+        <span class="c1"># Map y_label, titles and units per property</span>
+        <span class="n">y_labels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">:</span> <span class="s2">&quot;Fill thickness&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;settlements&quot;</span><span class="p">:</span> <span class="s2">&quot;Settlement&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x_displacements&quot;</span><span class="p">:</span> <span class="s2">&quot;X displacement&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y_displacements&quot;</span><span class="p">:</span> <span class="s2">&quot;Y displacement&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">titles</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">:</span> <span class="s2">&quot;Fill thickness&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;settlements&quot;</span><span class="p">:</span> <span class="s2">&quot;Settlement of initial ground surface&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x_displacements&quot;</span><span class="p">:</span> <span class="s2">&quot;Horizontal X displacement at rod top&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y_displacements&quot;</span><span class="p">:</span> <span class="s2">&quot;Horizontal Y displacement at rod top&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">units</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fill_thicknesses&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">vertical_units</span><span class="p">,</span>
+            <span class="s2">&quot;settlements&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">vertical_units</span><span class="p">,</span>
+            <span class="s2">&quot;x_displacements&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal_units</span><span class="p">,</span>
+            <span class="s2">&quot;y_displacements&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal_units</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># If axes is None create new Axes.</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="c1"># check if there is valid data to plot</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">axes</span>
+
+        <span class="c1"># Plot the property data over time</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">days</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">log_time</span><span class="p">:</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_log_time</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">days</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">))</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;settlements&quot;</span><span class="p">:</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">())</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">())</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y_labels</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">units</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [days]&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">titles</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span><span class="si">}</span><span class="s2"> for object: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add secondary xaxis with the date_time</span>
+        <span class="k">if</span> <span class="n">add_date_time</span><span class="p">:</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_datetime_as_secondary_axis</span><span class="p">(</span>
+                <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">datetime_format</span><span class="o">=</span><span class="n">datetime_format</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">axes</span>
+
+    <span class="k">def</span> <span class="nf">_add_datetime_as_secondary_axis</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
+        <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private helper method to add a secondary x-axis to the provided `axes` with the date and time</span>
+<span class="sd">        data. The original x-axis is expected to be time in [days].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axes: plt.Axes</span>
+<span class="sd">            Axes to create the figure</span>
+<span class="sd">        datetime_format: str, optional</span>
+<span class="sd">            The format of the date and time on the x-axis.</span>
+<span class="sd">            It must be an acceptable format for the strftime method of the datetime.datetime class.</span>
+<span class="sd">            Default is &quot;%d-%m-%Y&quot;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        plt.Axes</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the types of the input parameters are incorrect.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the `datetime_format` is not a valid format for the strftime method of the</span>
+<span class="sd">            datetime.datetime class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Validate input plot parameters</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_axes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">plot_utils</span><span class="o">.</span><span class="n">validate_plot_parameter_datetime_format</span><span class="p">(</span><span class="n">datetime_format</span><span class="p">)</span>
+
+        <span class="c1"># Add secondary xaxis with the date_time</span>
+        <span class="n">axes2</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+        <span class="n">axes2</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xscale</span><span class="p">())</span>
+        <span class="c1"># Set major and minor ticks</span>
+        <span class="k">for</span> <span class="n">minor</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="n">axes2</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">(</span><span class="n">minor</span><span class="o">=</span><span class="n">minor</span><span class="p">),</span> <span class="n">minor</span><span class="o">=</span><span class="n">minor</span><span class="p">)</span>
+        <span class="c1"># Set major and minor tick labels</span>
+        <span class="k">for</span> <span class="n">minor</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="n">axes2</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">days_to_date_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">datetime_format</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">(</span><span class="n">minor</span><span class="o">=</span><span class="n">minor</span><span class="p">)</span>
+                <span class="p">],</span>
+                <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                <span class="n">minor</span><span class="o">=</span><span class="n">minor</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># Set x-limits and label</span>
+        <span class="n">axes2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+        <span class="n">axes2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Date and Time&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">axes</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

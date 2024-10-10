@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference &mdash; baec 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            baec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#settlement-rod-measurement">Settlement Rod Measurement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.__init__"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.project"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.project</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.device"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.object_id"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.date_time"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.date_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.coordinate_reference_systems"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.coordinate_reference_systems</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_x"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_top_x</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_y"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_top_y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_z"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_top_z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_length"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_bottom_z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z_uncorrected"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.rod_bottom_z_uncorrected</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.ground_surface_z"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.ground_surface_z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status_messages"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.status_messages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.temperature"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.temperature</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.voltage"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.voltage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.to_dict"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurement.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.OK"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementStatus.OK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.INFO"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementStatus.INFO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.WARNING"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementStatus.WARNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.ERROR"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementStatus.ERROR</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#measured-settlement">Measured Settlement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.__init__"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.from_settlement_rod_measurement"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.from_settlement_rod_measurement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.project"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.project</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.object_id"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.start_date_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.start_date_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.date_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.date_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.days"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.days</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.fill_thickness"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.fill_thickness</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.settlement"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.settlement</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.x_displacement"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.x_displacement</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.y_displacement"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.y_displacement</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.horizontal_units"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.horizontal_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.vertical_units"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.vertical_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.status"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.status_messages"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.status_messages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement.to_dict"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlement.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#settlement-rod-measurement-series">Settlement Rod Measurement Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.__init__"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.measurements"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.measurements</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.project"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.project</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.device"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.object_id"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.coordinate_reference_systems"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.coordinate_reference_systems</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.to_dataframe"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_x_time"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.plot_x_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_y_time"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.plot_y_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_z_time"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.plot_z_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xyz_time"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.plot_xyz_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xy_plan_view"><code class="docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries.plot_xy_plan_view()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#measured-settlement-series">Measured Settlement Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.__init__"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.series"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.series</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.items"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.items</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.project"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.project</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.object_id"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_date_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.start_date_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_index"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.start_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.coordinate_reference_systems"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.coordinate_reference_systems</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_times"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.date_times</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.days</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.fill_thicknesses"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.fill_thicknesses</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.settlements"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.settlements</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.x_displacements"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.x_displacements</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.y_displacements"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.y_displacements</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days_to_date_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.days_to_date_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_time_to_days"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.date_time_to_days()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_x_displacement_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_x_displacement_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_y_displacement_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_y_displacement_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_settlement_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_settlement_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_fill_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_settlement_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_fill_settlement_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_displacements_time"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_displacements_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_xy_displacements_plan_view"><code class="docutils literal notranslate"><span class="pre">MeasuredSettlementSeries.plot_xy_displacements_plan_view()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#status-message">Status Message</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage"><code class="docutils literal notranslate"><span class="pre">StatusMessage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage.__init__"><code class="docutils literal notranslate"><span class="pre">StatusMessage.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage.to_string"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage.code"><code class="docutils literal notranslate"><span class="pre">StatusMessage.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage.description"><code class="docutils literal notranslate"><span class="pre">StatusMessage.description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage.level"><code class="docutils literal notranslate"><span class="pre">StatusMessage.level</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.OK"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel.OK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.INFO"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel.INFO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.WARNING"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel.WARNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.ERROR"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel.ERROR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.order"><code class="docutils literal notranslate"><span class="pre">StatusMessageLevel.order()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#measurement-device">Measurement Device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice"><code class="docutils literal notranslate"><span class="pre">MeasurementDevice</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice.__init__"><code class="docutils literal notranslate"><span class="pre">MeasurementDevice.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice.id"><code class="docutils literal notranslate"><span class="pre">MeasurementDevice.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice.qr_code"><code class="docutils literal notranslate"><span class="pre">MeasurementDevice.qr_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#project">Project</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.project.Project.__init__"><code class="docutils literal notranslate"><span class="pre">Project.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.project.Project.id"><code class="docutils literal notranslate"><span class="pre">Project.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.project.Project.name"><code class="docutils literal notranslate"><span class="pre">Project.name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#coordinatereferencesystems">CoordinateReferenceSystems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.__init__"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.from_epsg"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.from_epsg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.horizontal"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.horizontal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.vertical"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.vertical</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.horizontal_units"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.horizontal_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.vertical_units"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.vertical_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.vertical_datum"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.vertical_datum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems.vertical_datum_and_units"><code class="docutils literal notranslate"><span class="pre">CoordinateReferenceSystems.vertical_datum_and_units</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zbase">ZBASE</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.io.zbase.measurements_from_zbase"><code class="docutils literal notranslate"><span class="pre">measurements_from_zbase()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">baec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tree/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reference">
+<span id="id1"></span><h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h1>
+<section id="settlement-rod-measurement">
+<span id="settlementrodmeasurement"></span><h2>Settlement Rod Measurement<a class="headerlink" href="#settlement-rod-measurement" title="Permalink to this heading"></a></h2>
+<p>A settlement rod device consists of a rod and a (bottom) settlement plate (see figure below). The measurements are taken at the top of the rod (i.e. <cite>rod_top</cite>)
+and at the <cite>ground surface</cite> and since the <cite>rod length</cite> is known, the settlement of at the bottom of the rod (i.e. <cite>rod_bottom</cite>) can be also derived.</p>
+<img alt="../_images/settlement_rod.png" src="../_images/settlement_rod.png" />
+<p>The class <cite>SettlementRodMeasurement</cite> presented below stores the data of a single settlement rod measurement.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.settlement_rod_measurement.</span></span><span class="sig-name descname"><span class="pre">SettlementRodMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_reference_systems</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_bottom_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_surface_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#SettlementRodMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a single settlement rod measurement.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_reference_systems</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_top_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_bottom_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_surface_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#SettlementRodMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a SettlementRodMeasurement object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><em>Project</em></a>) – The project which the measurement belongs to.</p></li>
+<li><p><strong>device</strong> (<a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice" title="baec.measurements.measurement_device.MeasurementDevice"><em>MeasurementDevice</em></a>) – The measurement device.</p></li>
+<li><p><strong>object_id</strong> (<em>str</em>) – The ID of the measured object.</p></li>
+<li><p><strong>date_time</strong> (<em>datetime.datetime</em>) – The date and time of the measurement.</p></li>
+<li><p><strong>coordinate_reference_systems</strong> (<a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems" title="baec.coordinates.CoordinateReferenceSystems"><em>CoordinateReferenceSystems</em></a>) – The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the
+spatial measurements.</p></li>
+<li><p><strong>rod_top_x</strong> (<em>float</em>) – The horizontal X-coordinate of the top of the settlement rod.
+Units are according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>rod_top_y</strong> (<em>float</em>) – The horizontal Y-coordinate of the top of the settlement rod.
+Units are according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>rod_top_z</strong> (<em>float</em>) – The vertical Z-coordinate of the top of the settlement rod.
+It is the top of the settlement rod.
+Units and datum are according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>rod_length</strong> (<em>float</em>) – The length of the settlement rod including the thickness of the settlement plate.
+It is in principle the vertical distance between the top of the settlement rod and
+the bottom of the settlement plate.
+Units are according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>rod_bottom_z</strong> (<em>float</em>) – The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
+Note that the bottom of the plate is in principle the original ground surface.
+Units and datum according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>ground_surface_z</strong> (<em>float</em>) – The Z-coordinate of the ground surface.
+It is in principle the top of the fill, if present.
+Units and datum according to the <cite>coordinate_reference_systems</cite>.</p></li>
+<li><p><strong>status_messages</strong> (<em>List</em><em>[</em><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage" title="baec.measurements.settlement_rod_measurement.StatusMessage"><em>StatusMessage</em></a><em>]</em>) – The list of status messages about the measurement.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The temperature at the time of measurement in [°C], or None if unknown (default: None).</p></li>
+<li><p><strong>voltage</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The voltage measured in [mV], or None if unknown (default: None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If empty string for <cite>object_id</cite>.
+    If negative value for <cite>rod_length</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.project">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><span class="pre">Project</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.project" title="Permalink to this definition"></a></dt>
+<dd><p>The project which the measurement belongs to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice" title="baec.measurements.measurement_device.MeasurementDevice"><span class="pre">MeasurementDevice</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.device" title="Permalink to this definition"></a></dt>
+<dd><p>The measurement device.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.object_id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the measured object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.date_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.date_time" title="Permalink to this definition"></a></dt>
+<dd><p>The date and time of the measurement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.coordinate_reference_systems">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinate_reference_systems</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems" title="baec.coordinates.CoordinateReferenceSystems"><span class="pre">CoordinateReferenceSystems</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.coordinate_reference_systems" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the
+spatial measurements.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_top_x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_x" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal X-coordinate of the top of the settlement rod.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_top_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_y" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal Y-coordinate of the top of the settlement rod.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_top_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_top_z" title="Permalink to this definition"></a></dt>
+<dd><p>The vertical Z-coordinate of the top of the settlement rod.
+It is the top of the settlement rod.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_length" title="Permalink to this definition"></a></dt>
+<dd><p>The length of the settlement rod including the thickness of the settlement plate.
+It is in principle the vertical distance between the top of the settlement rod and the bottom of the settlement plate.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_bottom_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z" title="Permalink to this definition"></a></dt>
+<dd><p>The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
+Note that the bottom of the plate is in principle the original ground surface.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z_uncorrected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rod_bottom_z_uncorrected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.rod_bottom_z_uncorrected" title="Permalink to this definition"></a></dt>
+<dd><p>The uncorrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).
+It is computed as the difference beteen the Z-coordinate of the top of the settlement rod and the rod length.
+Units are according to the <cite>coordinate_reference_system</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.ground_surface_z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ground_surface_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.ground_surface_z" title="Permalink to this definition"></a></dt>
+<dd><p>The Z-coordinate of the ground surface.
+It is in principle the top of the fill, if present.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status_messages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage" title="baec.measurements.settlement_rod_measurement.StatusMessage"><span class="pre">StatusMessage</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status_messages" title="Permalink to this definition"></a></dt>
+<dd><p>The list of status messages about the measurement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus"><span class="pre">SettlementRodMeasurementStatus</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.status" title="Permalink to this definition"></a></dt>
+<dd><p>The status of the measurement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.temperature">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">temperature</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.temperature" title="Permalink to this definition"></a></dt>
+<dd><p>The temperature at the time of measurement in [°C], or None if unknown.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.voltage">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">voltage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.voltage" title="Permalink to this definition"></a></dt>
+<dd><p>The voltage measured in [mV], or None if unknown.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#SettlementRodMeasurement.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the measurement to a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class enum">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus">
+<em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.settlement_rod_measurement.</span></span><span class="sig-name descname"><span class="pre">SettlementRodMeasurementStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#SettlementRodMeasurementStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Represents the status of a settlement rod measurement.</p>
+<p>Valid values are as follows:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.OK">
+<span class="sig-name descname"><span class="pre">OK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;SettlementRodMeasurementStatus.OK:</span> <span class="pre">'OK'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.OK" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.INFO">
+<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;SettlementRodMeasurementStatus.INFO:</span> <span class="pre">'INFO'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.INFO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;SettlementRodMeasurementStatus.WARNING:</span> <span class="pre">'WARNING'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.WARNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;SettlementRodMeasurementStatus.ERROR:</span> <span class="pre">'ERROR'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus.ERROR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="measured-settlement">
+<span id="measuredsettlement"></span><h2>Measured Settlement<a class="headerlink" href="#measured-settlement" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.measured_settlement.</span></span><span class="sig-name descname"><span class="pre">MeasuredSettlement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settlement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_messages</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement.html#MeasuredSettlement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement" title="Permalink to this definition"></a></dt>
+<dd><p>Represents the measured settlement derived from a single settlement rod measurement.
+It includes the thickness of the fill layer and the x and y displacements at the rod top.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settlement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_messages</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement.html#MeasuredSettlement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a MeasuredSettlement object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><em>Project</em></a>) – The project which the measured settlement belongs to.</p></li>
+<li><p><strong>object_id</strong> (<em>str</em>) – The ID of the measured object.</p></li>
+<li><p><strong>start_date_time</strong> (<em>datetime.datetime</em>) – The date and time of the start of the measurements (zero measurement).</p></li>
+<li><p><strong>date_time</strong> (<em>datetime.datetime</em>) – The date and time of the measured settlement.</p></li>
+<li><p><strong>fill_thickness</strong> (<em>float</em>) – The thickness of the fill layer.
+Units are according to <cite>vertical_units</cite>.</p></li>
+<li><p><strong>settlement</strong> (<em>float</em>) – The settlement of the initial ground profile relative to the zero measurement.
+A positive (+) settlement value represents a downward movement.
+Units are according to <cite>vertical_units</cite>.</p></li>
+<li><p><strong>x_displacement</strong> (<em>float</em>) – The horizontal X-displacement relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p></li>
+<li><p><strong>y_displacement</strong> (<em>float</em>) – The horizontal Y-displacement relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p></li>
+<li><p><strong>horizontal_units</strong> (<em>str</em>) – The units of the horizontal XY displacements.</p></li>
+<li><p><strong>vertical_units</strong> (<em>str</em>) – The units of the measurements and distances in the vertical direction.</p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus"><em>SettlementRodMeasurementStatus</em></a>) – The status of the settlement rod measurement from which the measured settlement
+is derived.</p></li>
+<li><p><strong>status_messages</strong> (<em>List</em><em>[</em><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage" title="baec.measurements.settlement_rod_measurement.StatusMessage"><em>StatusMessage</em></a><em>]</em>) – The list of status messages about the settlement rod measurement from which the
+measured settlement is derived.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If empty string for <cite>object_id</cite>, <cite>horizontal_units</cite> and <cite>vertical_units</cite>.
+    If <cite>date_time</cite> is not &gt;= <cite>start_date_time</cite>.
+    If negative value for <cite>fill_thickness</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.from_settlement_rod_measurement">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_settlement_rod_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_measurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement.html#MeasuredSettlement.from_settlement_rod_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.from_settlement_rod_measurement" title="Permalink to this definition"></a></dt>
+<dd><p>Create a MeasuredSettlement object from a measurement and a zero measurement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement</strong> (<a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement"><em>SettlementRodMeasurement</em></a>) – The measurement to be interpreted.</p></li>
+<li><p><strong>zero_measurement</strong> (<a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement"><em>SettlementRodMeasurement</em></a>) – The measurement considered to the the zero measurement.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The derived MeasuredSettlement object relative to the zero measurement.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement" title="baec.measurements.measured_settlement.MeasuredSettlement">MeasuredSettlement</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the measurements do not belong to the same project, object_id or coordinate
+    reference systems.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.project">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><span class="pre">Project</span></a></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.project" title="Permalink to this definition"></a></dt>
+<dd><p>The project which the measured settlement belongs to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.object_id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the measured object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.start_date_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_date_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.start_date_time" title="Permalink to this definition"></a></dt>
+<dd><p>The date and time of the start of the measurements (zero measurement).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.date_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.date_time" title="Permalink to this definition"></a></dt>
+<dd><p>The date and time of the measured settlement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.days" title="Permalink to this definition"></a></dt>
+<dd><p>The time elapsed since the zero measurement in [days].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.fill_thickness">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fill_thickness</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.fill_thickness" title="Permalink to this definition"></a></dt>
+<dd><p>The thickness of the fill layer.
+Units are according to <cite>vertical_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.settlement">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">settlement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.settlement" title="Permalink to this definition"></a></dt>
+<dd><p>The settlement of the initial ground profile relative to the zero measurement.
+A positive (+) settlement value represents a downward movement.
+Units are according to <cite>vertical_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.x_displacement">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_displacement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.x_displacement" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal X-displacement at the rod top relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.y_displacement">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_displacement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.y_displacement" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal Y-displacement at the rod top relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.horizontal_units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.horizontal_units" title="Permalink to this definition"></a></dt>
+<dd><p>The units of the horizontal XY displacements.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.vertical_units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.vertical_units" title="Permalink to this definition"></a></dt>
+<dd><p>The units of the measurements and distances in the vertical direction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.status">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus"><span class="pre">SettlementRodMeasurementStatus</span></a></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.status" title="Permalink to this definition"></a></dt>
+<dd><p>The status of the settlement rod measurement from which the measured settlement
+is derived.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.status_messages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessage" title="baec.measurements.settlement_rod_measurement.StatusMessage"><span class="pre">StatusMessage</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.status_messages" title="Permalink to this definition"></a></dt>
+<dd><p>The list of status messages about the settlement rod measurement from which the
+measured settlement is derived.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement.MeasuredSettlement.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement.html#MeasuredSettlement.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement.MeasuredSettlement.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the measured settlement to a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="settlement-rod-measurement-series">
+<span id="settlementrodmeasurementseries"></span><h2>Settlement Rod Measurement Series<a class="headerlink" href="#settlement-rod-measurement-series" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.settlement_rod_measurement_series.</span></span><span class="sig-name descname"><span class="pre">SettlementRodMeasurementSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a series of measurements for a single settlement rod.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a SettlementRodMeasurementSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>measurements</strong> (<em>List</em><em>[</em><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement"><em>SettlementRodMeasurement</em></a><em>]</em>) – The list of measurements for the settlement rod.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the list of measurements is empty.
+    If the measurements are not for the same project, device, object or
+    coordinate refence systems.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.measurements">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measurements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement" title="baec.measurements.settlement_rod_measurement.SettlementRodMeasurement"><span class="pre">SettlementRodMeasurement</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.measurements" title="Permalink to this definition"></a></dt>
+<dd><p>The list of measurements for the settlement rod.
+They are organized in chronological order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.project">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><span class="pre">Project</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.project" title="Permalink to this definition"></a></dt>
+<dd><p>The project which all the measurements belongs to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.measurement_device.MeasurementDevice" title="baec.measurements.measurement_device.MeasurementDevice"><span class="pre">MeasurementDevice</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.device" title="Permalink to this definition"></a></dt>
+<dd><p>The measurement device.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.object_id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the measured object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.coordinate_reference_systems">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinate_reference_systems</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems" title="baec.coordinates.CoordinateReferenceSystems"><span class="pre">CoordinateReferenceSystems</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.coordinate_reference_systems" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal (X, Y) and vertical (Z) coordinate reference systems of the measurements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the series of measurements to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pandas DataFrame with the measurements. The columns of the DataFrame are:
+project_id, project_name, device_id, device_qr_code, object_id,
+coordinate_horizontal_epsg_code, coordinate_vertical_epsg_code,
+date_time, rod_top_x, rod_top_y, rod_top_z, rod_length, rod_bottom_z
+rod_bottom_z_uncorrected, ground_surface_z, status, status_messages, temperature,
+voltage.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_x_time">
+<span class="sig-name descname"><span class="pre">plot_x_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.plot_x_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_x_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the horizontal X-coordinates at the top of the rod over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>plt.Axes</em>) – Axes to create the figure</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_y_time">
+<span class="sig-name descname"><span class="pre">plot_y_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.plot_y_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_y_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the horizontal Y-coordinates at the top of the rod over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>plt.Axes</em>) – Axes to create the figure</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_z_time">
+<span class="sig-name descname"><span class="pre">plot_z_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.plot_z_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_z_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the vertical Z-coordinates at the top the rod, the ground surface and the bottom of the
+rod over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>plt.Axes</em>) – Axes to create the figure</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xyz_time">
+<span class="sig-name descname"><span class="pre">plot_xyz_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.plot_xyz_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xyz_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot in a new figure the horizontal XY-coordinates at the top of rod and the
+vertical Z-coordinates at the top the rod, the ground surface and the bottom of the
+rod over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xy_plan_view">
+<span class="sig-name descname"><span class="pre">plot_xy_plan_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement_series.html#SettlementRodMeasurementSeries.plot_xy_plan_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries.plot_xy_plan_view" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the plan view of the horizontal XY coordinates
+at the top of the rod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>plt.Axes</em>) – Axes to create the figure</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="measured-settlement-series">
+<span id="measuredsettlementseries"></span><h2>Measured Settlement Series<a class="headerlink" href="#measured-settlement-series" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.measured_settlement_series.</span></span><span class="sig-name descname"><span class="pre">MeasuredSettlementSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a series of MeasuredSettlement objects, derived for a single settlement rod.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Create a MeasuredSettlementSeries object from a SettlementRodMeasurementSeries object.</p>
+<p>The <cite>start_index</cite> and <cite>start_date_time</cite> are used to determine the start (or zero measurement)
+from the series of measurements. The following rules are applied:
+1. Either <cite>start_index</cite> or <cite>start_date_time</cite> can be provided. If both are provided, an error
+is raised.
+2. If neither <cite>start_index</cite> not <cite>start_date_time</cite> are provided, the first measurement or the
+series in used as the zero measurement. This is the default behaviour.
+3. If <cite>start_index</cite> is provided, the measurement at the index is used the zero measurement.
+4. If <cite>start_date_time</cite> is provided, the first measurement equal or after this date and time is
+considered as the zero measurement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> (<a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries" title="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries"><em>SettlementRodMeasurementSeries</em></a>) – The series of SettlementRodMeasurement objects.</p></li>
+<li><p><strong>start_index</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The index of the item of the series to consider as the start or zero measurement of the series, or None.
+Default is None.</p></li>
+<li><p><strong>start_date_time</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The date at which the start or zero measurement is taken place, or None.
+Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries" title="baec.measurements.measured_settlement_series.MeasuredSettlementSeries">MeasuredSettlementSeries</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If both <cite>start_index</cite> and <cite>start_date_time</cite> are provided.
+    If the <cite>start_date_time</cite> is out of range for the series.</p></li>
+<li><p><strong>IndexError</strong> – If the <cite>start_index</cite> is out of range for the series.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.series">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">series</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries" title="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries"><span class="pre">SettlementRodMeasurementSeries</span></a></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.series" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a series of measurements for a single settlement rod.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.items">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#baec.measurements.measured_settlement.MeasuredSettlement" title="baec.measurements.measured_settlement.MeasuredSettlement"><span class="pre">MeasuredSettlement</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.items" title="Permalink to this definition"></a></dt>
+<dd><p>The list of measured settlements in the series.
+They are organized in chronological order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.project">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.project.Project" title="baec.project.Project"><span class="pre">Project</span></a></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.project" title="Permalink to this definition"></a></dt>
+<dd><p>The project the measured settlements belong to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.object_id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the object the measured settlements belong to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_date_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_date_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_date_time" title="Permalink to this definition"></a></dt>
+<dd><p>The date and time of the start of measurements (zero measurement).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.start_index" title="Permalink to this definition"></a></dt>
+<dd><p>The date and time of the start of measurements (zero measurement).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.coordinate_reference_systems">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinate_reference_systems</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems" title="baec.coordinates.CoordinateReferenceSystems"><span class="pre">CoordinateReferenceSystems</span></a></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.coordinate_reference_systems" title="Permalink to this definition"></a></dt>
+<dd><p>The horizontal (X, Y) and vertical (Z) coordinate reference systems of the measurements.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_times">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_times" title="Permalink to this definition"></a></dt>
+<dd><p>The list of date and times for each measured settlement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days" title="Permalink to this definition"></a></dt>
+<dd><p>The list of time elapsed in [days] since the start of measurements
+for each measured settlement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.fill_thicknesses">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fill_thicknesses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.fill_thicknesses" title="Permalink to this definition"></a></dt>
+<dd><p>The list of fill thicknesses for each measured settlement.
+Units are according to <cite>vertical_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.settlements">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">settlements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.settlements" title="Permalink to this definition"></a></dt>
+<dd><p>The list of settlements of the initial ground profile relative to the zero measurement.
+A positive (+) settlement value represents a downward movement.
+Units are according to <cite>vertical_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.x_displacements">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_displacements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.x_displacements" title="Permalink to this definition"></a></dt>
+<dd><p>The list of horizontal X-displacements at the rod top relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.y_displacements">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_displacements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.y_displacements" title="Permalink to this definition"></a></dt>
+<dd><p>The list of horizontal Y-displacements at the rod top relative to the zero measurement.
+Units are according to the <cite>horizontal_units</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the MeasuredSettlementSeries to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pandas DataFrame with the measured settlements. The columns of the DataFrame are:
+project_id, project_name, object_id, start_date_time
+date_time, days, fill_thickness, settlement, x_displacement, y_displacement
+horizontal_units, vertical_units, status, status_messages</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days_to_date_time">
+<span class="sig-name descname"><span class="pre">days_to_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.days_to_date_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.days_to_date_time" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the days since the start of the measurements to a date and time.
+Note that the days can be a decimal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>days</strong> (<em>float</em>) – The days since the start of the measurements.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The date and time corresponding to days since the start of measurements.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_time_to_days">
+<span class="sig-name descname"><span class="pre">date_time_to_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.date_time_to_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.date_time_to_days" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the date time to days since the start of measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date_time</strong> (<em>datetime.datetime</em>) – The date and time to convert to days since the start of measurements.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The days since the start of the measurements. Note that the days can be a decimal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_x_displacement_time">
+<span class="sig-name descname"><span class="pre">plot_x_displacement_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_x_displacement_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_x_displacement_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the horizontal X displacement at the top of the rod relative to the
+zero measurement over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> (<em>plt.Axes</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Axes to create the figure. If None creates new Axes.
+Default is None.</p></li>
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_y_displacement_time">
+<span class="sig-name descname"><span class="pre">plot_y_displacement_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_y_displacement_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_y_displacement_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the horizontal Y displacement at the top of the rod relative to the
+zero measurement over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> (<em>plt.Axes</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Axes to create the figure. If None creates new Axes.
+Default is None.</p></li>
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_settlement_time">
+<span class="sig-name descname"><span class="pre">plot_settlement_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_settlement_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_settlement_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the settlement of the initial ground profile rod over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> (<em>plt.Axes</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Axes to create the figure. If None creates new Axes.
+Default is None.</p></li>
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_time">
+<span class="sig-name descname"><span class="pre">plot_fill_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_fill_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the fill thickness over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> (<em>plt.Axes</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Axes to create the figure. If None creates new Axes.
+Default is None.</p></li>
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_settlement_time">
+<span class="sig-name descname"><span class="pre">plot_fill_settlement_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_fill_settlement_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_fill_settlement_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot in a new fill thickness and the settlement of the initial ground profile
+relative to the zero measurement over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Figure</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_displacements_time">
+<span class="sig-name descname"><span class="pre">plot_displacements_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_log_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_date_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d-%m-%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_displacements_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_displacements_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plot in a new figure the horizontal XY-displacements at the top of rod and the
+fill thickness and the settlement of the initial ground profile relative to the
+zero measurement over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the time axis is logarithmic (linear otherwise).
+Note that time is plotted in days.
+Default is True.</p></li>
+<li><p><strong>min_log_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value for the time axis in [days] in case of a logarithmic plot.
+It must be greater than 0.0.
+Default is 1.0.</p></li>
+<li><p><strong>add_date_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the date and time are added as a secondary x-axis.
+Default is True.</p></li>
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the date and time on the x-axis (only used if <cite>add_date_time</cite> is True).
+It must be an acceptable format for the strftime method of the datetime.datetime class.
+Default is “%d-%m-%Y”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Figure</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the types of the input parameters are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the <cite>datetime_format</cite> is not a valid format for the strftime method of the
+    datetime.datetime class.
+    If the <cite>min_log_time</cite> is not greater than 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_xy_displacements_plan_view">
+<span class="sig-name descname"><span class="pre">plot_xy_displacements_plan_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measured_settlement_series.html#MeasuredSettlementSeries.plot_xy_displacements_plan_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measured_settlement_series.MeasuredSettlementSeries.plot_xy_displacements_plan_view" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the plan view of the horizontal XY displacements
+at the top of the rod, relative to the zero measurement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>plt.Axes</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Axes to create the figure. If None, then create new Axes.
+Default is None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="status-message">
+<span id="statusmessage"></span><h2>Status Message<a class="headerlink" href="#status-message" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.settlement_rod_measurement.</span></span><span class="sig-name descname"><span class="pre">StatusMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#StatusMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a status message of a single settlement rod measurement.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#StatusMessage.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a StatusMessage object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<em>int</em>) – The code of the status message.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the status message.</p></li>
+<li><p><strong>level</strong> (<a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel" title="baec.measurements.settlement_rod_measurement.StatusMessageLevel"><em>StatusMessageLevel</em></a>) – The severity level of the status message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage.to_string">
+<span class="sig-name descname"><span class="pre">to_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#StatusMessage.to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage.to_string" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the status message to a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage.code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage.code" title="Permalink to this definition"></a></dt>
+<dd><p>The code of the status message.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage.description" title="Permalink to this definition"></a></dt>
+<dd><p>The description of the status message.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessage.level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel" title="baec.measurements.settlement_rod_measurement.StatusMessageLevel"><span class="pre">StatusMessageLevel</span></a></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessage.level" title="Permalink to this definition"></a></dt>
+<dd><p>The severity level of the status message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class enum">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel">
+<em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.settlement_rod_measurement.</span></span><span class="sig-name descname"><span class="pre">StatusMessageLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#StatusMessageLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel" title="Permalink to this definition"></a></dt>
+<dd><p>Represents the severity level of a status message.</p>
+<p>Valid values are as follows:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel.OK">
+<span class="sig-name descname"><span class="pre">OK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StatusMessageLevel.OK:</span> <span class="pre">'OK'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.OK" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel.INFO">
+<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StatusMessageLevel.INFO:</span> <span class="pre">'INFO'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.INFO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StatusMessageLevel.WARNING:</span> <span class="pre">'WARNING'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.WARNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StatusMessageLevel.ERROR:</span> <span class="pre">'ERROR'&gt;</span></em><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.ERROR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code> and its members also have the following methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.settlement_rod_measurement.StatusMessageLevel.order">
+<span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/settlement_rod_measurement.html#StatusMessageLevel.order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.settlement_rod_measurement.StatusMessageLevel.order" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the order of the status message level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="measurement-device">
+<span id="measurementdevice"></span><h2>Measurement Device<a class="headerlink" href="#measurement-device" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.measurement_device.MeasurementDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.measurement_device.</span></span><span class="sig-name descname"><span class="pre">MeasurementDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qr_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measurement_device.html#MeasurementDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measurement_device.MeasurementDevice" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a measurement device.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.measurement_device.MeasurementDevice.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qr_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/measurement_device.html#MeasurementDevice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.measurement_device.MeasurementDevice.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a MeasurementDevice object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – The ID of the measurement device.</p></li>
+<li><p><strong>qr_code</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The QR code of the measurement device, or None if unknown (default: None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If empty string for <cite>id_</cite> or <cite>qr_code</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measurement_device.MeasurementDevice.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.measurements.measurement_device.MeasurementDevice.id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the measurement device.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.measurements.measurement_device.MeasurementDevice.qr_code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qr_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#baec.measurements.measurement_device.MeasurementDevice.qr_code" title="Permalink to this definition"></a></dt>
+<dd><p>The QR-code of the measurement device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="project">
+<span id="id2"></span><h2>Project<a class="headerlink" href="#project" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.project.Project">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.project.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.project.Project" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a project.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.project.Project.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/project.html#Project.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.project.Project.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a MeasurementDevice object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – The ID of the project.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the project.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If empty string for <cite>id_</cite> or <cite>name</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.project.Project.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.project.Project.id" title="Permalink to this definition"></a></dt>
+<dd><p>The ID of the project.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.project.Project.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.project.Project.name" title="Permalink to this definition"></a></dt>
+<dd><p>The name of the project.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="coordinatereferencesystems">
+<span id="id3"></span><h2>CoordinateReferenceSystems<a class="headerlink" href="#coordinatereferencesystems" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.coordinates.</span></span><span class="sig-name descname"><span class="pre">CoordinateReferenceSystems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizontal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/coordinates.html#CoordinateReferenceSystems"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems" title="Permalink to this definition"></a></dt>
+<dd><p>Represents the horizontal (X, Y) and vertical (Z) coordinate reference systems of a 3D point.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizontal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/coordinates.html#CoordinateReferenceSystems.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a CoordinateReferenceSystems object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizontal</strong> (<em>pyproj.CRS</em>) – The coordinate reference system of the X and Y-coordinates.
+It is a <cite>pyproj.CRS</cite> object (see <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/api/crs/crs.html">https://pyproj4.github.io/pyproj/stable/api/crs/crs.html</a>) of
+type ‘Projected’ or ‘Compound’.</p></li>
+<li><p><strong>vertical</strong> (<em>pyproj.CRS</em>) – The coordinate reference system of the Z-coordinate.
+It is a <cite>pyproj.CRS</cite> object (see <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/api/crs/crs.html">https://pyproj4.github.io/pyproj/stable/api/crs/crs.html</a>) of
+type ‘Vertical’ or ‘Compound’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>horizontal</cite> is not a projected or compound CRS.
+    If <cite>vertical</cite> is not a vertical or compound CRS.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.from_epsg">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_epsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizontal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/coordinates.html#CoordinateReferenceSystems.from_epsg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.from_epsg" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a CoordinateReferenceSystems object from the EPSG codes of the horizontal and vertical CRS.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your settlement rod is located in the Netherlands the horizontal coordinate reference systems is likely <cite>28992</cite>
+(Amersfoort / RD New) and the vertical <cite>5709</cite> (NAP height). To combine use <cite>7415</cite> (Amersfoort / RD New + NAP height).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizontal</strong> (<em>int</em>) – The EPSG code of the horizontal CRS.</p></li>
+<li><p><strong>vertical</strong> (<em>int</em>) – The EPSG code of the vertical CRS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A CoordinateReferenceSystems object with the horizontal and vertical CRS.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#baec.coordinates.CoordinateReferenceSystems" title="baec.coordinates.CoordinateReferenceSystems">CoordinateReferenceSystems</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pyproj.exceptions.CRSError</strong> – If the EPSG codes are not valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.horizontal">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CRS</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.horizontal" title="Permalink to this definition"></a></dt>
+<dd><p>The coordinate reference system of the horizontal X and Y-coordinates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.vertical">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CRS</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.vertical" title="Permalink to this definition"></a></dt>
+<dd><p>The coordinate reference system of the vertical Z-coordinate.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.horizontal_units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.horizontal_units" title="Permalink to this definition"></a></dt>
+<dd><p>The units of the horizontal CRS.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.vertical_units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.vertical_units" title="Permalink to this definition"></a></dt>
+<dd><p>The units of the vertical CRS</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.vertical_datum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical_datum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.vertical_datum" title="Permalink to this definition"></a></dt>
+<dd><p>The name of the vertical datum.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="baec.coordinates.CoordinateReferenceSystems.vertical_datum_and_units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical_datum_and_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#baec.coordinates.CoordinateReferenceSystems.vertical_datum_and_units" title="Permalink to this definition"></a></dt>
+<dd><p>The vertical datum and units of the vertical CRS.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="input-output">
+<span id="io"></span><h2>Input/output<a class="headerlink" href="#input-output" title="Permalink to this heading"></a></h2>
+<section id="zbase">
+<h3>ZBASE<a class="headerlink" href="#zbase" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="baec.measurements.io.zbase.measurements_from_zbase">
+<span class="sig-prename descclassname"><span class="pre">baec.measurements.io.zbase.</span></span><span class="sig-name descname"><span class="pre">measurements_from_zbase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath_or_buffer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/zbase.html#measurements_from_zbase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.zbase.measurements_from_zbase" title="Permalink to this definition"></a></dt>
+<dd><p>Parse a zBase csv into SettlementRodMeasurementSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath_or_buffer</strong> (<em>str</em><em> | </em><em>PathLike</em><em>[</em><em>str</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>bytes</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>str</em><em>]</em><em>,</em>) – Any valid string path is acceptable.</p></li>
+<li><p><strong>project_name</strong> (<em>str</em>) – The name of the project.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>series</strong> – A SettlementRodMeasurementSeries object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries" title="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries">SettlementRodMeasurementSeries</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input types are incorrect.</p></li>
+<li><p><strong>ValueError</strong> – If the list of measurements is empty.
+    If the measurements are not for the same project, device or object.</p></li>
+<li><p><strong>IOError</strong> – If ZBASE file cannot be parsed by Pandas</p></li>
+<li><p><strong>FileNotFoundError:</strong> – If filepath_or_buffer is requested but doesn’t exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

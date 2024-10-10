@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>baec.measurements.settlement_rod_measurement &mdash; baec 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            baec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">baec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">baec.measurements.settlement_rod_measurement</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for baec.measurements.settlement_rod_measurement</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cache</span><span class="p">,</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">total_ordering</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">baec.coordinates</span> <span class="kn">import</span> <span class="n">CoordinateReferenceSystems</span>
+<span class="kn">from</span> <span class="nn">baec.measurements.measurement_device</span> <span class="kn">import</span> <span class="n">MeasurementDevice</span>
+<span class="kn">from</span> <span class="nn">baec.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+
+<div class="viewcode-block" id="SettlementRodMeasurementStatus"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.SettlementRodMeasurementStatus">[docs]</a><span class="k">class</span> <span class="nc">SettlementRodMeasurementStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the status of a settlement rod measurement.&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If the highest severity level of the status messages is &quot;OK&quot;.</span>
+<span class="sd">    This will indicate that the measurement is correct.&quot;&quot;&quot;</span>
+    <span class="n">OK</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If the highest severity level of the status messages is &quot;INFO&quot;.</span>
+<span class="sd">    This will indicate that there is still at least one informative comment about the measurement. The measurement is still correct.&quot;&quot;&quot;</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If the highest severity level of the status messages is &quot;WARNING&quot;.</span>
+<span class="sd">    This will indicate that there is still at least one warning about the measurement. The measurement may not be correct or accurate enough.&quot;&quot;&quot;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;WARNING&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If the highest severity level of the status messages is &quot;ERROR&quot;.</span>
+<span class="sd">    This will indicate that there is still at least one error about the measurement. The measurement is most probably incorrect.&quot;&quot;&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span></div>
+
+
+<div class="viewcode-block" id="StatusMessageLevel"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.StatusMessageLevel">[docs]</a><span class="nd">@total_ordering</span>
+<span class="k">class</span> <span class="nc">StatusMessageLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the severity level of a status message.&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measurement is correct.&quot;&quot;&quot;</span>
+    <span class="n">OK</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measurement has an informative comment. The measurement is still correct.&quot;&quot;&quot;</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measurement has a warning. The measurement may not be correct or accurate enough.&quot;&quot;&quot;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;WARNING&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measurement has an error. The measurement is most probably incorrect.&quot;&quot;&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares the order of the status message level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">StatusMessageLevel</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">order</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="StatusMessageLevel.order"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.StatusMessageLevel.order">[docs]</a>    <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the order of the status message level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">order</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="StatusMessage"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.StatusMessage">[docs]</a><span class="k">class</span> <span class="nc">StatusMessage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a status message of a single settlement rod measurement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StatusMessage.__init__"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.StatusMessage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">level</span><span class="p">:</span> <span class="n">StatusMessageLevel</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a StatusMessage object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        code : int</span>
+<span class="sd">            The code of the status message.</span>
+<span class="sd">        description : str</span>
+<span class="sd">            The description of the status message.</span>
+<span class="sd">        level : StatusMessageLevel</span>
+<span class="sd">            The severity level of the status message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize all attributes using private setters.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_code</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_description</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for code attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;int&#39; type for &#39;code&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_code</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for description attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;str&#39; type for &#39;description&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty string not allowed for &#39;description&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">StatusMessageLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for level attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StatusMessageLevel</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;StatusMessageLevel&#39; type for &#39;level&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="StatusMessage.to_string"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.StatusMessage.to_string">[docs]</a>    <span class="nd">@cache</span>
+    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the status message to a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(code=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">, description=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">, level=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The code of the status message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The description of the status message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StatusMessageLevel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The severity level of the status message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_level</span></div>
+
+
+<div class="viewcode-block" id="SettlementRodMeasurement"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement">[docs]</a><span class="k">class</span> <span class="nc">SettlementRodMeasurement</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a single settlement rod measurement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SettlementRodMeasurement.__init__"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">MeasurementDevice</span><span class="p">,</span>
+        <span class="n">object_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">date_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span>
+        <span class="n">coordinate_reference_systems</span><span class="p">:</span> <span class="n">CoordinateReferenceSystems</span><span class="p">,</span>
+        <span class="n">rod_top_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">rod_top_y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">rod_top_z</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">rod_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">rod_bottom_z</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">ground_surface_z</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">status_messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StatusMessage</span><span class="p">],</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">voltage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a SettlementRodMeasurement object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        project : Project</span>
+<span class="sd">            The project which the measurement belongs to.</span>
+<span class="sd">        device : MeasurementDevice</span>
+<span class="sd">            The measurement device.</span>
+<span class="sd">        object_id : str</span>
+<span class="sd">            The ID of the measured object.</span>
+<span class="sd">        date_time : datetime.datetime</span>
+<span class="sd">            The date and time of the measurement.</span>
+<span class="sd">        coordinate_reference_systems : CoordinateReferenceSystems</span>
+<span class="sd">            The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the</span>
+<span class="sd">            spatial measurements.</span>
+<span class="sd">        rod_top_x : float</span>
+<span class="sd">            The horizontal X-coordinate of the top of the settlement rod.</span>
+<span class="sd">            Units are according to the `coordinate_reference_systems`.</span>
+<span class="sd">        rod_top_y : float</span>
+<span class="sd">            The horizontal Y-coordinate of the top of the settlement rod.</span>
+<span class="sd">            Units are according to the `coordinate_reference_systems`.</span>
+<span class="sd">        rod_top_z : float</span>
+<span class="sd">            The vertical Z-coordinate of the top of the settlement rod.</span>
+<span class="sd">            It is the top of the settlement rod.</span>
+<span class="sd">            Units and datum are according to the `coordinate_reference_systems`.</span>
+<span class="sd">        rod_length : float</span>
+<span class="sd">            The length of the settlement rod including the thickness of the settlement plate.</span>
+<span class="sd">            It is in principle the vertical distance between the top of the settlement rod and</span>
+<span class="sd">            the bottom of the settlement plate.</span>
+<span class="sd">            Units are according to the `coordinate_reference_systems`.</span>
+<span class="sd">        rod_bottom_z : float</span>
+<span class="sd">            The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).</span>
+<span class="sd">            Note that the bottom of the plate is in principle the original ground surface.</span>
+<span class="sd">            Units and datum according to the `coordinate_reference_systems`.</span>
+<span class="sd">        ground_surface_z : float</span>
+<span class="sd">            The Z-coordinate of the ground surface.</span>
+<span class="sd">            It is in principle the top of the fill, if present.</span>
+<span class="sd">            Units and datum according to the `coordinate_reference_systems`.</span>
+<span class="sd">        status_messages: List[StatusMessage]</span>
+<span class="sd">            The list of status messages about the measurement.</span>
+<span class="sd">        temperature : float or None, optional</span>
+<span class="sd">            The temperature at the time of measurement in [°C], or None if unknown (default: None).</span>
+<span class="sd">        voltage : float or None, optional</span>
+<span class="sd">            The voltage measured in [mV], or None if unknown (default: None).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input types are incorrect.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If empty string for `object_id`.</span>
+<span class="sd">            If negative value for `rod_length`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize all attributes using private setters.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_object_id</span><span class="p">(</span><span class="n">object_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_date_time</span><span class="p">(</span><span class="n">date_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinate_reference_systems</span><span class="p">(</span><span class="n">coordinate_reference_systems</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rod_top_x</span><span class="p">(</span><span class="n">rod_top_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rod_top_y</span><span class="p">(</span><span class="n">rod_top_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rod_top_z</span><span class="p">(</span><span class="n">rod_top_z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rod_length</span><span class="p">(</span><span class="n">rod_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rod_bottom_z</span><span class="p">(</span><span class="n">rod_bottom_z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_ground_surface_z</span><span class="p">(</span><span class="n">ground_surface_z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_messages</span><span class="p">(</span><span class="n">status_messages</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_temperature</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_voltage</span><span class="p">(</span><span class="n">voltage</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for project attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Project</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;Project&#39; type for &#39;project&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">MeasurementDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for device attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MeasurementDevice</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;MeasurementDevice&#39; type for &#39;device&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_object_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for object_id attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;str&#39; type for &#39;object_id&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty string not allowed for &#39;object_id&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_object_id</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for date_time attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;datetime.datetime&#39; type for &#39;date_time&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_date_time</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_coordinate_reference_systems</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">CoordinateReferenceSystems</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for coordinate_reference_systems attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CoordinateReferenceSystems</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;CoordinateReferenceSystems&#39; type for &#39;coordinate_reference_systems&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_reference_systems</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_rod_top_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for rod_top_x attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;rod_top_x&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_x</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_rod_top_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for rod_top_y attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type &#39;rod_top_y&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_y</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_rod_top_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for rod_top_z attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;rod_top_z&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_z</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_rod_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for rod_length attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;rod_length&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Negative value not allowed for &#39;rod_length&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rod_length</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_rod_bottom_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for rod_bottom_z attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;rod_bottom_z&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rod_bottom_z</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_ground_surface_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for ground_surface_z attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;float&#39; type for &#39;ground_surface_z&#39; attribute.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ground_surface_z</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_status_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StatusMessage</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for status attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;List[StatusMessage]&#39; type for &#39;status_messages&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># Check if the input is a list of StatusMessage objects.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">StatusMessage</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;List[StatusMessage]&#39; type for &#39;status_messages&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status_messages</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for temperature attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Expected &#39;float&#39; or &#39;None&#39; type for &#39;temperature&#39; attribute.&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temperature</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_set_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for voltage attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Expected &#39;float&#39; or &#39;None&#39; type for &#39;voltage&#39; attribute.&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_voltage</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The project which the measurement belongs to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MeasurementDevice</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The measurement device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">object_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The ID of the measured object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The date and time of the measurement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_date_time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinate_reference_systems</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CoordinateReferenceSystems</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The horizontal (X, Y) and vertical (Z) coordinate reference systems (CRS) of the</span>
+<span class="sd">        spatial measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_reference_systems</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_top_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The horizontal X-coordinate of the top of the settlement rod.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_top_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The horizontal Y-coordinate of the top of the settlement rod.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_top_z</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The vertical Z-coordinate of the top of the settlement rod.</span>
+<span class="sd">        It is the top of the settlement rod.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rod_top_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The length of the settlement rod including the thickness of the settlement plate.</span>
+<span class="sd">        It is in principle the vertical distance between the top of the settlement rod and the bottom of the settlement plate.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rod_length</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_bottom_z</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The corrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).</span>
+<span class="sd">        Note that the bottom of the plate is in principle the original ground surface.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rod_bottom_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rod_bottom_z_uncorrected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The uncorrected Z-coordinate at the bottom of the settlement rod (coincides with bottom of settlement plate).</span>
+<span class="sd">        It is computed as the difference beteen the Z-coordinate of the top of the settlement rod and the rod length.</span>
+<span class="sd">        Units are according to the `coordinate_reference_system`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_top_z</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_length</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ground_surface_z</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Z-coordinate of the ground surface.</span>
+<span class="sd">        It is in principle the top of the fill, if present.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ground_surface_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StatusMessage</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of status messages about the measurement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_messages</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SettlementRodMeasurementStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The status of the measurement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># If no status messages are available, return OK.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status_messages</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SettlementRodMeasurementStatus</span><span class="o">.</span><span class="n">OK</span>
+
+        <span class="c1"># Get the highest severity level of the status messages.</span>
+        <span class="n">highest_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">message</span><span class="o">.</span><span class="n">level</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_messages</span><span class="p">])</span>
+
+        <span class="c1"># Return the corresponding status.</span>
+        <span class="k">if</span> <span class="n">highest_level</span> <span class="o">==</span> <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SettlementRodMeasurementStatus</span><span class="o">.</span><span class="n">OK</span>
+        <span class="k">elif</span> <span class="n">highest_level</span> <span class="o">==</span> <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SettlementRodMeasurementStatus</span><span class="o">.</span><span class="n">INFO</span>
+        <span class="k">elif</span> <span class="n">highest_level</span> <span class="o">==</span> <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SettlementRodMeasurementStatus</span><span class="o">.</span><span class="n">WARNING</span>
+        <span class="k">elif</span> <span class="n">highest_level</span> <span class="o">==</span> <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SettlementRodMeasurementStatus</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No corresponding SettlementRodMeasurementStatus is available for </span><span class="si">{</span><span class="n">highest_level</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The temperature at the time of measurement in [°C], or None if unknown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temperature</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The voltage measured in [mV], or None if unknown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_voltage</span>
+
+<div class="viewcode-block" id="SettlementRodMeasurement.to_dict"><a class="viewcode-back" href="../../../tree/reference.html#baec.measurements.settlement_rod_measurement.SettlementRodMeasurement.to_dict">[docs]</a>    <span class="nd">@cache</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the measurement to a dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;project_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;device_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;device_qr_code&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">qr_code</span><span class="p">,</span>
+            <span class="s2">&quot;object_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span>
+            <span class="s2">&quot;coordinate_horizontal_epsg_code&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">(),</span>
+            <span class="s2">&quot;coordinate_vertical_epsg_code&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">(),</span>
+            <span class="s2">&quot;coordinate_horizontal_units&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">horizontal_units</span><span class="p">,</span>
+            <span class="s2">&quot;coordinate_vertical_units&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">vertical_units</span><span class="p">,</span>
+            <span class="s2">&quot;coordinate_vertical_datum&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinate_reference_systems</span><span class="o">.</span><span class="n">vertical_datum</span><span class="p">,</span>
+            <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_time</span><span class="p">,</span>
+            <span class="s2">&quot;rod_top_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_top_x</span><span class="p">,</span>
+            <span class="s2">&quot;rod_top_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_top_y</span><span class="p">,</span>
+            <span class="s2">&quot;rod_top_z&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_top_z</span><span class="p">,</span>
+            <span class="s2">&quot;rod_length&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_length</span><span class="p">,</span>
+            <span class="s2">&quot;rod_bottom_z&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_bottom_z</span><span class="p">,</span>
+            <span class="s2">&quot;rod_bottom_z_uncorrected&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rod_bottom_z_uncorrected</span><span class="p">,</span>
+            <span class="s2">&quot;ground_surface_z&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ground_surface_z</span><span class="p">,</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;status_messages&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_messages</span><span class="p">]),</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span>
+        <span class="p">}</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
