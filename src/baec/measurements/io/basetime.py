@@ -342,7 +342,7 @@ class BaseTimeBucket:
             for date_measurement in measurement_serie["Measurements"]:
                 measurement = measurement_serie["Measurements"][date_measurement]
 
-                if measurement["Error Codes"] == " ":
+                if measurement["Error Codes"] in [" ", "[]"]:
                     status_messages = [
                         StatusMessage(
                             code=7000,
@@ -351,9 +351,11 @@ class BaseTimeBucket:
                         )
                     ]
                 else:
-                    error_string_list = measurement["Error Codes"][1:-1].split(",")
-                    error_integer_list = [int(num) for num in error_string_list]
-
+                    try:
+                        error_string_list = measurement["Error Codes"][1:-1].split(",")
+                        error_integer_list = [int(num) for num in error_string_list]
+                    except ValueError:
+                        error_integer_list = [7000]
                     status_messages = [
                         StatusMessage(
                             code=error_code,
@@ -374,8 +376,15 @@ class BaseTimeBucket:
                         )
                         for error_code in error_integer_list
                         if self.dict_errors[error_code]["status message level"]
-                        in ["INFO", "WARNING", "ERROR"]
+                        in ["OK", "INFO", "WARNING", "ERROR"]
                     ]
+
+                if measurement_serie['Project type'] == 'SettlementRods':
+                    rod_bottom_z = measurement["Coordinates Soil"]["Height groundplate"]
+                    ground_surface_z = measurement["Coordinates Soil"]["Height Soil"]
+                else:
+                    rod_bottom_z = float("nan")
+                    ground_surface_z = float("nan")
 
                 test_measurement = SettlementRodMeasurement(
                     project=baec_project,
@@ -393,10 +402,8 @@ class BaseTimeBucket:
                     rod_top_z=measurement["Coordinates Local"]["Height"]
                     or float("nan"),
                     rod_length=measurement["Vertical offset (meters)"] or float("nan"),
-                    rod_bottom_z=measurement["Coordinates Soil"]["Height groundplate"]
-                    or float("nan"),
-                    ground_surface_z=measurement["Coordinates Soil"]["Height Soil"]
-                    or float("nan"),
+                    rod_bottom_z=rod_bottom_z or float("nan"),
+                    ground_surface_z=ground_surface_z or float("nan"),
                     status_messages=status_messages,
                     temperature=measurement["Temperature (Celsius)"] or float("nan"),
                     voltage=measurement["Voltage Locator One (mV)"] or float("nan"),
@@ -448,3 +455,4 @@ class BaseTimeBucket:
                 return [num1]
         else:
             return []
+
