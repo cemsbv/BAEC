@@ -45,21 +45,21 @@ jobs:
           BASETIME_ACCESS_KEY: ${{ secrets.BASETIME_ACCESS_KEY }}
           BASETIME_KEY_ID: ${{ secrets.BASETIME_KEY_ID }}
 
-  #     - name: Post coverage results
-  #       uses: coverallsapp/github-action@v2
-  #       with:
-  #         flag-name: run-${{ matrix.python-version }}
-  #         parallel: true
+      - name: Post coverage results
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: run-${{ matrix.python-version }}
+          parallel: true
 
-  # finish:
-  #   needs: test
-  #   if: ${{ always() }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Coveralls Finished
-  #       uses: coverallsapp/github-action@v2
-  #       with:
-  #         parallel-finished: true
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
 
   lint:
     name: Formatting check

@@ -1,39 +1,41 @@
-# name: Release
+name: Release
 
-# on:
-#   push:
-#     tags: ['*']
+on:
+  push:
+    tags: ["*"]
 
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
+permissions: read-all
 
-#     environment:
-#       name: release
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-#     # Mandatory permission for trusted publishing to PyPi
-#     permissions:
-#       id-token: write
+    environment:
+      name: release
 
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Set up Python
-#         uses: actions/setup-python@v4
-#         with:
-#           python-version: "3.11"
+    # Mandatory permission for trusted publishing to PyPi
+    permissions:
+      id-token: write
 
-#       - name: Install dependencies
-#         run: |
-#           pip install setuptools build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-#       - name: Build a binary wheel and a source tarball
-#         run: python3 -m build
+      - name: Install dependencies
+        run: |
+          pip install setuptools build
 
-#       - name: Store the distribution packages
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: python-package-distributions
-#           path: dist/
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build
 
-#       - name: Publish distribution 📦 to PyPI
-#         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
