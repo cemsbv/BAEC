@@ -67,3 +67,5 @@ fig = model.plot_fill_settlement_time()
 
 fig.set_size_inches(15, 7.5)
 plt.savefig(dirpath.joinpath(f"model_fit_{rod_id}.png"))
+
+print(NucleiClient().user_permissions)
