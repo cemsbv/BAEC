@@ -22,7 +22,7 @@ backcall==0.2.0
     # via ipython
 beautifulsoup4==4.12.3
     # via sphinx-toolbox
-black[jupyter]==23.10.1
+black[jupyter]==24.3.0
     # via
     #   baec (pyproject.toml)
     #   black
