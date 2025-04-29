@@ -14,7 +14,7 @@ asteroid-sphinx-theme==0.0.3
     # via baec (pyproject.toml)
 asttokens==2.4.1
     # via stack-data
-autodocsumm==0.2.12
+autodocsumm==0.2.14
     # via sphinx-toolbox
 babel==2.15.0
     # via sphinx
