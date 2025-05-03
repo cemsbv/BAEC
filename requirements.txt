@@ -38,7 +38,7 @@ botocore-stubs==1.35.30
     # via
     #   baec (pyproject.toml)
     #   boto3-stubs
-cachecontrol[filecache]==0.14.0
+cachecontrol[filecache]==0.14.3
     # via
     #   cachecontrol
     #   sphinx-toolbox
