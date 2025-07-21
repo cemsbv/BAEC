@@ -57,13 +57,13 @@ class FitCoreParametersBounds:
 class FitCoreParameters:
     """Object containing the parameters bounds of a fit call."""
 
-    primarySettlement: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    primarySettlement: FitCoreParametersBounds
     """primary settlement [%]"""
-    shift: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    shift: FitCoreParametersBounds
     """shift [days]"""
-    hydrodynamicPeriod: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    hydrodynamicPeriod: FitCoreParametersBounds
     """ hydrodynamic period [year]"""
-    finalSettlement: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    finalSettlement: FitCoreParametersBounds
     """ final settlement [m]"""
 
     @property
@@ -95,7 +95,7 @@ class FitCoreModelGenerator:
         series: MeasuredSettlementSeries,
         client: NucleiClient,
         model: FitCoreModel | None = None,
-        model_parameters: FitCoreParameters = FitCoreParameters(),
+        model_parameters: FitCoreParameters | None = None,
     ):
         """
 
@@ -114,7 +114,19 @@ class FitCoreModelGenerator:
 
         self._series = series
         self._client = client
-        self._set_model_parameters(model_parameters)
+        self._set_model_parameters(
+            model_parameters
+            or FitCoreParameters(
+                primarySettlement=FitCoreParametersBounds(
+                    lowerBound=0, upperBound=None
+                ),
+                shift=FitCoreParametersBounds(lowerBound=0, upperBound=None),
+                hydrodynamicPeriod=FitCoreParametersBounds(
+                    lowerBound=0, upperBound=None
+                ),
+                finalSettlement=FitCoreParametersBounds(lowerBound=0, upperBound=None),
+            )
+        )
         self._model = model or self.fit(force=True)
         self._hash_settlements_ = deepcopy(
             (
