@@ -2,6 +2,7 @@ import datetime
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 from nuclei.client import NucleiClient
 
 from baec.measurements.io.basetime import BaseTimeBucket, Credentials
@@ -48,6 +49,9 @@ for key, items in projects_ids.items():
             plt.show(block=False)
             plt.pause(3)
             plt.close(fig)
+
+            if np.isnan(series.settlements).all():
+                continue
 
             # generate fitcore model
             model = FitCoreModelGenerator(

@@ -342,7 +342,7 @@ class BaseTimeBucket:
             for date_measurement in measurement_serie["Measurements"]:
                 measurement = measurement_serie["Measurements"][date_measurement]
 
-                if measurement["Error Codes"] in [" ", "[]"]:
+                if measurement["Error Codes"] in [" ", "[]", None]:
                     status_messages = [
                         StatusMessage(
                             code=7000,
@@ -356,6 +356,8 @@ class BaseTimeBucket:
                         error_integer_list = [int(num) for num in error_string_list]
                     except ValueError:
                         error_integer_list = [7000]
+                    except TypeError:
+                        raise IOError(measurement)
                     status_messages = [
                         StatusMessage(
                             code=error_code,
