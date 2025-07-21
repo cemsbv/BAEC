@@ -102,5 +102,7 @@ module = [
     "numpy.*",
     "boto3.*",
     "botocore.*",
+    "marimo.*",
+    "altair.*",
 ]
 ignore_missing_imports = true
