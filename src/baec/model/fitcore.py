@@ -43,12 +43,59 @@ class FitCoreResult:
     """Settlement [m]"""
 
 
+@dataclass
+class FitCoreParametersBounds:
+    """Object containing the parameters bounds of a fit call."""
+
+    lowerBound: float = 0
+    """lowerBound """
+    upperBound: float | None = None
+    """upperBound"""
+
+
+@dataclass
+class FitCoreParameters:
+    """Object containing the parameters bounds of a fit call."""
+
+    primarySettlement: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    """primary settlement [%]"""
+    shift: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    """shift [days]"""
+    hydrodynamicPeriod: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    """ hydrodynamic period [year]"""
+    finalSettlement: FitCoreParametersBounds = FitCoreParametersBounds(0, None)
+    """ final settlement [m]"""
+
+    @property
+    def serialize(self):
+        return {
+            "primarySettlement": {
+                "lowerBound": self.primarySettlement.lowerBound,
+                "upperBound": self.primarySettlement.upperBound,
+            },
+            "shift": {
+                "lowerBound": self.shift.lowerBound,
+                "upperBound": self.shift.upperBound,
+            },
+            "hydrodynamicPeriod": {
+                "lowerBound": self.hydrodynamicPeriod.lowerBound,
+                "upperBound": self.hydrodynamicPeriod.upperBound,
+            },
+            "finalSettlement": {
+                "lowerBound": self.finalSettlement.lowerBound,
+                "upperBound": self.finalSettlement.upperBound,
+            },
+        }
+
+
 class FitCoreModelGenerator:
 
     def __init__(
         self,
         series: MeasuredSettlementSeries,
         client: NucleiClient,
+        model: FitCoreModel | None = None,
+        model_parameters: FitCoreParameters = FitCoreParameters(),
     ):
         """
 
@@ -58,12 +105,55 @@ class FitCoreModelGenerator:
         series : MeasuredSettlementSeries
             Represents a series of measurements for a single settlement rod.
         client : NucleiClient
+        model : FitCoreModel | None
+            default is None
+            Object containing the results of a fit call.
+        model_parameters : FitCoreParameters
+            Object containing the parameters bounds of a fit call.
         """
 
         self._series = series
         self._client = client
-        self._hash_settlements_ = deepcopy(tuple(self.series.settlements).__hash__())
-        self._model = self.fit(force=True)
+        self._set_model_parameters(model_parameters)
+        self._model = model or self.fit(force=True)
+        self._hash_settlements_ = deepcopy(
+            (
+                tuple(self.series.settlements).__hash__(),
+                self.model_parameters.serialize.__str__().__hash__(),
+            )
+        )
+
+    def _set_model_parameters(self, value: FitCoreParameters) -> None:
+        """Private setter for model_parameters attribute."""
+        if not isinstance(value, FitCoreParameters):
+            raise TypeError(
+                "Expected 'FitCoreParameters' type for 'model_parameters' attribute."
+            )
+        self._params = value
+
+    @property
+    def model_parameters(self) -> FitCoreParameters:
+        """Object containing the parameters bounds of a fit call."""
+        return self._params
+
+    def set_model(self, value: FitCoreModel) -> None:
+        """Setter for model attribute."""
+        if not isinstance(value, FitCoreModel):
+            raise TypeError("Expected 'FitCoreModel' type for 'model' attribute.")
+        self._model = value
+
+    @property
+    def model(self) -> FitCoreModel:
+        """Object containing the results of a fit call."""
+        return self._model
+
+    def _set_series(self, value: MeasuredSettlementSeries) -> None:
+        """Private setter for model attribute."""
+        if not isinstance(value, FitCoreModel):
+            raise TypeError(
+                "Expected 'MeasuredSettlementSeries' type for 'series' attribute."
+            )
+        self._series = value
 
     @property
     def series(self) -> MeasuredSettlementSeries:
@@ -83,20 +173,22 @@ class FitCoreModelGenerator:
 
         # check if the __hash__ of the MeasuredSettlementSeries has changed
         # if not no need to refit the series
-        if (
-            not force
-            and self._hash_settlements_ == tuple(self.series.settlements).__hash__()
+        if not force and self._hash_settlements_ == (
+            tuple(self.series.settlements).__hash__(),
+            self.model_parameters.serialize.__str__().__hash__(),
         ):
-            logging.info("Series has not changed. Use cached FitCoreModel")
+            logging.info("Series adn params has not changed. Use cached FitCoreModel")
             return self._model
 
+        # filter
+        _df = self.series.to_dataframe()
+        _df = _df.loc[(~_df["settlement"].isnull()) & (_df["settlement"] > 0)]
         # create payload for the fit API call
         payload = {
-            "timeSeries": [
-                isoparse(x.isoformat()) for x in self.series.to_dataframe()["date_time"]
-            ],
-            "settlementSeries": np.clip(self.series.settlements, 0, None).tolist(),
+            "timeSeries": [isoparse(x.isoformat()) for x in _df["date_time"]],
+            "settlementSeries": _df["settlement"].tolist(),
             "startDay": 0,
+            "settings": self.model_parameters.serialize,
         }
 
         # call endpoint
@@ -109,7 +201,10 @@ class FitCoreModelGenerator:
             raise RuntimeError(response.text)
 
         # update cache properties
-        self._hash_settlements_ = deepcopy(tuple(self.series.settlements).__hash__())
+        self._hash_settlements_ = (
+            tuple(self.series.settlements).__hash__(),
+            self.model_parameters.serialize.__str__().__hash__(),
+        )
         self._model = FitCoreModel(**response.json()["popt"])
 
         return self._model
@@ -131,7 +226,7 @@ class FitCoreModelGenerator:
         result : FitCoreResult
         """
 
-        payload = {"days": days} | self.fit(force=False).__dict__
+        payload = {"days": days} | self._model.__dict__
 
         response = self._client.session.post(
             url=BASE_URL + "simpleKoppejan/predict",
@@ -235,7 +330,10 @@ class FitCoreModelGenerator:
             axes.set_xlim(min_log_time, max(days) + 1.0)
             axes.set_xscale("log")
 
-        axes.set_ylim(min(settlement) - 0.5, max(settlement) + 0.5)
+        axes.set_ylim(
+            np.nanmin(np.array(settlement, dtype=np.float64)) - 0.5,
+            np.nanmax(np.array(settlement, dtype=np.float64)) + 0.5,
+        )
         if invert_yaxis:
             axes.invert_yaxis()
 
