@@ -170,3 +170,4 @@ cython_debug/
 
 # Other
 tmp.*
+__marimo__
