@@ -67,7 +67,7 @@ class FitCoreParameters:
     """ final settlement [m]"""
 
     @property
-    def serialize(self):
+    def serialize(self) -> dict:
         return {
             "primarySettlement": {
                 "lowerBound": self.primarySettlement.lowerBound,

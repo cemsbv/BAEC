@@ -10,19 +10,23 @@ app = marimo.App(
 
 @app.cell
 def _():
-    import altair as alt
-    import marimo as mo
     import datetime
     import os
 
+    import altair as alt
+    import marimo as mo
     import numpy as np
     import pandas as pd
     from nuclei.client import NucleiClient
 
     from baec.measurements.io.basetime import BaseTimeBucket, Credentials
     from baec.measurements.measured_settlement_series import MeasuredSettlementSeries
-    from baec.model.fitcore import FitCoreModelGenerator, FitCoreParameters, FitCoreParametersBounds, FitCoreModel
-
+    from baec.model.fitcore import (
+        FitCoreModel,
+        FitCoreModelGenerator,
+        FitCoreParameters,
+        FitCoreParametersBounds,
+    )
 
     return (
         BaseTimeBucket,
@@ -66,7 +70,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    aws_secret_access_key = mo.ui.text(placeholder="", label="BaseTime key password", kind="password")
+    aws_secret_access_key = mo.ui.text(
+        placeholder="", label="BaseTime key password", kind="password"
+    )
     aws_secret_access_key
     return (aws_secret_access_key,)
 
@@ -74,8 +80,12 @@ def _(mo):
 @app.cell
 def _(Credentials, aws_access_key_id, aws_secret_access_key):
     credentials = Credentials(
-        aws_access_key_id= aws_access_key_id.value if aws_access_key_id.value != "" else None,
-        aws_secret_access_key=aws_secret_access_key.value if aws_secret_access_key.value != "" else None
+        aws_access_key_id=(
+            aws_access_key_id.value if aws_access_key_id.value != "" else None
+        ),
+        aws_secret_access_key=(
+            aws_secret_access_key.value if aws_secret_access_key.value != "" else None
+        ),
     )
     return (credentials,)
 
@@ -98,7 +108,7 @@ def _(mo, projects_ids):
         value=list(projects_ids.keys())[0],
         label="Project name",
         searchable=True,
-        allow_select_none=False
+        allow_select_none=False,
     )
     project
     return (project,)
@@ -129,7 +139,9 @@ def _(manage_project, project, rod_id):
 
 @app.cell
 def _(measurements, mo):
-    start_date_time = mo.ui.date.from_series(measurements.to_dataframe()["date_time"], label="Start date")
+    start_date_time = mo.ui.date.from_series(
+        measurements.to_dataframe()["date_time"], label="Start date"
+    )
     start_date_time
     return (start_date_time,)
 
@@ -140,47 +152,56 @@ def _(alt, measurements, pd, start_date_time):
         alt.Chart(measurements.to_dataframe())
         .mark_line()
         .encode(
-            x=alt.X(field='date_time', type='temporal', timeUnit='yearmonthdate'),
-            y=alt.Y(field='rod_top_z', type='quantitative', aggregate='mean'),
-            color=alt.value('blue'),
+            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate"),
+            y=alt.Y(field="rod_top_z", type="quantitative", aggregate="mean"),
+            color=alt.value("blue"),
             tooltip=[
-                alt.Tooltip(field='date_time', timeUnit='yearmonthdate', title='date_time'),
-                alt.Tooltip(field='rod_top_z', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(
+                    field="date_time", timeUnit="yearmonthdate", title="date_time"
+                ),
+                alt.Tooltip(field="rod_top_z", aggregate="mean", format=",.2f"),
+            ],
         )
     )
     _chart_2 = (
         alt.Chart(measurements.to_dataframe())
         .mark_line()
         .encode(
-            x=alt.X(field='date_time', type='temporal', timeUnit='yearmonthdate'),
-            y=alt.Y(field='ground_surface_z', type='quantitative', aggregate='mean'),
-            color=alt.value('orange'),
+            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate"),
+            y=alt.Y(field="ground_surface_z", type="quantitative", aggregate="mean"),
+            color=alt.value("orange"),
             tooltip=[
-                alt.Tooltip(field='date_time', timeUnit='yearmonthdate', title='date_time'),
-                alt.Tooltip(field='ground_surface_z', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(
+                    field="date_time", timeUnit="yearmonthdate", title="date_time"
+                ),
+                alt.Tooltip(field="ground_surface_z", aggregate="mean", format=",.2f"),
+            ],
         )
     )
     _chart_3 = (
         alt.Chart(measurements.to_dataframe())
         .mark_line()
         .encode(
-            x=alt.X(field='date_time', type='temporal', timeUnit='yearmonthdate'),
-            y=alt.Y(field='rod_bottom_z', type='quantitative', aggregate='mean'),
-            color=alt.value('green'),
+            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate"),
+            y=alt.Y(field="rod_bottom_z", type="quantitative", aggregate="mean"),
+            color=alt.value("green"),
             tooltip=[
-                alt.Tooltip(field='date_time', timeUnit='yearmonthdate', title='date_time'),
-                alt.Tooltip(field='rod_bottom_z', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(
+                    field="date_time", timeUnit="yearmonthdate", title="date_time"
+                ),
+                alt.Tooltip(field="rod_bottom_z", aggregate="mean", format=",.2f"),
+            ],
         )
     )
-    rules = alt.Chart(pd.DataFrame({
-      'date_time': [start_date_time.value],
-      'color': ['black']
-    })).mark_rule().encode(
-      x=alt.X(field='date_time', type='temporal', timeUnit='yearmonthdate'),
-      color=alt.Color('color:N', scale=None)
+    rules = (
+        alt.Chart(
+            pd.DataFrame({"date_time": [start_date_time.value], "color": ["black"]})
+        )
+        .mark_rule()
+        .encode(
+            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate"),
+            color=alt.Color("color:N", scale=None),
+        )
     )
     (_chart_1 + _chart_2 + _chart_3 + rules).resolve_scale()
     return
@@ -208,7 +229,9 @@ def _(measurements, mo):
 def _(MeasuredSettlementSeries, datetime, measurements, start_date_time):
     series = MeasuredSettlementSeries(
         measurements,
-        start_date_time=datetime.datetime.combine(start_date_time.value, measurements.to_dataframe()["date_time"].min().time()),
+        start_date_time=datetime.datetime.combine(
+            start_date_time.value, measurements.to_dataframe()["date_time"].min().time()
+        ),
     )
     return (series,)
 
@@ -218,41 +241,31 @@ def _(alt, pd, series):
     _chart_1 = (
         alt.Chart(
             pd.DataFrame(
-                {
-                    "day": series.days,
-                    "fill_thicknesses": series.fill_thicknesses
-                }
+                {"day": series.days, "fill_thicknesses": series.fill_thicknesses}
             )
         )
         .mark_line()
         .encode(
-            x=alt.X(field='day', type='quantitative'),
-            y=alt.Y(field='fill_thicknesses', type='quantitative', aggregate='mean'),
-            color=alt.value('blue'),
+            x=alt.X(field="day", type="quantitative"),
+            y=alt.Y(field="fill_thicknesses", type="quantitative", aggregate="mean"),
+            color=alt.value("blue"),
             tooltip=[
-                alt.Tooltip(field='day', title='day'),
-                alt.Tooltip(field='fill_thicknesses', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(field="day", title="day"),
+                alt.Tooltip(field="fill_thicknesses", aggregate="mean", format=",.2f"),
+            ],
         )
     )
     _chart_2 = (
-        alt.Chart(
-            pd.DataFrame(
-                {
-                    "day": series.days,
-                    "settlements": series.settlements
-                }
-            )
-        )
+        alt.Chart(pd.DataFrame({"day": series.days, "settlements": series.settlements}))
         .mark_line()
         .encode(
-            x=alt.X(field='day', type='quantitative'),
-            y=alt.Y(field='settlements', type='quantitative', aggregate='mean'),
-            color=alt.value('orange'),
+            x=alt.X(field="day", type="quantitative"),
+            y=alt.Y(field="settlements", type="quantitative", aggregate="mean"),
+            color=alt.value("orange"),
             tooltip=[
-                alt.Tooltip(field='day', title='day'),
-                alt.Tooltip(field='settlements', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(field="day", title="day"),
+                alt.Tooltip(field="settlements", aggregate="mean", format=",.2f"),
+            ],
         )
     )
 
@@ -263,7 +276,12 @@ def _(alt, pd, series):
 @app.cell
 def _(mo):
     primary_settlement_bounds = mo.ui.range_slider(
-        start=0, stop=100, step=1, value=[0, 100], show_value=True, label="primary settlement [%]"
+        start=0,
+        stop=100,
+        step=1,
+        value=[0, 100],
+        show_value=True,
+        label="primary settlement [%]",
     )
 
     primary_settlement_bounds
@@ -283,7 +301,12 @@ def _(mo):
 @app.cell
 def _(mo):
     hydrodynamic_period_bounds = mo.ui.range_slider(
-        start=0, stop=10, step=1, value=[0, 6], show_value=True, label="hydrodynamic period [year]"
+        start=0,
+        stop=10,
+        step=1,
+        value=[0, 6],
+        show_value=True,
+        label="hydrodynamic period [year]",
     )
 
     hydrodynamic_period_bounds
@@ -293,7 +316,12 @@ def _(mo):
 @app.cell
 def _(mo):
     final_settlement_bounds = mo.ui.range_slider(
-        start=0, stop=10, step=1, value=[0, 6], show_value=True, label="final settlement [m]"
+        start=0,
+        stop=10,
+        step=1,
+        value=[0, 6],
+        show_value=True,
+        label="final settlement [m]",
     )
     final_settlement_bounds
     return (final_settlement_bounds,)
@@ -320,11 +348,7 @@ def _(
         hydrodynamicPeriod=FitCoreParametersBounds(*hydrodynamic_period_bounds.value),
         finalSettlement=FitCoreParametersBounds(*final_settlement_bounds.value),
     )
-    model = FitCoreModelGenerator(
-        series=series,
-        client=client,
-        model_parameters=params
-    )
+    model = FitCoreModelGenerator(series=series, client=client, model_parameters=params)
     return (model,)
 
 
@@ -332,7 +356,10 @@ def _(
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     primary_settlement = mo.ui.number(
-        start=0, step=1, value=model.fit().primarySettlement, label="primary settlement [%]"
+        start=0,
+        step=1,
+        value=model.fit().primarySettlement,
+        label="primary settlement [%]",
     )
 
     primary_settlement
@@ -342,9 +369,7 @@ def _(mo, model, np, series):
 @app.cell
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
-    shift = mo.ui.number(
-        start=0, step=1, value=model.fit().shift, label="shift [days]"
-    )
+    shift = mo.ui.number(start=0, step=1, value=model.fit().shift, label="shift [days]")
 
     shift
     return (shift,)
@@ -354,7 +379,10 @@ def _(mo, model, np, series):
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     hydrodynamic_period = mo.ui.number(
-        start=0, step=1, value=model.fit().hydrodynamicPeriod, label="hydrodynamic period [year]"
+        start=0,
+        step=1,
+        value=model.fit().hydrodynamicPeriod,
+        label="hydrodynamic period [year]",
     )
 
     hydrodynamic_period
@@ -398,7 +426,10 @@ def _(
 @app.cell
 def _(mo):
     end_time_delta = mo.ui.number(
-        start=0, step=10, value=100, label="End date of the predicted settlement  [days]"
+        start=0,
+        step=10,
+        value=100,
+        label="End date of the predicted settlement  [days]",
     )
     end_time_delta
     return (end_time_delta,)
@@ -410,41 +441,31 @@ def _(alt, end_time_delta, mo, model, np, pd, series):
     _chart_1 = (
         alt.Chart(
             pd.DataFrame(
-                {
-                    "day": series.days,
-                    "fill_thicknesses": series.fill_thicknesses
-                }
+                {"day": series.days, "fill_thicknesses": series.fill_thicknesses}
             )
         )
         .mark_line()
         .encode(
-            x=alt.X(field='day', type='quantitative'),
-            y=alt.Y(field='fill_thicknesses', type='quantitative', aggregate='mean'),
-            color=alt.value('blue'),
+            x=alt.X(field="day", type="quantitative"),
+            y=alt.Y(field="fill_thicknesses", type="quantitative", aggregate="mean"),
+            color=alt.value("blue"),
             tooltip=[
-                alt.Tooltip(field='day', title='day'),
-                alt.Tooltip(field='fill_thicknesses', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(field="day", title="day"),
+                alt.Tooltip(field="fill_thicknesses", aggregate="mean", format=",.2f"),
+            ],
         )
     )
     _chart_2 = (
-        alt.Chart(
-            pd.DataFrame(
-                {
-                    "day": series.days,
-                    "settlements": series.settlements
-                }
-            )
-        )
+        alt.Chart(pd.DataFrame({"day": series.days, "settlements": series.settlements}))
         .mark_line()
         .encode(
-            x=alt.X(field='day', type='quantitative'),
-            y=alt.Y(field='settlements', type='quantitative', aggregate='mean'),
-            color=alt.value('orange'),
+            x=alt.X(field="day", type="quantitative"),
+            y=alt.Y(field="settlements", type="quantitative", aggregate="mean"),
+            color=alt.value("orange"),
             tooltip=[
-                alt.Tooltip(field='day', title='day'),
-                alt.Tooltip(field='settlements', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(field="day", title="day"),
+                alt.Tooltip(field="settlements", aggregate="mean", format=",.2f"),
+            ],
         )
     )
     _chart_3 = (
@@ -452,19 +473,21 @@ def _(alt, end_time_delta, mo, model, np, pd, series):
             pd.DataFrame(
                 {
                     "day": np.arange(0, end_time_delta.value, step=1, dtype=int),
-                    "settlements": model.predict(np.arange(0, end_time_delta.value, step=1, dtype=int)).settlement
+                    "settlements": model.predict(
+                        np.arange(0, end_time_delta.value, step=1, dtype=int)
+                    ).settlement,
                 }
             )
         )
         .mark_line()
         .encode(
-            x=alt.X(field='day', type='quantitative'),
-            y=alt.Y(field='settlements', type='quantitative', aggregate='mean'),
-            color=alt.value('green'),
+            x=alt.X(field="day", type="quantitative"),
+            y=alt.Y(field="settlements", type="quantitative", aggregate="mean"),
+            color=alt.value("green"),
             tooltip=[
-                alt.Tooltip(field='day', title='day'),
-                alt.Tooltip(field='settlements', aggregate='mean', format=',.2f')
-            ]
+                alt.Tooltip(field="day", title="day"),
+                alt.Tooltip(field="settlements", aggregate="mean", format=",.2f"),
+            ],
         )
     )
 

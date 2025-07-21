@@ -31,7 +31,7 @@ Go to `personal-access-tokens` and create a new user token.
 
 ```bash
 set -a; source ./*.env; set +a
-marimo edit ./notebooks/gui_notebook.py 
+marimo edit ./notebooks/gui_notebook.py
 #marimo run ./notebooks/gui_notebook.py
 ```
 
