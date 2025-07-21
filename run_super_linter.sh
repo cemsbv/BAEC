@@ -15,10 +15,10 @@ docker run \
 	--env VALIDATE_PYTHON_PYLINT=false \
 	--env VALIDATE_NATURAL_LANGUAGE=false \
 	--env VALIDATE_MARKDOWN=false \
-	--env FILTER_REGEX_EXCLUDE=.*tests/.* \
+	--env FILTER_REGEX_EXCLUDE='.*[tests|notebooks]/.*' \
 	--env LINTER_RULES_PATH=/ \
 	--env PYTHON_BLACK_CONFIG_FILE=pyproject.toml \
 	--env PYTHON_ISORT_CONFIG_FILE=pyproject.toml \
 	--env PYTHON_MYPY_CONFIG_FILE=pyproject.toml \
 	--env PYTHON_FLAKE8_CONFIG_FILE=.flake8 \
-	-v $(pwd):/tmp/lint ghcr.io/super-linter/super-linter:v7
+	-v $(pwd):/tmp/lint ghcr.io/super-linter/super-linter:v8
