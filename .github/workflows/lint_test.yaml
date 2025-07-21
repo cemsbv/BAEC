@@ -13,6 +13,9 @@ on:
 
 permissions: read-all
 
+env:
+  UV_SYSTEM_PYTHON: 1
+
 jobs:
   test:
     name: Unit test
