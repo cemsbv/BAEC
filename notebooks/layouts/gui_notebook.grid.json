@@ -10,16 +10,31 @@
         "position": null
       },
       {
-        "position": [1, 1, 8, 3]
+        "position": [
+          1,
+          1,
+          8,
+          3
+        ]
       },
       {
         "position": null
       },
       {
-        "position": [14, 1, 9, 3]
+        "position": [
+          14,
+          1,
+          9,
+          3
+        ]
       },
       {
-        "position": [14, 5, 9, 3]
+        "position": [
+          14,
+          5,
+          9,
+          3
+        ]
       },
       {
         "position": null
@@ -28,28 +43,53 @@
         "position": null
       },
       {
-        "position": [1, 11, 6, 3],
+        "position": [
+          1,
+          11,
+          10,
+          3
+        ],
         "side": "left"
       },
       {
-        "position": [7, 11, 6, 3],
+        "position": [
+          11,
+          11,
+          12,
+          3
+        ],
         "side": "left"
       },
       {
         "position": null
       },
       {
-        "position": [1, 15, 6, 3],
+        "position": [
+          1,
+          15,
+          6,
+          3
+        ],
         "side": "left"
       },
       {
-        "position": [1, 18, 22, 21]
+        "position": [
+          1,
+          18,
+          22,
+          21
+        ]
       },
       {
         "position": null
       },
       {
-        "position": [17, 15, 6, 3],
+        "position": [
+          17,
+          15,
+          6,
+          3
+        ],
         "side": "right"
       },
       {
@@ -59,40 +99,104 @@
         "position": null
       },
       {
-        "position": [1, 40, 7, 6]
+        "position": [
+          1,
+          40,
+          7,
+          3
+        ]
       },
       {
-        "position": [1, 54, 7, 7]
+        "position": [
+          1,
+          48,
+          7,
+          3
+        ]
       },
       {
-        "position": [1, 47, 7, 6]
+        "position": [
+          1,
+          44,
+          7,
+          3
+        ]
       },
       {
-        "position": [1, 62, 7, 6]
+        "position": [
+          1,
+          52,
+          7,
+          3
+        ]
       },
       {
         "position": null
       },
       {
-        "position": [9, 40, 6, 6]
+        "position": [
+          16,
+          40,
+          7,
+          3
+        ]
       },
       {
-        "position": [9, 54, 6, 7]
+        "position": [
+          16,
+          48,
+          7,
+          3
+        ]
       },
       {
-        "position": [9, 47, 6, 6]
+        "position": [
+          16,
+          44,
+          7,
+          3
+        ]
       },
       {
-        "position": [9, 62, 6, 6]
+        "position": [
+          16,
+          52,
+          7,
+          3
+        ]
       },
       {
         "position": null
       },
       {
-        "position": [17, 40, 6, 6]
+        "position": [
+          1,
+          59,
+          9,
+          3
+        ]
       },
       {
-        "position": [1, 69, 22, 20]
+        "position": null
+      },
+      {
+        "position": [
+          14,
+          59,
+          9,
+          3
+        ]
+      },
+      {
+        "position": [
+          1,
+          63,
+          22,
+          20
+        ]
+      },
+      {
+        "position": null
       }
     ]
   }

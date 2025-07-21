@@ -193,7 +193,7 @@ def _(alt, measurements, pd, start_date_time):
             ],
         )
     )
-    rules = (
+    _rules = (
         alt.Chart(
             pd.DataFrame({"date_time": [start_date_time.value], "color": ["black"]})
         )
@@ -203,7 +203,7 @@ def _(alt, measurements, pd, start_date_time):
             color=alt.Color("color:N", scale=None),
         )
     )
-    (_chart_1 + _chart_2 + _chart_3 + rules).resolve_scale()
+    (_chart_1 + _chart_2 + _chart_3 + _rules).resolve_scale()
     return
 
 
@@ -436,7 +436,29 @@ def _(mo):
 
 
 @app.cell
-def _(alt, end_time_delta, mo, model, np, pd, series):
+def _(end_time_delta, mo, model, np, series):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
+
+    days = np.arange(0, end_time_delta.value + 10, step=1, dtype=int)
+    settlements = model.predict(days).settlement
+    return days, settlements
+
+
+@app.cell
+def _(days, end_time_delta, mo, np, series, settlements):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
+
+    end_time_settlement = mo.ui.number(
+        value=np.interp(end_time_delta.value, days, settlements).round(3),
+        label=f"Settlement after {end_time_delta.value} days [m]",
+        disabled=True
+    )
+    end_time_settlement
+    return
+
+
+@app.cell
+def _(alt, days, end_time_delta, mo, np, pd, series, settlements):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     _chart_1 = (
         alt.Chart(
@@ -472,10 +494,8 @@ def _(alt, end_time_delta, mo, model, np, pd, series):
         alt.Chart(
             pd.DataFrame(
                 {
-                    "day": np.arange(0, end_time_delta.value, step=1, dtype=int),
-                    "settlements": model.predict(
-                        np.arange(0, end_time_delta.value, step=1, dtype=int)
-                    ).settlement,
+                    "day": days,
+                    "settlements": settlements,
                 }
             )
         )
@@ -491,7 +511,22 @@ def _(alt, end_time_delta, mo, model, np, pd, series):
         )
     )
 
-    (_chart_1 + _chart_2 + _chart_3).resolve_scale()
+    _rules = (
+        alt.Chart(
+            pd.DataFrame({"day": [end_time_delta.value], "color": ["black"]})
+        )
+        .mark_rule()
+        .encode(
+            x=alt.X(field="day", type="quantitative"),
+            color=alt.Color("color:N", scale=None),
+        )
+    )
+    (_chart_1 + _chart_2 + _chart_3 + _rules).resolve_scale()
+    return
+
+
+@app.cell
+def _():
     return
 
 
