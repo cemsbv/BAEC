@@ -24,7 +24,7 @@ def test_io_basetime() -> None:
 
     print(manage_project.get_users_projects_ids())
     series = manage_project.make_settlement_rod_measurement_series(
-        project="Flevokusthaven", rod_id="MP02"
+        company="Demo", project="Hansweert", rod_id="257-2"
     )
     assert isinstance(series.to_dataframe(), pd.DataFrame)
 
@@ -57,14 +57,14 @@ def test_basetime_connection():
     time_start = datetime.now()
     print(manage_project.get_users_projects_ids())
     test_series = manage_project.make_settlement_rod_measurement_series(
-        project="Voorbelasting Wilderszijde Lansingerland", rod_id="ZB-1001"
+        company="Demo", project="Hansweert", rod_id="257-2"
     )
 
     print(test_series.to_dataframe())
     print(datetime.now()-time_start)
     time_start = datetime.now()
     test_series = manage_project.make_settlement_rod_measurement_series(
-        project="Voorbelasting Wilderszijde Lansingerland", rod_id="ZB-1001"
+        company="Demo", project="Hansweert", rod_id="257-4"
     )
     print(test_series.to_dataframe())
     print(datetime.now()-time_start)

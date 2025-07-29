@@ -103,9 +103,23 @@ def _(BaseTimeBucket, credentials):
 @app.cell
 def _(mo, projects_ids):
     # With search functionality
-    project = mo.ui.dropdown(
+    company = mo.ui.dropdown(
         options=projects_ids.keys(),
         value=list(projects_ids.keys())[0],
+        label="Company name",
+        searchable=True,
+        allow_select_none=False,
+    )
+    company
+    return (company,)
+
+
+@app.cell
+def _(company, mo, projects_ids):
+    # With search functionality
+    project = mo.ui.dropdown(
+        options=projects_ids[company.value].keys(),
+        value=list(projects_ids[company.value].keys())[0],
         label="Project name",
         searchable=True,
         allow_select_none=False,
@@ -115,11 +129,11 @@ def _(mo, projects_ids):
 
 
 @app.cell
-def _(mo, project, projects_ids):
+def _(company, mo, project, projects_ids):
     # With search functionality
     rod_id = mo.ui.dropdown(
-        options=projects_ids[project.value],
-        value=projects_ids[project.value][0],
+        options=projects_ids[company.value][project.value],
+        value=projects_ids[company.value][project.value][0],
         label="Settlement rod",
         searchable=True,
         allow_select_none=False,
@@ -129,10 +143,10 @@ def _(mo, project, projects_ids):
 
 
 @app.cell
-def _(manage_project, project, rod_id):
+def _(company, manage_project, project, rod_id):
     # create settlement rod measurement series from BaseTime Bucket
     measurements = manage_project.make_settlement_rod_measurement_series(
-        project=project.value, rod_id=rod_id.value
+        company=company.value, project=project.value, rod_id=rod_id.value
     )
     return (measurements,)
 
@@ -393,7 +407,7 @@ def _(mo, model, np, series):
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     final_settlement = mo.ui.number(
-        start=0, step=1, value=model.fit().finalSettlement, label="final settlement [m]"
+        start=0, step=0.01, value=model.fit().finalSettlement, label="final settlement [m]"
     )
     final_settlement
     return (final_settlement,)
@@ -436,10 +450,10 @@ def _(mo):
 
 
 @app.cell
-def _(end_time_delta, mo, model, np, series):
+def _(end_time_delta, mo, model, np, series, shift):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-    days = np.arange(0, end_time_delta.value + 10, step=1, dtype=int)
+    days = np.arange(0, end_time_delta.value + 10, step=1, dtype=int) + shift.value
     settlements = model.predict(days).settlement
     return days, settlements
 
@@ -449,7 +463,7 @@ def _(days, end_time_delta, mo, np, series, settlements):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
     end_time_settlement = mo.ui.number(
-        value=np.interp(end_time_delta.value, days, settlements).round(3),
+        value=np.interp(end_time_delta.value, days, np.array(settlements).astype(np.float64)).round(3),
         label=f"Settlement after {end_time_delta.value} days [m]",
         disabled=True
     )
