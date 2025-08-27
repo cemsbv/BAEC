@@ -169,7 +169,7 @@ numpy==1.26.4
     #   matplotlib
     #   pandas
     #   pandas-stubs
-orjson==3.10.6
+orjson==3.11.3
     # via cems-nuclei
 packaging==23.2
     # via
