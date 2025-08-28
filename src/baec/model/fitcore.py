@@ -237,6 +237,14 @@ class FitCoreModelGenerator:
         -------
         result : FitCoreResult
         """
+        if self._model.primarySettlement is None:
+            raise ValueError("The value for 'primarySettlement' is None, please update the value")
+        if self._model.shift is None:
+            raise ValueError("The value for 'shift' is None, please update the value")
+        if self._model.finalSettlement is None:
+            raise ValueError("The value for 'finalSettlement' is None, please update the value")
+        if self._model.hydrodynamicPeriod is None:
+            raise ValueError("The value for 'hydrodynamicPeriod' is None, please update the value")
 
         payload = {"days": days} | self._model.__dict__
 
