@@ -103,11 +103,11 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 Generate requirements.txt file with:
 
 ```bash
-uv pip compile --python-version 3.10 --extra=test --extra=lint --extra=docs --extra=aws --extra=gui --output-file=requirements.txt pyproject.toml
+uv pip compile --python-version 3.10 --extra=test --extra=docs --extra=aws --extra=gui --output-file=requirements.txt pyproject.toml
 ```
 
 Update the requirements within the defined ranges with:
 
 ```bash
-uv pip compile --python-version 3.10 --upgrade --extra=test --extra=lint --extra=docs --extra=aws --extra=gui --output-file=requirements.txt pyproject.toml
+uv pip compile --python-version 3.10 --upgrade --extra=test --extra=docs --extra=aws --extra=gui --output-file=requirements.txt pyproject.toml
 ```
