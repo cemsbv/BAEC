@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>baec.measurements.io.basetime &mdash; baec 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            baec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">baec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">baec.measurements.io.basetime</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for baec.measurements.io.basetime</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">getpass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReadCsvBuffer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">baec.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoordinateReferenceSystems</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">baec.measurements.measurement_device</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementDevice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">baec.measurements.settlement_rod_measurement</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SettlementRodMeasurement</span><span class="p">,</span>
+    <span class="n">StatusMessage</span><span class="p">,</span>
+    <span class="n">StatusMessageLevel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">baec.measurements.settlement_rod_measurement_series</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SettlementRodMeasurementSeries</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">baec.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">botocore</span><span class="w"> </span><span class="kn">import</span> <span class="n">exceptions</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+        <span class="s2">&quot;Please make sure that you installed baec with the correct extension. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Use pip install baec[aws] to use this model. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="Credentials"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.Credentials">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Credentials</span><span class="p">:</span>
+<div class="viewcode-block" id="Credentials.__init__"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.Credentials.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Credentials needs to refer to the AWS credential file given by Basetime.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        aws_access_key_id: str, optional</span>
+<span class="sd">            The access key to use when creating the client.This is entirely optional, and if not provided,</span>
+<span class="sd">            the credentials configured for the session will automatically be used. You only need to provide</span>
+<span class="sd">            this argument if you want to override the credentials used for this specific client.</span>
+<span class="sd">        aws_secret_access_key: : str, optional</span>
+<span class="sd">            The secret key to use when creating the client.  Same semantics as aws_access_key_id above.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">aws_access_key_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;BASETIME_KEY_ID&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+                    <span class="s2">&quot;Authentication is needed. What is your BaseTime key ID?&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;BASETIME_KEY_ID&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">aws_access_key_id</span>
+
+        <span class="k">if</span> <span class="n">aws_secret_access_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;BASETIME_ACCESS_KEY&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;What is your access key?&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;BASETIME_ACCESS_KEY&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">aws_secret_access_key</span></div>
+
+<div class="viewcode-block" id="Credentials.from_csv"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.Credentials.from_csv">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_csv</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">filepath_or_buffer</span><span class="p">:</span> <span class="p">(</span>
+            <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">ReadCsvBuffer</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="n">ReadCsvBuffer</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Credentials&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filepath_or_buffer: filepath_or_buffer: str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Credentials</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError/ClientError</span>
+<span class="sd">            If the provided credential file does not contain the correct credentials.</span>
+<span class="sd">            If the wrong type of value is given for the credential file.</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the credential file does not contain credentials.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the list of measurements is empty.</span>
+<span class="sd">            If the measurements are not for the same project, device or object.</span>
+<span class="sd">        IOError</span>
+<span class="sd">            If ZBASE file cannot be parsed by Pandas</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If filepath_or_buffer is requested but doesn&#39;t exist.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Read the credentials file</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dict_credentials</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ParserError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Errors encountered while parsing contents of the credentials file: </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Wrong type of credentials file given, str | PathLike[str] | ReadCsvBuffer[bytes] | &quot;</span>
+                <span class="s2">&quot;ReadCsvBuffer[str], Any valid string path is acceptable.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">dict_credentials</span><span class="p">[</span><span class="s2">&quot;Access key ID&quot;</span><span class="p">],</span> <span class="n">dict_credentials</span><span class="p">[</span><span class="s2">&quot;Secret access key&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BaseTimeBucket"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.BaseTimeBucket">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseTimeBucket</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class object to get a list of projects and Point IDs or to import measurements as a SettlementRodMeasurementSeries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseTimeBucket.__init__"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.BaseTimeBucket.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a ProjectsIDs object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        credentials : str | PathLike[str] | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]</span>
+<span class="sd">            Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ProjectsIDs</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError/ClientError</span>
+<span class="sd">            If the provided credential file does not contain the correct credentials.</span>
+<span class="sd">            If the wrong type of value is given for the credential file.</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input types are incorrect.</span>
+<span class="sd">            If the credential file does not contain credentials.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the list of measurements is empty.</span>
+<span class="sd">            If the measurements are not for the same project, device or object.</span>
+<span class="sd">        IOError</span>
+<span class="sd">            If ZBASE file cannot be parsed by Pandas</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If filepath_or_buffer is requested but doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create boto3 client and resource for connecting to AWS S3</span>
+        <span class="n">s3c</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;eu-west-1&quot;</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">s3r</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span>
+            <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;eu-west-1&quot;</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create boto3 client for using the lamdba functions</span>
+        <span class="n">lambda_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;eu-west-1&quot;</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create the dictionary to translate the error codes. Get the error_codes file from the AWS S3 bucket</span>
+        <span class="n">dict_errors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">s3r</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="s2">&quot;basetime-general&quot;</span><span class="p">,</span> <span class="s2">&quot;error_codes.txt&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">error_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="n">dict_errors</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">error_line</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;basetime error&quot;</span><span class="p">:</span> <span class="n">error_line</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">error_line</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="s2">&quot;status message level&quot;</span><span class="p">:</span> <span class="n">error_line</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="p">}</span>
+        <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The AWS Access Key ID you provided does not exist in our records.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Initialize all attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s3c</span> <span class="o">=</span> <span class="n">s3c</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s3r</span> <span class="o">=</span> <span class="n">s3r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="n">credentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_c</span> <span class="o">=</span> <span class="n">lambda_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_errors</span> <span class="o">=</span> <span class="n">dict_errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users_projects_ids</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_settlement_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">SettlementRodMeasurementSeries</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="BaseTimeBucket.get_users_projects_ids"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.BaseTimeBucket.get_users_projects_ids">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_users_projects_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call Lambda function in the Basetime AWS environment, to get the projets and point ID&#39;s of the objects the</span>
+<span class="sd">        user is allow to get.</span>
+<span class="sd">        Return the dictionary containing every User as a key, then the Project as key, the value is a list of all the Point IDs.</span>
+<span class="sd">        - Company/user</span>
+<span class="sd">            - projects</span>
+<span class="sd">                - point IDs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;api-gateway-project_get&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_access_key_id</span>
+                <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_secret_access_key</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_c</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+            <span class="n">FunctionName</span><span class="o">=</span><span class="n">function_name</span><span class="p">,</span>
+            <span class="n">InvocationType</span><span class="o">=</span><span class="s2">&quot;RequestResponse&quot;</span><span class="p">,</span>
+            <span class="n">Payload</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">response_ids</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Payload&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response_ids</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s2">&quot;Credentials are not registrated. Contact Basetime to grant access to the projects.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span></div>
+
+<div class="viewcode-block" id="BaseTimeBucket.make_settlement_rod_measurement_series"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.BaseTimeBucket.make_settlement_rod_measurement_series">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_settlement_rod_measurement_series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rod_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a SettlementRodMeasurementSeries:</span>
+
+<span class="sd">        Initialize by checking if the values are inside the S3 environment of Basetime, by using variable [dic_projects].</span>
+<span class="sd">        Iterate through all the folders in the S3 environment. The environment has the following folder structure:</span>
+<span class="sd">        - Company uuid</span>
+<span class="sd">            - Folders with project uuids</span>
+<span class="sd">                - Files of point uuids</span>
+<span class="sd">                    - Each file contans a full history of all the measurements of the point uuid.</span>
+<span class="sd">                    - Everytime a customers generates a new point uuid, a new file will be created.</span>
+
+<span class="sd">        SettlementRodMeasurement creating:</span>
+<span class="sd">            - Split Basetime EPSG code to list of EPSG numbers to add to CoordinateReferenceSystems</span>
+<span class="sd">            - Split error codes into multiple StatusMessage classes</span>
+<span class="sd">            - Add all values to the SettlementRodMeasurement class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">project</span><span class="p">,</span>
+            <span class="n">rod_id</span><span class="p">,</span>
+        <span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settlement_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settlement_cache</span><span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="n">project</span><span class="p">,</span>
+                    <span class="n">rod_id</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span> <span class="ow">and</span> <span class="n">rod_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span><span class="p">[</span><span class="n">project</span><span class="p">]:</span>
+            <span class="n">list_SettlementRodMeasurement</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;api-gateway-get-data&quot;</span>
+
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_access_key_id</span>
+                    <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+                    <span class="s2">&quot;Project&quot;</span><span class="p">:</span> <span class="n">project</span><span class="p">,</span>
+                    <span class="s2">&quot;Point_ID&quot;</span><span class="p">:</span> <span class="n">rod_id</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_c</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+                <span class="n">FunctionName</span><span class="o">=</span><span class="n">function_name</span><span class="p">,</span>
+                <span class="n">InvocationType</span><span class="o">=</span><span class="s2">&quot;RequestResponse&quot;</span><span class="p">,</span>
+                <span class="n">Payload</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">response_payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Payload&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">measurement_serie</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response_payload</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="s2">&quot;Credentials missing for this Rod ID. Contact Basetime to grant access to the project.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;Invalid request&quot;</span> <span class="ow">in</span> <span class="n">measurement_serie</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;missing headers: Authorization, Projects, Point_ID&quot;</span><span class="p">)</span>
+
+            <span class="n">list_epsg_codes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_epsg_string_to_list_int</span><span class="p">(</span>
+                <span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Coordinate projection&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="n">coordinate_reference_systems</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">CoordinateReferenceSystems</span><span class="p">(</span>
+                    <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_user_input</span><span class="p">(</span><span class="n">list_epsg_codes</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="p">(</span>
+                        <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_user_input</span><span class="p">(</span><span class="n">list_epsg_codes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_epsg_codes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+                        <span class="k">else</span> <span class="p">(</span>
+                            <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_user_input</span><span class="p">(</span><span class="n">list_epsg_codes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_epsg_codes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                            <span class="k">else</span> <span class="kc">None</span>
+                        <span class="p">)</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">list_epsg_codes</span>
+                <span class="k">else</span> <span class="n">CoordinateReferenceSystems</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">baec_project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span>
+                <span class="n">id_</span><span class="o">=</span><span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Project uuid&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Project name&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">object_id</span> <span class="o">=</span> <span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Object ID&quot;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">date_measurement</span> <span class="ow">in</span> <span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Measurements&quot;</span><span class="p">]:</span>
+                <span class="n">measurement</span> <span class="o">=</span> <span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Measurements&quot;</span><span class="p">][</span><span class="n">date_measurement</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Error Codes&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;[]&quot;</span><span class="p">]:</span>
+                    <span class="n">status_messages</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">StatusMessage</span><span class="p">(</span>
+                            <span class="n">code</span><span class="o">=</span><span class="mi">7000</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Measurement approved&quot;</span><span class="p">,</span>
+                            <span class="n">level</span><span class="o">=</span><span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">error_string_list</span> <span class="o">=</span> <span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Error Codes&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                        <span class="n">error_integer_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">error_string_list</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                        <span class="n">error_integer_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7000</span><span class="p">]</span>
+                    <span class="n">status_messages</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">StatusMessage</span><span class="p">(</span>
+                            <span class="n">code</span><span class="o">=</span><span class="n">error_code</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_errors</span><span class="p">[</span><span class="n">error_code</span><span class="p">][</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
+                            <span class="n">level</span><span class="o">=</span><span class="p">(</span>
+                                <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">INFO</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_errors</span><span class="p">[</span><span class="n">error_code</span><span class="p">][</span><span class="s2">&quot;status message level&quot;</span><span class="p">]</span>
+                                <span class="o">==</span> <span class="s2">&quot;INFO&quot;</span>
+                                <span class="k">else</span> <span class="p">(</span>
+                                    <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">WARNING</span>
+                                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_errors</span><span class="p">[</span><span class="n">error_code</span><span class="p">][</span>
+                                        <span class="s2">&quot;status message level&quot;</span>
+                                    <span class="p">]</span>
+                                    <span class="o">==</span> <span class="s2">&quot;WARNING&quot;</span>
+                                    <span class="k">else</span> <span class="n">StatusMessageLevel</span><span class="o">.</span><span class="n">ERROR</span>
+                                <span class="p">)</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">error_code</span> <span class="ow">in</span> <span class="n">error_integer_list</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_errors</span><span class="p">[</span><span class="n">error_code</span><span class="p">][</span><span class="s2">&quot;status message level&quot;</span><span class="p">]</span>
+                        <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">]</span>
+                    <span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">measurement_serie</span><span class="p">[</span><span class="s2">&quot;Project type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SettlementRods&quot;</span><span class="p">:</span>
+                    <span class="n">rod_bottom_z</span> <span class="o">=</span> <span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Coordinates Soil&quot;</span><span class="p">][</span><span class="s2">&quot;Height groundplate&quot;</span><span class="p">]</span>
+                    <span class="n">ground_surface_z</span> <span class="o">=</span> <span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Coordinates Soil&quot;</span><span class="p">][</span><span class="s2">&quot;Height Soil&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rod_bottom_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+                    <span class="n">ground_surface_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+
+                <span class="n">test_measurement</span> <span class="o">=</span> <span class="n">SettlementRodMeasurement</span><span class="p">(</span>
+                    <span class="n">project</span><span class="o">=</span><span class="n">baec_project</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">MeasurementDevice</span><span class="p">(</span>
+                        <span class="n">id_</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Device name&quot;</span><span class="p">],</span>
+                        <span class="n">qr_code</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;QR-code&quot;</span><span class="p">],</span>
+                    <span class="p">),</span>
+                    <span class="n">object_id</span><span class="o">=</span><span class="n">object_id</span><span class="p">,</span>
+                    <span class="n">date_time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_measurement</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">),</span>
+                    <span class="n">coordinate_reference_systems</span><span class="o">=</span><span class="n">coordinate_reference_systems</span><span class="p">,</span>
+                    <span class="n">rod_top_x</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Coordinates Local&quot;</span><span class="p">][</span><span class="s2">&quot;Easting&quot;</span><span class="p">]</span>
+                    <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">rod_top_y</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Coordinates Local&quot;</span><span class="p">][</span><span class="s2">&quot;Northing&quot;</span><span class="p">]</span>
+                    <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">rod_top_z</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Coordinates Local&quot;</span><span class="p">][</span><span class="s2">&quot;Height&quot;</span><span class="p">]</span>
+                    <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">rod_length</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Vertical offset (meters)&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">rod_bottom_z</span><span class="o">=</span><span class="n">rod_bottom_z</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">ground_surface_z</span><span class="o">=</span><span class="n">ground_surface_z</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">status_messages</span><span class="o">=</span><span class="n">status_messages</span><span class="p">,</span>
+                    <span class="n">temperature</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Temperature (Celsius)&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                    <span class="n">voltage</span><span class="o">=</span><span class="n">measurement</span><span class="p">[</span><span class="s2">&quot;Voltage Locator One (mV)&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+
+                <span class="n">list_SettlementRodMeasurement</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_measurement</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_projects</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2"> is in the project list, but not rod_id: </span><span class="si">{</span><span class="n">rod_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2"> is not in the project list&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">project</span><span class="p">,</span>
+            <span class="n">rod_id</span><span class="p">,</span>
+        <span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settlement_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_settlement_cache</span><span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="n">project</span><span class="p">,</span>
+                    <span class="n">rod_id</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">(</span><span class="n">list_SettlementRodMeasurement</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SettlementRodMeasurementSeries</span><span class="p">(</span><span class="n">list_SettlementRodMeasurement</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseTimeBucket.convert_epsg_string_to_list_int"><a class="viewcode-back" href="../../../../tree/reference.html#baec.measurements.io.basetime.BaseTimeBucket.convert_epsg_string_to_list_int">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_epsg_string_to_list_int</span><span class="p">(</span><span class="n">epsg_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a Basetime coordinate projection to a list of string containing the EPSG codes.</span>
+
+<span class="sd">        Input: Basetime coordinate string (for example: &quot;RDNAPTrans (28992,5709)&quot;)</span>
+
+<span class="sd">        Output: list of EPSG numbers (for example: [28992,5709])</span>
+
+<span class="sd">        If list has a length of 2, XY and Z projection are present.</span>
+<span class="sd">        If the list has a length of 1, only the XY projection is present.</span>
+<span class="sd">        If the list is empty, no projection could be transformed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\((\d+)(?:,(\d+))?\)&quot;</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">epsg_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">num1</span><span class="p">,</span> <span class="n">num2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">num1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

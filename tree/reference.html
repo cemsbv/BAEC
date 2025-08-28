@@ -204,6 +204,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#baec.measurements.io.zbase.measurements_from_zbase"><code class="docutils literal notranslate"><span class="pre">measurements_from_zbase()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#basetime">BaseTime</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.io.basetime.Credentials"><code class="docutils literal notranslate"><span class="pre">Credentials</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#baec.measurements.io.basetime.BaseTimeBucket"><code class="docutils literal notranslate"><span class="pre">BaseTimeBucket</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1480,6 +1485,160 @@ type ‘Vertical’ or ‘Compound’.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="basetime">
+<h3>BaseTime<a class="headerlink" href="#basetime" title="Permalink to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.Credentials">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.io.basetime.</span></span><span class="sig-name descname"><span class="pre">Credentials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#Credentials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.Credentials" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.Credentials.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#Credentials.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.Credentials.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Credentials needs to refer to the AWS credential file given by Basetime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aws_access_key_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The access key to use when creating the client.This is entirely optional, and if not provided,
+the credentials configured for the session will automatically be used. You only need to provide
+this argument if you want to override the credentials used for this specific client.</p></li>
+<li><p><strong>aws_secret_access_key</strong> (<em>: str</em><em>, </em><em>optional</em>) – The secret key to use when creating the client.  Same semantics as aws_access_key_id above.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.Credentials.from_csv">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath_or_buffer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#Credentials.from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.Credentials.from_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath_or_buffer</strong> (<em>filepath_or_buffer: str</em><em> | </em><em>PathLike</em><em>[</em><em>str</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>bytes</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#baec.measurements.io.basetime.Credentials" title="baec.measurements.io.basetime.Credentials">Credentials</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError/ClientError</strong> – If the provided credential file does not contain the correct credentials.
+    If the wrong type of value is given for the credential file.</p></li>
+<li><p><strong>TypeError</strong> – If the credential file does not contain credentials.</p></li>
+<li><p><strong>ValueError</strong> – If the list of measurements is empty.
+    If the measurements are not for the same project, device or object.</p></li>
+<li><p><strong>IOError</strong> – If ZBASE file cannot be parsed by Pandas</p></li>
+<li><p><strong>FileNotFoundError</strong> – If filepath_or_buffer is requested but doesn’t exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.BaseTimeBucket">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">baec.measurements.io.basetime.</span></span><span class="sig-name descname"><span class="pre">BaseTimeBucket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#BaseTimeBucket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.BaseTimeBucket" title="Permalink to this definition"></a></dt>
+<dd><p>Class object to get a list of projects and Point IDs or to import measurements as a SettlementRodMeasurementSeries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.BaseTimeBucket.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#BaseTimeBucket.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.BaseTimeBucket.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a ProjectsIDs object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>credentials</strong> (<em>str</em><em> | </em><em>PathLike</em><em>[</em><em>str</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>bytes</em><em>] </em><em>| </em><em>ReadCsvBuffer</em><em>[</em><em>str</em><em>]</em>) – Any valid string path is acceptable. Credentials needs to refer to the AWS credential file given by Basetime.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ProjectsIDs</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError/ClientError</strong> – If the provided credential file does not contain the correct credentials.
+    If the wrong type of value is given for the credential file.</p></li>
+<li><p><strong>TypeError</strong> – If the input types are incorrect.
+    If the credential file does not contain credentials.</p></li>
+<li><p><strong>ValueError</strong> – If the list of measurements is empty.
+    If the measurements are not for the same project, device or object.</p></li>
+<li><p><strong>IOError</strong> – If ZBASE file cannot be parsed by Pandas</p></li>
+<li><p><strong>FileNotFoundError</strong> – If filepath_or_buffer is requested but doesn’t exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.BaseTimeBucket.get_users_projects_ids">
+<span class="sig-name descname"><span class="pre">get_users_projects_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#BaseTimeBucket.get_users_projects_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.BaseTimeBucket.get_users_projects_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Call Lambda function in the Basetime AWS environment, to get the projets and point ID’s of the objects the
+user is allow to get.
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+<p>Return the dictionary containing every User as a key, then the Project as key, the value is a list of all the Point IDs.
+- Company/user</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>projects</dt><dd><ul>
+<li><p>point IDs</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.BaseTimeBucket.make_settlement_rod_measurement_series">
+<span class="sig-name descname"><span class="pre">make_settlement_rod_measurement_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rod_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#BaseTimeBucket.make_settlement_rod_measurement_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.BaseTimeBucket.make_settlement_rod_measurement_series" title="Permalink to this definition"></a></dt>
+<dd><p>Make a SettlementRodMeasurementSeries:</p>
+<p>Initialize by checking if the values are inside the S3 environment of Basetime, by using variable [dic_projects].
+:rtype: <a class="reference internal" href="#baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries" title="baec.measurements.settlement_rod_measurement_series.SettlementRodMeasurementSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">SettlementRodMeasurementSeries</span></code></a></p>
+<p>Iterate through all the folders in the S3 environment. The environment has the following folder structure:
+- Company uuid</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Folders with project uuids</dt><dd><ul>
+<li><dl class="simple">
+<dt>Files of point uuids</dt><dd><ul>
+<li><p>Each file contans a full history of all the measurements of the point uuid.</p></li>
+<li><p>Everytime a customers generates a new point uuid, a new file will be created.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>SettlementRodMeasurement creating:</dt><dd><ul class="simple">
+<li><p>Split Basetime EPSG code to list of EPSG numbers to add to CoordinateReferenceSystems</p></li>
+<li><p>Split error codes into multiple StatusMessage classes</p></li>
+<li><p>Add all values to the SettlementRodMeasurement class</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="baec.measurements.io.basetime.BaseTimeBucket.convert_epsg_string_to_list_int">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_epsg_string_to_list_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epsg_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/baec/measurements/io/basetime.html#BaseTimeBucket.convert_epsg_string_to_list_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#baec.measurements.io.basetime.BaseTimeBucket.convert_epsg_string_to_list_int" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a Basetime coordinate projection to a list of string containing the EPSG codes.</p>
+<p>Input: Basetime coordinate string (for example: “RDNAPTrans (28992,5709)”)</p>
+<p>Output: list of EPSG numbers (for example: [28992,5709])</p>
+<p>If list has a length of 2, XY and Z projection are present.
+If the list has a length of 1, only the XY projection is present.
+If the list is empty, no projection could be transformed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

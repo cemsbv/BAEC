@@ -123,3 +123,20 @@ ZBASE
 ......
 
 .. autofunction:: baec.measurements.io.zbase.measurements_from_zbase
+
+BaseTime
+.........
+
+.. autoclass:: baec.measurements.io.basetime.Credentials
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
+
+.. autoclass:: baec.measurements.io.basetime.BaseTimeBucket
+    :members:
+    :inherited-members:
+    :member-order: bysource
+
+    .. automethod:: __init__
