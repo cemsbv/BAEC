@@ -30,7 +30,7 @@ docs = [
     "ipython==8.11.0",
     "asteroid-sphinx-theme==0.0.3",
     "sphinx_rtd_theme>1.2,<2",
-    "enum-tools[sphinx]>=0.12,<0.13",
+    "enum-tools[sphinx]>=0.13,<0.14",
 ]
 aws = [
     "boto3>1.34,<2",
