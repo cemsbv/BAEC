@@ -289,7 +289,7 @@ ruamel-yaml==0.18.15
     # via sphinx-toolbox
 ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
-ruff==0.12.10
+ruff==0.12.11
     # via marimo
 s3transfer==0.13.1
     # via boto3
