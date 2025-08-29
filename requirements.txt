@@ -161,7 +161,7 @@ jupyterlab-widgets==3.0.15
     # via ipywidgets
 kiwisolver==1.4.9
     # via matplotlib
-marimo==0.14.17
+marimo==0.15.1
     # via baec (pyproject.toml)
 markdown==3.8.2
     # via
