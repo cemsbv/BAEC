@@ -31,7 +31,7 @@ backcall==0.2.0
     # via ipython
 beautifulsoup4==4.13.5
     # via sphinx-toolbox
-boto3==1.40.19
+boto3==1.40.20
     # via baec (pyproject.toml)
 botocore==1.40.19
     # via
