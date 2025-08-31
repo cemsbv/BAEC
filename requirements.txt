@@ -171,7 +171,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   sphinx-jinja2-compat
-matplotlib==3.10.5
+matplotlib==3.10.6
     # via baec (pyproject.toml)
 matplotlib-inline==0.1.7
     # via ipython
