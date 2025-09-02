@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>baec.coordinates &mdash; baec 0.2.1 documentation</title>
+  <title>baec.coordinates &mdash; baec 0.2.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -233,12 +233,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="nd">@cached_property</span>
+<div class="viewcode-block" id="CoordinateReferenceSystems.vertical_datum_and_units"><a class="viewcode-back" href="../../tree/reference.html#baec.coordinates.CoordinateReferenceSystems.vertical_datum_and_units">[docs]</a>    <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">vertical_datum_and_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The vertical datum and units of the vertical CRS.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_datum</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_units</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_datum</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_units</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the object to a string.&quot;&quot;&quot;</span>
