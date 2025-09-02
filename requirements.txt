@@ -302,7 +302,7 @@ snowballstemmer==3.0.1
     # via sphinx
 soupsieve==2.8
     # via beautifulsoup4
-sphinx==6.1.3
+sphinx==6.2.1
     # via
     #   baec (pyproject.toml)
     #   asteroid-sphinx-theme
