@@ -1,5 +1,7 @@
 name: deploy marimo
 
+permissions: read-all
+
 env:
   UV_SYSTEM_PYTHON: 1
 
