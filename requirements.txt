@@ -346,7 +346,7 @@ sqlglot==27.10.0
     # via marimo
 stack-data==0.6.3
     # via ipython
-standard-imghdr==3.10.14
+standard-imghdr==3.13.0
     # via sphinx-jinja2-compat
 starlette==0.47.3
     # via marimo
