@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2025-09-02
+
+### Miscellaneous Tasks
+
+#### Marimo
+
+- Install missing dependencies
+
+
+### Build
+
+#### Marimo
+
+- Uses actions/checkout@v4
+- Update notebook path
+- Update notebook path
+- Set UV_SYSTEM_PYTHON
+- Build and deploy marimo app in job
+- Build and deploy marimo app in job
+
+
+### Format
+
+#### CHECKOV
+
+- Set top-level permissions
+
+
 ## [0.2.0] - 2025-08-28
 
 ### Bug Fixes

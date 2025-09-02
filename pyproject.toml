@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "baec"
-version = "0.2.1"
+version = "0.2.2"
 description = "Python SDK to create Model Generators and add them into the BAEC platform."
 requires-python = ">=3.9"
 dependencies = [
