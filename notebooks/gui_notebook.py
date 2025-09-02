@@ -23,7 +23,7 @@ def _():
 
 @app.cell
 async def _(micropip):
-    await micropip.install("baec")
+    await micropip.install("baec[aws]")
 
     from nuclei.client import NucleiClient
 

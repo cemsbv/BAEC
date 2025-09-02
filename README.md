@@ -40,7 +40,7 @@ marimo edit ./notebooks/gui_notebook.py
 
 ## Environment
 
-We recommend developing in Python 3.12 with a clean virtual environment (using `virtualenv` or `conda`), installing the requirements from the requirements.txt file:
+We recommend developing in Python 3.13 with a clean virtual environment (using `virtualenv` or `conda`), installing the requirements from the requirements.txt file:
 
 Example using `virtualenv` and `pip` to install the dependencies in a new environment .env on Linux:
 

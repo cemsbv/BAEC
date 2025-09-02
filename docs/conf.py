@@ -35,7 +35,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
-    "sphinx_autodoc_typehints",
     "matplotlib.sphinxext.plot_directive",
     "enum_tools.autoenum",
 ]
