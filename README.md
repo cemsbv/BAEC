@@ -33,6 +33,7 @@ Go to `personal-access-tokens` and create a new user token.
 set -a; source ./*.env; set +a
 marimo edit ./notebooks/gui_notebook.py
 #marimo run ./notebooks/gui_notebook.py
+#marimo export html-wasm ./notebooks/gui_notebook.py -o build/marimo --mode run
 ```
 
 # Contribution

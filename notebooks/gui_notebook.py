@@ -15,8 +15,16 @@ def _():
 
     import altair as alt
     import marimo as mo
+    import micropip
     import numpy as np
     import pandas as pd
+    return alt, datetime, micropip, mo, np, os, pd
+
+
+@app.cell
+async def _(micropip):
+    await micropip.install("baec")
+
     from nuclei.client import NucleiClient
 
     from baec.measurements.io.basetime import BaseTimeBucket, Credentials
@@ -27,7 +35,6 @@ def _():
         FitCoreParameters,
         FitCoreParametersBounds,
     )
-
     return (
         BaseTimeBucket,
         Credentials,
@@ -37,12 +44,6 @@ def _():
         FitCoreParametersBounds,
         MeasuredSettlementSeries,
         NucleiClient,
-        alt,
-        datetime,
-        mo,
-        np,
-        os,
-        pd,
     )
 
 
@@ -184,12 +185,6 @@ def _(alt, measurements, pd, start_date_time):
 
 
 @app.cell
-def _(measurements):
-    measurements.to_dataframe()
-    return
-
-
-@app.cell
 def _(measurements, mo):
     csv_download_lazy_measurements = mo.download(
         data=measurements.to_dataframe().to_csv(sep=";").encode("utf-8"),
@@ -210,42 +205,6 @@ def _(MeasuredSettlementSeries, datetime, measurements, start_date_time):
         ),
     )
     return (series,)
-
-
-@app.cell
-def _(alt, pd, series):
-    _df = pd.DataFrame(
-                {
-                    "date_time": series.days, 
-                    "fill_thicknesses": series.fill_thicknesses,
-                    "settlements": series.settlements
-                }
-            )
-
-    _colors = alt.Scale(domain=["fill_thicknesses", "settlements"], range=['blue', 'orange', 'green'])
-
-    _chart_1 = (
-        alt.Chart(_df)
-        .transform_fold(
-            ['fill_thicknesses', 'settlements'],
-            as_=['variable', 'value']
-        )
-        .mark_line()
-        .encode(
-            x=alt.X(field="date_time", type="quantitative", title="Days"),
-            y=alt.Y(field="value", type="quantitative", title="Measurements [m]"),
-            color=alt.Color('variable:N', scale=_colors, title="Legend"),
-            tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Days"
-                ),
-                alt.Tooltip(field="value", format=",.2f", title="Value"),
-            ],
-        )
-    )
-
-    (_chart_1).resolve_scale()
-    return
 
 
 @app.cell
@@ -414,7 +373,7 @@ def _(mo):
 def _(end_time_delta, mo, model, np, pd, series, shift, start_date_time):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-    days = np.arange(0, end_time_delta.value + 10, step=1, dtype=int) + shift.value
+    days = np.arange(0, end_time_delta.value + 1, step=1, dtype=int) + shift.value
     settlements = model.predict(days).settlement
 
     _df_left = pd.DataFrame(
@@ -456,12 +415,12 @@ def _(days, end_time_delta, mo, np, series, settlements):
 
 @app.cell
 def _(alt, df_settlements_preditions, end_time_delta, pd):
-    _colors = alt.Scale(domain=["fill_thicknesses", "settlements", "predict"], range=['blue', 'orange', 'green'])
+    _colors = alt.Scale(domain=["fill_thicknesses",], range=['blue'])
 
     _chart_1 = (
         alt.Chart(df_settlements_preditions)
         .transform_fold(
-            ["fill_thicknesses", "settlements", "predict"],
+            ["fill_thicknesses"],
             as_=['variable', 'value']
         )
         .mark_line()
@@ -492,18 +451,52 @@ def _(alt, df_settlements_preditions, end_time_delta, pd):
         )
     )
 
-    _rules_2 = (
+
+    (_chart_1 + _rules_1).resolve_scale()
+    return
+
+
+@app.cell
+def _(alt, df_settlements_preditions, end_time_delta, pd):
+    _colors = alt.Scale(domain=["settlements", "predict"], range=['orange', 'green'])
+
+    _chart_2 = (
+        alt.Chart(df_settlements_preditions)
+        .transform_fold(
+            ["settlements", "predict"],
+            as_=['variable', 'value']
+        )
+        .mark_line()
+        .encode(
+            x=alt.X(field="days_merge", type="quantitative", title="Days", scale=alt.Scale(type='symlog')),
+            y=alt.Y(field="value", type="quantitative", title="Measurements [m]"),
+            color=alt.Color('variable:N', scale=_colors, title="Legend"),
+            tooltip=[
+                alt.Tooltip(
+                    field="date_time", title="Date"
+                ),
+                alt.Tooltip(
+                    field="days_merge", title="Days"
+                ),
+                alt.Tooltip(field="value", format=",.2f", title="Value"),
+            ],
+        )
+    )
+
+
+    _rules_1 = (
         alt.Chart(
-            pd.DataFrame({"value": [0.0], "color": ["black"]})
+            pd.DataFrame({"day": [end_time_delta.value], "color": ["black"]})
         )
         .mark_rule()
         .encode(
-            y=alt.Y(field="value", type="quantitative"),
+            x=alt.X(field="day", type="quantitative"),
             color=alt.Color("color:N", scale=None),
         )
     )
 
-    (_chart_1 + _rules_1 + _rules_2).resolve_scale()
+
+    (_chart_2 + _rules_1).resolve_scale()
     return
 
 
