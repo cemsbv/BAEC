@@ -251,7 +251,7 @@ pymdown-extensions==10.16.1
     # via marimo
 pyparsing==3.2.3
     # via matplotlib
-pyproj==3.7.1
+pyproj==3.7.2
     # via baec (pyproject.toml)
 pytest==8.4.1
     # via baec (pyproject.toml)
