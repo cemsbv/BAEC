@@ -4,4 +4,4 @@ try:
     __version__ = version("baec")
 # during CI
 except PackageNotFoundError:
-    __version__ = "0.2.0"
+    __version__ = "0.2.1"
