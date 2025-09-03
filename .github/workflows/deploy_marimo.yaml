@@ -33,7 +33,7 @@ jobs:
           marimo export html-wasm notebooks/gui_notebook.py -o build/marimo --mode run
 
       - name: 📦 Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: build/marimo
 
