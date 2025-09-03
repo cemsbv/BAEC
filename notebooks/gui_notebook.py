@@ -10,6 +10,7 @@ app = marimo.App(
 
 @app.cell
 def _():
+    import sys
     import datetime
     import os
 
@@ -18,12 +19,18 @@ def _():
     import micropip
     import numpy as np
     import pandas as pd
-    return alt, datetime, micropip, mo, np, os, pd
+    return alt, datetime, micropip, mo, np, os, pd, sys
 
 
 @app.cell
-async def _(micropip):
-    await micropip.install("baec[aws]")
+async def _(micropip, sys):
+    if sys.platform == 'emscripten':
+        # running in Pyodide or other Emscripten based build
+        await micropip.install(["pyodide-http", "baec[aws]", "ssl"])
+
+        # Patch requests
+        import pyodide_http
+        pyodide_http.patch_all()
 
     from nuclei.client import NucleiClient
 
@@ -58,7 +65,11 @@ def _(mo):
 def _(NucleiClient, jwt, os):
     if jwt.value != "":
         os.environ["NUCLEI_TOKEN"] = jwt.value
-    client = NucleiClient()
+
+    if "NUCLEI_TOKEN" in os.environ:
+        client = NucleiClient()
+    else:
+        raise ValueError("No JWT token provided")
     return (client,)
 
 
@@ -79,15 +90,18 @@ def _(mo):
 
 
 @app.cell
-def _(Credentials, aws_access_key_id, aws_secret_access_key):
-    credentials = Credentials(
-        aws_access_key_id=(
-            aws_access_key_id.value if aws_access_key_id.value != "" else None
-        ),
-        aws_secret_access_key=(
-            aws_secret_access_key.value if aws_secret_access_key.value != "" else None
-        ),
-    )
+def _(Credentials, aws_access_key_id, aws_secret_access_key, os):
+    if aws_access_key_id.value != "":
+        os.environ["BASETIME_KEY_ID"] = aws_access_key_id.value
+
+    if aws_secret_access_key.value != "":
+        os.environ["BASETIME_ACCESS_KEY"] = aws_secret_access_key.value
+
+    if "BASETIME_KEY_ID" in os.environ and "BASETIME_ACCESS_KEY" in os.environ:
+        credentials = Credentials()
+
+    else:
+        raise ValueError("BaseTime AWS credentials provided")
     return (credentials,)
 
 
@@ -414,7 +428,9 @@ def _(days, end_time_delta, mo, np, series, settlements):
 
 
 @app.cell
-def _(alt, df_settlements_preditions, end_time_delta, pd):
+def _(alt, df_settlements_preditions, end_time_delta, mo, np, pd, series):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
+
     _colors = alt.Scale(domain=["fill_thicknesses",], range=['blue'])
 
     _chart_1 = (
@@ -457,7 +473,8 @@ def _(alt, df_settlements_preditions, end_time_delta, pd):
 
 
 @app.cell
-def _(alt, df_settlements_preditions, end_time_delta, pd):
+def _(alt, df_settlements_preditions, end_time_delta, mo, np, pd, series):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
     _colors = alt.Scale(domain=["settlements", "predict"], range=['orange', 'green'])
 
     _chart_2 = (
@@ -501,7 +518,8 @@ def _(alt, df_settlements_preditions, end_time_delta, pd):
 
 
 @app.cell
-def _(df_settlements_preditions, mo):
+def _(df_settlements_preditions, mo, np, series):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
     csv_download_lazy_prediction = mo.download(
         data=df_settlements_preditions.to_csv(sep=";").encode("utf-8"),
         filename="measurements.csv",
