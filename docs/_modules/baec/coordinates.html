@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>baec.coordinates &mdash; baec 0.2.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            baec
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">baec</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">baec.coordinates</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for baec.coordinates</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
+
+
+<div class="viewcode-block" id="CoordinateReferenceSystems"><a class="viewcode-back" href="../../tree/reference.html#baec.coordinates.CoordinateReferenceSystems">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinateReferenceSystems</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the horizontal (X, Y) and vertical (Z) coordinate reference systems of a 3D point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CoordinateReferenceSystems.__init__"><a class="viewcode-back" href="../../tree/reference.html#baec.coordinates.CoordinateReferenceSystems.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">,</span> <span class="n">vertical</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a CoordinateReferenceSystems object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        horizontal : pyproj.CRS</span>
+<span class="sd">            The coordinate reference system of the X and Y-coordinates.</span>
+<span class="sd">            It is a `pyproj.CRS` object (see https://pyproj4.github.io/pyproj/stable/api/crs/crs.html) of</span>
+<span class="sd">            type &#39;Projected&#39; or &#39;Compound&#39;.</span>
+<span class="sd">        vertical : pyproj.CRS</span>
+<span class="sd">            The coordinate reference system of the Z-coordinate.</span>
+<span class="sd">            It is a `pyproj.CRS` object (see https://pyproj4.github.io/pyproj/stable/api/crs/crs.html) of</span>
+<span class="sd">            type &#39;Vertical&#39; or &#39;Compound&#39;.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input types are incorrect.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If `horizontal` is not a projected or compound CRS.</span>
+<span class="sd">            If `vertical` is not a vertical or compound CRS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize all attributes using private setters.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_horizontal</span><span class="p">(</span><span class="n">horizontal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_vertical</span><span class="p">(</span><span class="n">vertical</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoordinateReferenceSystems.from_epsg"><a class="viewcode-back" href="../../tree/reference.html#baec.coordinates.CoordinateReferenceSystems.from_epsg">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_epsg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vertical</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CoordinateReferenceSystems</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a CoordinateReferenceSystems object from the EPSG codes of the horizontal and vertical CRS.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        If your settlement rod is located in the Netherlands the horizontal coordinate reference systems is likely `28992`</span>
+<span class="sd">        (Amersfoort / RD New) and the vertical `5709` (NAP height). To combine use `7415` (Amersfoort / RD New + NAP height).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        horizontal : int</span>
+<span class="sd">            The EPSG code of the horizontal CRS.</span>
+<span class="sd">        vertical : int</span>
+<span class="sd">            The EPSG code of the vertical CRS.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        CoordinateReferenceSystems</span>
+<span class="sd">            A CoordinateReferenceSystems object with the horizontal and vertical CRS.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        pyproj.exceptions.CRSError</span>
+<span class="sd">            If the EPSG codes are not valid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">horizontal</span><span class="o">=</span><span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_epsg</span><span class="p">(</span><span class="n">horizontal</span><span class="p">),</span>
+            <span class="n">vertical</span><span class="o">=</span><span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_epsg</span><span class="p">(</span><span class="n">vertical</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_horizontal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for horizontal attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;pyproj.CRS&#39; type for &#39;horizontal&#39; attribute.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check whether the CRS is a projected or compound CRS.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_projected</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_compound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;is_projected&#39; or &#39;is_compound&#39; to be true for &#39;horizontal&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Set the coordinate system in case of a projected CRS.</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">is_projected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># Set the coordinate system in case of a compound CRS.</span>
+        <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">is_compound</span><span class="p">:</span>
+            <span class="n">projected_crs</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">crs</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">sub_crs_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crs</span><span class="o">.</span><span class="n">is_projected</span><span class="p">:</span>
+                    <span class="n">projected_crs</span> <span class="o">=</span> <span class="n">crs</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">projected_crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No projected CRS found in the compound CRS.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal</span> <span class="o">=</span> <span class="n">projected_crs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_vertical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private setter for z attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected &#39;pyproj.CRS&#39; type for &#39;vertical&#39; attribute.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check whether the CRS is a vertical or compound CRS.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_vertical</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_compound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &#39;is_vertical&#39; or &#39;is_compound&#39; to be true for &#39;vertical&#39; attribute.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Set the coordinate system in case of a vertical CRS.</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">is_vertical</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># Set the coordinate system in case of a compound CRS.</span>
+        <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">is_compound</span><span class="p">:</span>
+            <span class="n">vertical_crs</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">crs</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">sub_crs_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crs</span><span class="o">.</span><span class="n">is_vertical</span><span class="p">:</span>
+                    <span class="n">vertical_crs</span> <span class="o">=</span> <span class="n">crs</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">vertical_crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No vertical CRS found in the compound CRS.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span> <span class="o">=</span> <span class="n">vertical_crs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">horizontal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The coordinate reference system of the horizontal X and Y-coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vertical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The coordinate reference system of the vertical Z-coordinate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">horizontal_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The units of the horizontal CRS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal</span><span class="o">.</span><span class="n">axis_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vertical_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The units of the vertical CRS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span><span class="o">.</span><span class="n">axis_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vertical_datum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the vertical datum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="CoordinateReferenceSystems.vertical_datum_and_units"><a class="viewcode-back" href="../../tree/reference.html#baec.coordinates.CoordinateReferenceSystems.vertical_datum_and_units">[docs]</a>    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vertical_datum_and_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The vertical datum and units of the vertical CRS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_datum</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_units</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the object to a string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;CoordinateReferenceSystems(Horizontal: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">()</span><span class="si">}</span><span class="s2">, Vertical: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compares two CoordinateReferenceSystems objects.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CoordinateReferenceSystems</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">horizontal</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">vertical</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
