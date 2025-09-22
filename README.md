@@ -31,9 +31,10 @@ Go to `personal-access-tokens` and create a new user token.
 
 ```bash
 set -a; source ./*.env; set +a
-marimo edit ./notebooks/gui_notebook.py
-#marimo run ./notebooks/gui_notebook.py
-#marimo export html-wasm ./notebooks/gui_notebook.py -o build/marimo --mode run
+marimo edit ./marimo/baec_basetime_multi/app.py
+#marimo edit ./marimo/baec_basetime_single/app.py
+#marimo run ./marimo/baec_basetime_single/app.py
+#marimo export html-wasm ./marimo/baec_basetime_single/app.py -o build/marimo --mode run
 ```
 
 # Contribution
