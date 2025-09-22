@@ -19,7 +19,12 @@ def _():
     import micropip
     import numpy as np
     import pandas as pd
-    return alt, datetime, micropip, mo, np, os, pd, sys
+
+    import leafmap.foliumap as leafmap
+    import geopandas as gpd
+    import shapely as shp
+
+    return alt, datetime, gpd, leafmap, micropip, mo, np, os, pd, shp, sys
 
 
 @app.cell
@@ -197,12 +202,27 @@ def _(manage_project, mo, np, pd, project, rod_id):
 
     measurements_db = pd.concat(_measurements_db_list)
     measurements_df = pd.DataFrame(_records)
-    return measurements_db, measurements_df, measurements_list
+    return measurements_db, measurements_list
 
 
 @app.cell
-def _(measurements_df):
-    measurements_df
+def _(gpd, measurements_db, shp):
+    measurements_db["geometry"] = measurements_db[["rod_top_x", "rod_top_y"]].apply(lambda x: shp.Point(*x), axis=1)
+    measurements_gdf = gpd.GeoDataFrame(measurements_db, geometry="geometry",crs="epsg:28992").to_crs("WGS84")
+    return (measurements_gdf,)
+
+
+@app.cell
+def _(leafmap, measurements_gdf):
+    m = leafmap.Map(
+        tiles="CartoDB Positron",
+        measure_control = False,
+        draw_control = False,
+        center = (52.4, 4.9),
+        zoom=9
+    )
+    m.add_gdf(measurements_gdf, layer_name = "Measurements")
+    m
     return
 
 

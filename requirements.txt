@@ -96,8 +96,10 @@ filelock==3.19.1
     # via
     #   cachecontrol
     #   sphinx-toolbox
+folium==0.20.0
 fonttools==4.59.2
     # via matplotlib
+geopandas==1.1.1
 h11==0.16.0
     # via
     #   httpcore
