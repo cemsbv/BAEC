@@ -27,7 +27,7 @@ repository = "https://github.com/cemsbv/BAEC"
 [project.optional-dependencies]
 test = ["coveralls", "pytest", "requests-mock"]
 docs = [
-    "Sphinx>=6,<7",
+    "Sphinx>=6,<8",
     "sphinx-autodoc-typehints>=1,<2",
     "ipython>=8,<9",
     "asteroid-sphinx-theme==0.0.3",
