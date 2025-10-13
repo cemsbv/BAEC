@@ -218,7 +218,7 @@ class FittedFitCoreModel:
             axes.set_xlim(min_log_time, max(days) + 1.0)
             axes.set_xscale("log")
 
-        axes.set_ylim(min(settlement) - 0.5, max(settlement) + 0.5)
+        # axes.set_ylim(min(settlement) - 0.5, max(settlement) + 0.5)
         if invert_yaxis:
             axes.invert_yaxis()
 
