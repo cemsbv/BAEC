@@ -183,7 +183,7 @@ natsort==8.4.0
     # via domdf-python-tools
 nbformat==5.10.4
     # via marimo
-numpy==2.3.2
+numpy==2.3.4
     # via
     #   baec (pyproject.toml)
     #   contourpy
