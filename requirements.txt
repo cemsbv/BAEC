@@ -31,7 +31,7 @@ beautifulsoup4==4.13.5
     # via sphinx-toolbox
 boto3==1.40.21
     # via baec (pyproject.toml)
-botocore==1.40.21
+botocore==1.40.69
     # via
     #   boto3
     #   s3transfer
