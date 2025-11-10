@@ -71,7 +71,7 @@ jobs:
     name: Formatting check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Full git history is needed to get a proper list of changed test_files within `super-linter`
           fetch-depth: 0
@@ -81,15 +81,40 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
-          FILTER_REGEX_EXCLUDE: '.*[tests|marimo]/.*'
+          FILTER_REGEX_EXCLUDE: ".*[tests|marimo]/.*"
 
-          VALIDATE_JSCPD: false
-          VALIDATE_CSS: false
           VALIDATE_BASH: false
-          VALIDATE_YAML: false
-          VALIDATE_PYTHON_PYLINT: false
-          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_BIOME_FIX: false
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_CSS: false
+          VALIDATE_CSS_PRETTIER: false
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
+          VALIDATE_GRAPHQL: false
+          VALIDATE_GRAPHQL_PRETTIER: false
+          VALIDATE_HTML: false
+          VALIDATE_HTML_PRETTIER: false
+          VALIDATE_JAVASCRIPT_ES: false
+          VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_JSCPD: false
+          VALIDATE_JSONC: false
+          VALIDATE_JSONC_PRETTIER: false
+          VALIDATE_JSON_ES: false
+          VALIDATE_JSON_PRETTIER: false
+          VALIDATE_JSX: false
+          VALIDATE_JSX_PRETTIER: false
           VALIDATE_MARKDOWN: false
+          VALIDATE_MARKDOWN_PRETTIER: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_TSX: false
+          VALIDATE_TYPESCRIPT_ES: false
+          VALIDATE_TYPESCRIPT_PRETTIER: false
+          VALIDATE_VUE: false
+          VALIDATE_VUE_PRETTIER: false
+          VALIDATE_YAML: false
 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

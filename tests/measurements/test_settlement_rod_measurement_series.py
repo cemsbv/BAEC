@@ -78,18 +78,18 @@ def test_settlement_rod_measurement_series_init_with_invalid_measurements(
 
     # Different coordinate reference systems (horizontal)
     measurements = deepcopy(example_settlement_rod_measurements)
-    measurements[
-        0
-    ]._coordinate_reference_systems = CoordinateReferenceSystems.from_epsg(28992, 5710)
+    measurements[0]._coordinate_reference_systems = (
+        CoordinateReferenceSystems.from_epsg(28992, 5710)
+    )
 
     with pytest.raises(ValueError, match="coordinate reference systems"):
         SettlementRodMeasurementSeries(measurements=measurements)
 
     # Different coordinate reference systems (vertical)
     measurements = deepcopy(example_settlement_rod_measurements)
-    measurements[
-        0
-    ]._coordinate_reference_systems = CoordinateReferenceSystems.from_epsg(31370, 5709)
+    measurements[0]._coordinate_reference_systems = (
+        CoordinateReferenceSystems.from_epsg(31370, 5709)
+    )
 
     with pytest.raises(ValueError, match="coordinate reference systems"):
         SettlementRodMeasurementSeries(measurements=measurements)

@@ -59,7 +59,11 @@ class FitCoreResult:
         settlement: float
             settlement in meters
         """
-        return np.interp(day, np.array(self.days).astype(np.int16), np.array(self.settlement).astype(np.float64))
+        return np.interp(
+            day,
+            np.array(self.days).astype(np.int16),
+            np.array(self.settlement).astype(np.float64),
+        )
 
     def release_date(self, z: float, day: int) -> int:
         """
@@ -77,13 +81,18 @@ class FitCoreResult:
         date: int
             Date the corresponds with the settlement
         """
-        return int(interp1d(
-            x=(np.array(self.settlement).astype(np.float64)
-                - self.settlement_at_day(day=day)),
-            y=self.days,
-            kind="quadratic",
-            fill_value="extrapolate",
-        )(z))
+        return int(
+            interp1d(
+                x=(
+                    np.array(self.settlement).astype(np.float64)
+                    - self.settlement_at_day(day=day)
+                ),
+                y=self.days,
+                kind="quadratic",
+                fill_value="extrapolate",
+            )(z)
+        )
+
 
 @dataclass
 class FitCoreParametersBounds:
@@ -280,13 +289,19 @@ class FitCoreModelGenerator:
         result : FitCoreResult
         """
         if self._model.primarySettlement is None:
-            raise ValueError("The value for 'primarySettlement' is None, please update the value")
+            raise ValueError(
+                "The value for 'primarySettlement' is None, please update the value"
+            )
         if self._model.shift is None:
             raise ValueError("The value for 'shift' is None, please update the value")
         if self._model.finalSettlement is None:
-            raise ValueError("The value for 'finalSettlement' is None, please update the value")
+            raise ValueError(
+                "The value for 'finalSettlement' is None, please update the value"
+            )
         if self._model.hydrodynamicPeriod is None:
-            raise ValueError("The value for 'hydrodynamicPeriod' is None, please update the value")
+            raise ValueError(
+                "The value for 'hydrodynamicPeriod' is None, please update the value"
+            )
 
         payload = {"days": days} | self._model.__dict__
 

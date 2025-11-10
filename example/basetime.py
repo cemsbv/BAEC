@@ -33,7 +33,6 @@ for project, items in tqdm(projects_ids.items()):
                 project=project, rod_id=item
             )
 
-
             # create figures
             fig = measurements.plot_xyz_time()
             fig.savefig(f"{workdir}/figs/{project}-{item}.png")

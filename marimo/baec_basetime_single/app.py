@@ -10,15 +10,17 @@ app = marimo.App(
 
 @app.cell
 def _():
-    import sys
     import datetime
     import os
+    import sys
 
     import altair as alt
-    import marimo as mo
     import micropip
     import numpy as np
     import pandas as pd
+
+    import marimo as mo
+
     return alt, datetime, micropip, mo, np, os, pd, sys
 
 
@@ -45,6 +47,7 @@ async def _(micropip, sys):
         FitCoreParameters,
         FitCoreParametersBounds,
     )
+
     return (
         BaseTimeBucket,
         Credentials,
@@ -78,9 +81,7 @@ def _(NucleiClient, jwt, os):
 
 @app.cell
 def _(mo):
-    aws_access_key_id = mo.ui.text(
-        placeholder="", label="BaseTime key ID", kind="text"
-    )
+    aws_access_key_id = mo.ui.text(placeholder="", label="BaseTime key ID", kind="text")
     aws_access_key_id
     return (aws_access_key_id,)
 
@@ -292,18 +293,12 @@ def _(
 ):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     params = FitCoreParameters(
-        primarySettlement=FitCoreParametersBounds(
-            *primary_settlement_bounds.value
-        ),
+        primarySettlement=FitCoreParametersBounds(*primary_settlement_bounds.value),
         shift=FitCoreParametersBounds(*shift_bounds.value),
-        hydrodynamicPeriod=FitCoreParametersBounds(
-            *hydrodynamic_period_bounds.value
-        ),
+        hydrodynamicPeriod=FitCoreParametersBounds(*hydrodynamic_period_bounds.value),
         finalSettlement=FitCoreParametersBounds(*final_settlement_bounds.value),
     )
-    model = FitCoreModelGenerator(
-        series=series, client=client, model_parameters=params
-    )
+    model = FitCoreModelGenerator(series=series, client=client, model_parameters=params)
     return (model,)
 
 
@@ -324,9 +319,7 @@ def _(mo, model, np, series):
 @app.cell
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
-    shift = mo.ui.number(
-        start=0, step=1, value=model.fit().shift, label="shift [days]"
-    )
+    shift = mo.ui.number(start=0, step=1, value=model.fit().shift, label="shift [days]")
 
     shift
     return (shift,)
@@ -415,7 +408,6 @@ def _(df_measurements, mo, model, np, pd, series, shift, start_date_time):
     days = np.arange(0, 10000 + 1, step=10, dtype=int) + shift.value
     result = model.predict(days)
 
-
     df_settlements_predictions = pd.DataFrame(
         {
             "days": days,
@@ -426,8 +418,7 @@ def _(df_measurements, mo, model, np, pd, series, shift, start_date_time):
         df_settlements_predictions["days"], unit="day"
     ) + pd.to_datetime(start_date_time.value)
     df_settlements_predictions["days"] = (
-        df_settlements_predictions["date_time"]
-        - df_measurements["date_time"].min()
+        df_settlements_predictions["date_time"] - df_measurements["date_time"].min()
     ).dt.days
     return df_settlements_predictions, result
 
@@ -456,9 +447,7 @@ def _(
 ):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-    _days = result.release_date(
-        z=residual_settlement.value, day=end_time_delta.value
-    )
+    _days = result.release_date(z=residual_settlement.value, day=end_time_delta.value)
     _daytime = start_date_time.value + datetime.timedelta(days=_days)
 
     release_date = mo.md(
@@ -483,17 +472,13 @@ def _(
 ):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-
     df_measurements["fill_thicknesses"] = (
         df_measurements["ground_surface_z"].diff().cumsum()
     )
-    df_measurements["settlements"] = (
-        df_measurements["rod_bottom_z"].diff().cumsum()
-    )
+    df_measurements["settlements"] = df_measurements["rod_bottom_z"].diff().cumsum()
     df_measurements["days"] = (
         df_measurements["date_time"] - df_measurements["date_time"].min()
     ).dt.days
-
 
     _chart_1 = (
         alt.Chart(df_measurements)
@@ -507,19 +492,13 @@ def _(
                 title="Days",
                 scale=alt.Scale(type="symlog"),
             ),
-            y=alt.Y(
-                field="settlements", type="quantitative", title="Measurements [m]"
-            ),
+            y=alt.Y(field="settlements", type="quantitative", title="Measurements [m]"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(
                     field="settlements", format=",.2f", title="SettlementElevation"
                 ),
-                alt.Tooltip(
-                    field="rod_bottom_z", format=",.2f", title="Settlement"
-                ),
+                alt.Tooltip(field="rod_bottom_z", format=",.2f", title="Settlement"),
             ],
         )
     )
@@ -542,9 +521,7 @@ def _(
                 title="Measurements [m]",
             ),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(
                     field="fill_thicknesses",
                     format=",.2f",
@@ -569,13 +546,9 @@ def _(
                 title="Days",
                 scale=alt.Scale(type="symlog"),
             ),
-            y=alt.Y(
-                field="predict", type="quantitative", title="Measurements [m]"
-            ),
+            y=alt.Y(field="predict", type="quantitative", title="Measurements [m]"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(field="predict", format=",.2f", title="Value"),
             ],
         )
@@ -636,9 +609,7 @@ def _(
         )
     )
 
-    (
-        _chart_1 + _chart_2 + _chart_3 + _rules_1 + _rules_2
-    ).resolve_scale().properties(
+    (_chart_1 + _chart_2 + _chart_3 + _rules_1 + _rules_2).resolve_scale().properties(
         width=1100,  # Set your desired width here
         height=300,  # Set your desired height here
     )

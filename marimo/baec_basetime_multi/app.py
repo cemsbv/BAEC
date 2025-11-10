@@ -10,19 +10,19 @@ app = marimo.App(
 
 @app.cell
 def _():
-    import sys
     import datetime
     import os
+    import sys
 
     import altair as alt
-    import marimo as mo
+    import geopandas as gpd
+    import leafmap.foliumap as leafmap
     import micropip
     import numpy as np
     import pandas as pd
-
-    import leafmap.foliumap as leafmap
-    import geopandas as gpd
     import shapely as shp
+
+    import marimo as mo
 
     return alt, datetime, gpd, leafmap, micropip, mo, np, os, pd, shp, sys
 
@@ -50,6 +50,7 @@ async def _(micropip, sys):
         FitCoreParameters,
         FitCoreParametersBounds,
     )
+
     return (
         BaseTimeBucket,
         Credentials,
@@ -82,9 +83,7 @@ def _(NucleiClient, jwt, os):
 
 @app.cell
 def _(mo):
-    aws_access_key_id = mo.ui.text(
-        placeholder="", label="BaseTime key ID", kind="text"
-    )
+    aws_access_key_id = mo.ui.text(placeholder="", label="BaseTime key ID", kind="text")
     aws_access_key_id
     return (aws_access_key_id,)
 
@@ -178,8 +177,7 @@ def _(manage_project, mo, np, pd, project, rod_id):
                 "Time;min": _series_df["date_time"].iloc[0],
                 "Time;max": _series_df["date_time"].iloc[-1],
                 "Duration": (
-                    _series_df["date_time"].iloc[-1]
-                    - _series_df["date_time"].iloc[0]
+                    _series_df["date_time"].iloc[-1] - _series_df["date_time"].iloc[0]
                 ).days,
                 "Number of measurements": len(_series_df),
                 "SurfaceLevel;max": _series_df["ground_surface_z"].iloc[-1],
@@ -207,8 +205,12 @@ def _(manage_project, mo, np, pd, project, rod_id):
 
 @app.cell
 def _(gpd, measurements_db, shp):
-    measurements_db["geometry"] = measurements_db[["rod_top_x", "rod_top_y"]].apply(lambda x: shp.Point(*x), axis=1)
-    measurements_gdf = gpd.GeoDataFrame(measurements_db, geometry="geometry",crs="epsg:28992").to_crs("WGS84")
+    measurements_db["geometry"] = measurements_db[["rod_top_x", "rod_top_y"]].apply(
+        lambda x: shp.Point(*x), axis=1
+    )
+    measurements_gdf = gpd.GeoDataFrame(
+        measurements_db, geometry="geometry", crs="epsg:28992"
+    ).to_crs("WGS84")
     return (measurements_gdf,)
 
 
@@ -216,12 +218,12 @@ def _(gpd, measurements_db, shp):
 def _(leafmap, measurements_gdf):
     m = leafmap.Map(
         tiles="CartoDB Positron",
-        measure_control = False,
-        draw_control = False,
-        center = (52.4, 4.9),
-        zoom=9
+        measure_control=False,
+        draw_control=False,
+        center=(52.4, 4.9),
+        zoom=9,
     )
-    m.add_gdf(measurements_gdf, layer_name = "Measurements")
+    m.add_gdf(measurements_gdf, layer_name="Measurements")
     m
     return
 
@@ -254,21 +256,15 @@ def _(alt, measurements_db, pd, start_date_time):
             ),
             color=alt.Color(field="object_id", type="nominal", title="Legend"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
-                alt.Tooltip(
-                    field="ground_surface_z", format=",.2f", title="Value"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
+                alt.Tooltip(field="ground_surface_z", format=",.2f", title="Value"),
                 alt.Tooltip(field="object_id"),
             ],
         )
     )
     _rules = (
         alt.Chart(
-            pd.DataFrame(
-                {"date_time": [start_date_time.value], "color": ["black"]}
-            )
+            pd.DataFrame({"date_time": [start_date_time.value], "color": ["black"]})
         )
         .mark_rule()
         .encode(
@@ -299,9 +295,7 @@ def _(alt, measurements_db, pd, start_date_time):
             ),
             color=alt.Color(field="object_id", type="nominal", title="Legend"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(field="rod_bottom_z", format=",.2f", title="Value"),
                 alt.Tooltip(field="object_id"),
             ],
@@ -310,9 +304,7 @@ def _(alt, measurements_db, pd, start_date_time):
 
     _rules = (
         alt.Chart(
-            pd.DataFrame(
-                {"date_time": [start_date_time.value], "color": ["black"]}
-            )
+            pd.DataFrame({"date_time": [start_date_time.value], "color": ["black"]})
         )
         .mark_rule()
         .encode(
@@ -444,13 +436,9 @@ def _(
 ):
     mo.stop(predicate=len(series_list) == 0)
     params = FitCoreParameters(
-        primarySettlement=FitCoreParametersBounds(
-            *primary_settlement_bounds.value
-        ),
+        primarySettlement=FitCoreParametersBounds(*primary_settlement_bounds.value),
         shift=FitCoreParametersBounds(*shift_bounds.value),
-        hydrodynamicPeriod=FitCoreParametersBounds(
-            *hydrodynamic_period_bounds.value
-        ),
+        hydrodynamicPeriod=FitCoreParametersBounds(*hydrodynamic_period_bounds.value),
         finalSettlement=FitCoreParametersBounds(*final_settlement_bounds.value),
     )
 
@@ -490,9 +478,7 @@ def _(datetime, measurement, mo, model_list, np, pd, start_date_time):
     ):
         try:
             days = (
-                np.logspace(
-                    start=0, stop=5, endpoint=True, num=100, dtype=np.int64
-                )
+                np.logspace(start=0, stop=5, endpoint=True, num=100, dtype=np.int64)
                 + _model.model.shift
             )
             result = _model.predict(days)
@@ -574,17 +560,12 @@ def _(alt, mo, model_list, prediction_db):
             ),
             color=alt.Color(field="object_id", type="nominal", title="Legend"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
-                alt.Tooltip(
-                    field="fill_thicknesses", format=",.2f", title="Value"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
+                alt.Tooltip(field="fill_thicknesses", format=",.2f", title="Value"),
                 alt.Tooltip(field="object_id"),
             ],
         )
     )
-
 
     (_chart_1).resolve_scale()
     return
@@ -593,9 +574,7 @@ def _(alt, mo, model_list, prediction_db):
 @app.cell
 def _(alt, mo, model_list, prediction_db):
     mo.stop(predicate=len(model_list) == 0)
-    _colors = alt.Scale(
-        domain=["settlements", "predict"], range=["orange", "green"]
-    )
+    _colors = alt.Scale(domain=["settlements", "predict"], range=["orange", "green"])
 
     _chart_1 = (
         alt.Chart(prediction_db)
@@ -607,14 +586,10 @@ def _(alt, mo, model_list, prediction_db):
                 title="Days",
                 scale=alt.Scale(type="symlog"),
             ),
-            y=alt.Y(
-                field="predict", type="quantitative", title="Measurements [m]"
-            ),
+            y=alt.Y(field="predict", type="quantitative", title="Measurements [m]"),
             color=alt.Color(field="object_id", type="nominal", title="Legend"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(field="predict", format=",.2f", title="Value"),
                 alt.Tooltip(field="object_id"),
             ],
@@ -630,20 +605,15 @@ def _(alt, mo, model_list, prediction_db):
                 title="Days",
                 scale=alt.Scale(type="symlog"),
             ),
-            y=alt.Y(
-                field="settlements", type="quantitative", title="Measurements [m]"
-            ),
+            y=alt.Y(field="settlements", type="quantitative", title="Measurements [m]"),
             color=alt.Color(field="object_id", type="nominal", title="Legend"),
             tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(field="settlements", format=",.2f", title="Value"),
                 alt.Tooltip(field="object_id"),
             ],
         )
     )
-
 
     (_chart_1 + _chart_2).resolve_scale()
     return
