@@ -14,6 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import ScalarFormatter
 from nuclei.client import NucleiClient
 from nuclei.client.utils import serialize_jsonifyable_object
+from scipy.interpolate import interp1d
 
 from baec.measurements import plot_utils
 from baec.measurements.measured_settlement_series import MeasuredSettlementSeries
@@ -39,8 +40,58 @@ class FitCoreModel:
 class FitCoreResult:
     """Object containing the results of a predict call."""
 
+    days: Sequence
+    """days [day]"""
     settlement: Sequence
     """Settlement [m]"""
+
+    def settlement_at_day(self, day: int) -> float:
+        """
+        Predict the settlement at a given time.
+
+        Parameters
+        ----------
+        day: int
+            TimeDelta of the end settlement based from start of measurements
+
+        Returns
+        -------
+        settlement: float
+            settlement in meters
+        """
+        return np.interp(
+            day,
+            np.array(self.days).astype(np.int16),
+            np.array(self.settlement).astype(np.float64),
+        )
+
+    def release_date(self, z: float, day: int) -> int:
+        """
+        Predict day on which a settlement is met
+
+        Parameters
+        ----------
+        z: float
+            Residual settlement [m]
+        day: int
+            TimeDelta of the end settlement based from start of measurements
+
+        Returns
+        -------
+        date: int
+            Date the corresponds with the settlement
+        """
+        return int(
+            interp1d(
+                x=(
+                    np.array(self.settlement).astype(np.float64)
+                    - self.settlement_at_day(day=day)
+                ),
+                y=self.days,
+                kind="quadratic",
+                fill_value="extrapolate",
+            )(z)
+        )
 
 
 @dataclass
@@ -238,13 +289,19 @@ class FitCoreModelGenerator:
         result : FitCoreResult
         """
         if self._model.primarySettlement is None:
-            raise ValueError("The value for 'primarySettlement' is None, please update the value")
+            raise ValueError(
+                "The value for 'primarySettlement' is None, please update the value"
+            )
         if self._model.shift is None:
             raise ValueError("The value for 'shift' is None, please update the value")
         if self._model.finalSettlement is None:
-            raise ValueError("The value for 'finalSettlement' is None, please update the value")
+            raise ValueError(
+                "The value for 'finalSettlement' is None, please update the value"
+            )
         if self._model.hydrodynamicPeriod is None:
-            raise ValueError("The value for 'hydrodynamicPeriod' is None, please update the value")
+            raise ValueError(
+                "The value for 'hydrodynamicPeriod' is None, please update the value"
+            )
 
         payload = {"days": days} | self._model.__dict__
 
@@ -256,7 +313,7 @@ class FitCoreModelGenerator:
         if not response.ok:
             raise RuntimeError(response.text)
 
-        return FitCoreResult(**response.json())
+        return FitCoreResult(**({"days": days} | response.json()))
 
     def plot_settlement_time(
         self,

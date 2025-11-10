@@ -14,6 +14,11 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     permissions: write-all
+    strategy:
+      matrix:
+        folder:
+          - "baec_basetime_single"
+          - "baec_basetime_multi"
     steps:
       - uses: actions/checkout@v4
 
@@ -31,11 +36,11 @@ jobs:
 
       - name: 📄 Export notebook
         run: |
-          marimo export html-wasm notebooks/gui_notebook.py -o public --mode run
+          marimo export html-wasm marimo/${{ matrix.folder }}/app.py -o public --mode run
 
       - name: Publish app
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          destination_dir: ./marimo
+          destination_dir: ./marimo/${{ matrix.folder }}

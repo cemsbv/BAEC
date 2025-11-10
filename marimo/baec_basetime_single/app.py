@@ -2,46 +2,52 @@ import marimo
 
 __generated_with = "0.14.17"
 app = marimo.App(
-    width="medium",
+    width="full",
     app_title="BAEC",
-    layout_file="layouts/gui_notebook.grid.json",
+    layout_file="layouts/app.grid.json",
 )
 
 
 @app.cell
 def _():
-    import sys
     import datetime
     import os
+    import sys
 
     import altair as alt
-    import marimo as mo
     import micropip
     import numpy as np
     import pandas as pd
+
+    import marimo as mo
+
     return alt, datetime, micropip, mo, np, os, pd, sys
 
 
 @app.cell
 async def _(micropip, sys):
-    if sys.platform == 'emscripten':
+    if sys.platform == "emscripten":
         # running in Pyodide or other Emscripten based build
         await micropip.install(["pyodide-http", "baec[aws]", "ssl"])
 
         # Patch requests
         import pyodide_http
+
         pyodide_http.patch_all()
 
     from nuclei.client import NucleiClient
 
     from baec.measurements.io.basetime import BaseTimeBucket, Credentials
-    from baec.measurements.measured_settlement_series import MeasuredSettlementSeries
+    from baec.measurements.measured_settlement_series import (
+        MeasuredSettlementSeries,
+    )
     from baec.model.fitcore import (
         FitCoreModel,
         FitCoreModelGenerator,
         FitCoreParameters,
         FitCoreParametersBounds,
     )
+
     return (
         BaseTimeBucket,
         Credentials,
@@ -118,9 +124,10 @@ def _(BaseTimeBucket, credentials):
 @app.cell
 def _(mo, projects_ids):
     # With search functionality
+    _options = sorted(list(projects_ids.keys()))
     project = mo.ui.dropdown(
-        options=projects_ids.keys(),
-        value=list(projects_ids.keys())[0],
+        options=_options,
+        value=_options[0],
         label="Project name",
         searchable=True,
         allow_select_none=False,
@@ -132,9 +139,10 @@ def _(mo, projects_ids):
 @app.cell
 def _(mo, project, projects_ids):
     # With search functionality
+    _options = sorted(projects_ids[project.value])
     rod_id = mo.ui.dropdown(
-        options=projects_ids[project.value],
-        value=projects_ids[project.value][0],
+        options=_options,
+        value=_options[0],
         label="Settlement rod",
         searchable=True,
         allow_select_none=False,
@@ -149,53 +157,31 @@ def _(manage_project, project, rod_id):
     measurements = manage_project.make_settlement_rod_measurement_series(
         project=project.value, rod_id=rod_id.value
     )
-    return (measurements,)
+
+    df_measurements = measurements.to_dataframe()
+    df_measurements = df_measurements.set_index("date_time", drop=False)
+    df_measurements = df_measurements.resample("1W").max()
+    return df_measurements, measurements
 
 
 @app.cell
-def _(measurements, mo):
+def _(df_measurements, mo, np):
+    _message = mo.md("")
+    if all(np.isnan(df_measurements["rod_bottom_z"])):
+        _message = mo.md(
+            ":warning: **No measurements**, please select a defferent settlement rod."
+        )
+    _message
+    return
+
+
+@app.cell
+def _(df_measurements, mo):
     start_date_time = mo.ui.date.from_series(
-        measurements.to_dataframe()["date_time"], label="Start date"
+        df_measurements["date_time"], label="Start date"
     )
     start_date_time
     return (start_date_time,)
-
-
-@app.cell
-def _(alt, measurements, pd, start_date_time):
-    _colors = alt.Scale(domain=["rod_top_z", "ground_surface_z", "rod_bottom_z"], range=['blue', 'orange', 'green'])
-
-    _chart_1 = (
-        alt.Chart(measurements.to_dataframe())
-        .transform_fold(
-            ['rod_top_z', 'ground_surface_z', 'rod_bottom_z'],
-            as_=['variable', 'value']
-        )
-        .mark_line()
-        .encode(
-            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate", title="Date"),
-            y=alt.Y(field="value", type="quantitative", title="Measurements [m NAP]"),
-            color=alt.Color('variable:N', scale=_colors, title="Legend"),
-            tooltip=[
-                alt.Tooltip(
-                    field="date_time", timeUnit="yearmonthdate", title="Date"
-                ),
-                alt.Tooltip(field="value", format=",.2f", title="Value"),
-            ],
-        )
-    )
-    _rules = (
-        alt.Chart(
-            pd.DataFrame({"date_time": [start_date_time.value], "color": ["black"]})
-        )
-        .mark_rule()
-        .encode(
-            x=alt.X(field="date_time", type="temporal", timeUnit="yearmonthdate"),
-            color=alt.Color("color:N", scale=None),
-        )
-    )
-    (_chart_1 + _rules).resolve_scale()
-    return
 
 
 @app.cell
@@ -211,14 +197,25 @@ def _(measurements, mo):
 
 
 @app.cell
-def _(MeasuredSettlementSeries, datetime, measurements, start_date_time):
+def _(
+    MeasuredSettlementSeries,
+    datetime,
+    df_measurements,
+    measurements,
+    start_date_time,
+):
     series = MeasuredSettlementSeries(
         measurements,
         start_date_time=datetime.datetime.combine(
-            start_date_time.value, measurements.to_dataframe()["date_time"].min().time()
+            start_date_time.value, df_measurements["date_time"].min().time()
         ),
     )
     return (series,)
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
@@ -239,7 +236,12 @@ def _(mo):
 @app.cell
 def _(mo):
     shift_bounds = mo.ui.range_slider(
-        start=0, stop=10, step=1, value=[0, 6], show_value=True, label="shift [days]"
+        start=0,
+        stop=1100,
+        step=1,
+        value=[0, 365],
+        show_value=True,
+        label="shift [days]",
     )
 
     shift_bounds
@@ -341,7 +343,10 @@ def _(mo, model, np, series):
 def _(mo, model, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     final_settlement = mo.ui.number(
-        start=0, step=0.01, value=model.fit().finalSettlement, label="final settlement [m]"
+        start=0,
+        step=0.01,
+        value=model.fit().finalSettlement,
+        label="final settlement [m]",
     )
     final_settlement
     return (final_settlement,)
@@ -375,153 +380,247 @@ def _(
 def _(mo):
     end_time_delta = mo.ui.number(
         start=0,
-        step=10,
-        value=100,
-        label="End date of the predicted settlement  [days]",
+        stop=10000,
+        step=1,
+        value=900,
+        label="End date of the predicted settlement [days]",
     )
     end_time_delta
     return (end_time_delta,)
 
 
 @app.cell
-def _(end_time_delta, mo, model, np, pd, series, shift, start_date_time):
-    mo.stop(predicate=all(np.isnan(series.settlements)))
-
-    days = np.arange(0, end_time_delta.value + 1, step=1, dtype=int) + shift.value
-    settlements = model.predict(days).settlement
-
-    _df_left = pd.DataFrame(
-                {
-                    "days": series.days,
-                    "fill_thicknesses": series.fill_thicknesses,
-                    "settlements": np.array(series.settlements) * -1,
-                    "merge": (np.round(series.days, 3)*100).astype(int)
-                }
-            )
-
-    _df_right = pd.DataFrame(
-                {
-                    "days": days,
-                    "predict": np.array(settlements) * -1,
-                    "merge": (np.round(days, 3)*100).astype(int)
-                }
-            )
-
-    _df = pd.merge(_df_right, _df_left, on="merge", how = 'outer')
-    _df["days_merge"] = _df["merge"] / 100
-    _df["date_time"] = pd.to_timedelta(_df["days_merge"], unit="day") + pd.to_datetime(start_date_time.value)
-    df_settlements_preditions = _df.interpolate(limit_direction="backward")
-    return days, df_settlements_preditions, settlements
+def _(mo):
+    residual_settlement = mo.ui.number(
+        start=0,
+        step=0.01,
+        value=0.1,
+        label="Residual settlement [m]",
+    )
+    residual_settlement
+    return (residual_settlement,)
 
 
 @app.cell
-def _(days, end_time_delta, mo, np, series, settlements):
+def _(df_measurements, mo, model, np, pd, series, shift, start_date_time):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-    end_time_settlement = mo.ui.number(
-        value=np.interp(end_time_delta.value, days, np.array(settlements).astype(np.float64)).round(3),
-        label=f"Settlement after {end_time_delta.value} days [m]",
-        disabled=True
+    days = np.arange(0, 10000 + 1, step=10, dtype=int) + shift.value
+    result = model.predict(days)
+
+    df_settlements_predictions = pd.DataFrame(
+        {
+            "days": days,
+            "predict": np.array(result.settlement) * -1,
+        }
+    )
+    df_settlements_predictions["date_time"] = pd.to_timedelta(
+        df_settlements_predictions["days"], unit="day"
+    ) + pd.to_datetime(start_date_time.value)
+    df_settlements_predictions["days"] = (
+        df_settlements_predictions["date_time"] - df_measurements["date_time"].min()
+    ).dt.days
+    return df_settlements_predictions, result
+
+
+@app.cell
+def _(end_time_delta, mo, np, result, series):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
+    _settlement = result.settlement_at_day(end_time_delta.value).round(3)
+    end_time_settlement = mo.md(
+        f"Settlement after {end_time_delta.value} days is {_settlement} meters.",
     )
     end_time_settlement
     return
 
 
 @app.cell
-def _(alt, df_settlements_preditions, end_time_delta, mo, np, pd, series):
+def _(
+    datetime,
+    end_time_delta,
+    mo,
+    np,
+    residual_settlement,
+    result,
+    series,
+    start_date_time,
+):
     mo.stop(predicate=all(np.isnan(series.settlements)))
 
-    _colors = alt.Scale(domain=["fill_thicknesses",], range=['blue'])
+    _days = result.release_date(z=residual_settlement.value, day=end_time_delta.value)
+    _daytime = start_date_time.value + datetime.timedelta(days=_days)
+
+    release_date = mo.md(
+        f"A settlement of {residual_settlement.value} meters is obtaind after {_days} days ({_daytime.strftime('%d/%m/%Y')})",
+    )
+    release_date
+    return
+
+
+@app.cell
+def _(
+    alt,
+    datetime,
+    df_measurements,
+    df_settlements_predictions,
+    end_time_delta,
+    mo,
+    np,
+    pd,
+    series,
+    start_date_time,
+):
+    mo.stop(predicate=all(np.isnan(series.settlements)))
+
+    df_measurements["fill_thicknesses"] = (
+        df_measurements["ground_surface_z"].diff().cumsum()
+    )
+    df_measurements["settlements"] = df_measurements["rod_bottom_z"].diff().cumsum()
+    df_measurements["days"] = (
+        df_measurements["date_time"] - df_measurements["date_time"].min()
+    ).dt.days
 
     _chart_1 = (
-        alt.Chart(df_settlements_preditions)
-        .transform_fold(
-            ["fill_thicknesses"],
-            as_=['variable', 'value']
+        alt.Chart(df_measurements)
+        .mark_line(
+            color="orange",
         )
-        .mark_line()
         .encode(
-            x=alt.X(field="days_merge", type="quantitative", title="Days", scale=alt.Scale(type='symlog')),
-            y=alt.Y(field="value", type="quantitative", title="Measurements [m]"),
-            color=alt.Color('variable:N', scale=_colors, title="Legend"),
+            x=alt.X(
+                field="days",
+                type="quantitative",
+                title="Days",
+                scale=alt.Scale(type="symlog"),
+            ),
+            y=alt.Y(field="settlements", type="quantitative", title="Measurements [m]"),
             tooltip=[
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(
-                    field="date_time", title="Date"
+                    field="settlements", format=",.2f", title="SettlementElevation"
                 ),
-                alt.Tooltip(
-                    field="days_merge", title="Days"
-                ),
-                alt.Tooltip(field="value", format=",.2f", title="Value"),
+                alt.Tooltip(field="rod_bottom_z", format=",.2f", title="Settlement"),
             ],
         )
     )
-
-    _rules_1 = (
-        alt.Chart(
-            pd.DataFrame({"day": [end_time_delta.value], "color": ["black"]})
-        )
-        .mark_rule()
-        .encode(
-            x=alt.X(field="day", type="quantitative"),
-            color=alt.Color("color:N", scale=None),
-        )
-    )
-
-
-    (_chart_1 + _rules_1).resolve_scale()
-    return
-
-
-@app.cell
-def _(alt, df_settlements_preditions, end_time_delta, mo, np, pd, series):
-    mo.stop(predicate=all(np.isnan(series.settlements)))
-    _colors = alt.Scale(domain=["settlements", "predict"], range=['orange', 'green'])
 
     _chart_2 = (
-        alt.Chart(df_settlements_preditions)
-        .transform_fold(
-            ["settlements", "predict"],
-            as_=['variable', 'value']
+        alt.Chart(df_measurements)
+        .mark_line(
+            color="blue",
         )
-        .mark_line()
         .encode(
-            x=alt.X(field="days_merge", type="quantitative", title="Days", scale=alt.Scale(type='symlog')),
-            y=alt.Y(field="value", type="quantitative", title="Measurements [m]"),
-            color=alt.Color('variable:N', scale=_colors, title="Legend"),
+            x=alt.X(
+                field="days",
+                type="quantitative",
+                title="Days",
+                scale=alt.Scale(type="symlog"),
+            ),
+            y=alt.Y(
+                field="fill_thicknesses",
+                type="quantitative",
+                title="Measurements [m]",
+            ),
             tooltip=[
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
                 alt.Tooltip(
-                    field="date_time", title="Date"
+                    field="fill_thicknesses",
+                    format=",.2f",
+                    title="SurfaceElevation",
                 ),
                 alt.Tooltip(
-                    field="days_merge", title="Days"
+                    field="ground_surface_z", format=",.2f", title="SurfaceLevel"
                 ),
-                alt.Tooltip(field="value", format=",.2f", title="Value"),
             ],
         )
     )
 
+    _chart_3 = (
+        alt.Chart(df_settlements_predictions)
+        .mark_line(
+            color="green",
+        )
+        .encode(
+            x=alt.X(
+                field="days",
+                type="quantitative",
+                title="Days",
+                scale=alt.Scale(type="symlog"),
+            ),
+            y=alt.Y(field="predict", type="quantitative", title="Measurements [m]"),
+            tooltip=[
+                alt.Tooltip(field="date_time", timeUnit="yearmonthdate", title="Date"),
+                alt.Tooltip(field="predict", format=",.2f", title="Value"),
+            ],
+        )
+    )
 
     _rules_1 = (
         alt.Chart(
-            pd.DataFrame({"day": [end_time_delta.value], "color": ["black"]})
+            pd.DataFrame(
+                {
+                    "days": [
+                        (
+                            pd.to_datetime(
+                                start_date_time.value
+                                + datetime.timedelta(days=end_time_delta.value)
+                            ).date()
+                            - df_measurements["date_time"].min().date()
+                        ).days
+                    ],
+                    "color": ["black"],
+                }
+            )
         )
         .mark_rule()
         .encode(
-            x=alt.X(field="day", type="quantitative"),
+            x=alt.X(
+                field="days",
+                type="quantitative",
+                title="Days",
+                scale=alt.Scale(type="symlog"),
+            ),
             color=alt.Color("color:N", scale=None),
         )
     )
 
+    _rules_2 = (
+        alt.Chart(
+            pd.DataFrame(
+                {
+                    "days": [
+                        (
+                            pd.to_datetime(start_date_time.value).date()
+                            - df_measurements["date_time"].min().date()
+                        ).days
+                    ],
+                    "color": ["black"],
+                }
+            )
+        )
+        .mark_rule()
+        .encode(
+            x=alt.X(
+                field="days",
+                type="quantitative",
+                title="Days",
+                scale=alt.Scale(type="symlog"),
+            ),
+            color=alt.Color("color:N", scale=None),
+        )
+    )
 
-    (_chart_2 + _rules_1).resolve_scale()
+    (_chart_1 + _chart_2 + _chart_3 + _rules_1 + _rules_2).resolve_scale().properties(
+        width=1100,  # Set your desired width here
+        height=300,  # Set your desired height here
+    )
     return
 
 
 @app.cell
-def _(df_settlements_preditions, mo, np, series):
+def _(df_settlements_predictions, mo, np, series):
     mo.stop(predicate=all(np.isnan(series.settlements)))
     csv_download_lazy_prediction = mo.download(
-        data=df_settlements_preditions.to_csv(sep=";").encode("utf-8"),
+        data=df_settlements_predictions.to_csv(sep=";").encode("utf-8"),
         filename="measurements.csv",
         mimetype="text/csv",
         label="Download CSV",

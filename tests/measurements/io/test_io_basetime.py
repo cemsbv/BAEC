@@ -36,6 +36,7 @@ def test_io_basetime() -> None:
 
     plt.close("all")
 
+
 def test_basetime_connection():
     """
     Test script for the Basetime connection.
@@ -53,7 +54,7 @@ def test_basetime_connection():
 
     manage_project = BaseTimeBucket(credentials)
 
-    print(datetime.now()-time_start)
+    print(datetime.now() - time_start)
     time_start = datetime.now()
     print(manage_project.get_users_projects_ids())
     test_series = manage_project.make_settlement_rod_measurement_series(
@@ -61,10 +62,10 @@ def test_basetime_connection():
     )
 
     print(test_series.to_dataframe())
-    print(datetime.now()-time_start)
+    print(datetime.now() - time_start)
     time_start = datetime.now()
     test_series = manage_project.make_settlement_rod_measurement_series(
         project="Voorbelasting Wilderszijde Lansingerland", rod_id="ZB-1001"
     )
     print(test_series.to_dataframe())
-    print(datetime.now()-time_start)
+    print(datetime.now() - time_start)
