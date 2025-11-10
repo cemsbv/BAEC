@@ -5,7 +5,7 @@
 # syntax=docker/dockerfile:1.4
 
 # Choose a python version that you know works with your application
-FROM python:3.13-slim-trixie
+FROM python:3.14-slim-trixie
 
 # Install uv for fast package management
 COPY --from=ghcr.io/astral-sh/uv:0.4.20 /uv /bin/uv
