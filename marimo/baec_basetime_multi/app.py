@@ -391,7 +391,7 @@ def _(mo):
 def _(mo):
     shift_bounds = mo.ui.range_slider(
         start=0,
-        stop=10,
+        stop=100,
         step=1,
         value=[0, 100],
         show_value=True,
@@ -408,7 +408,7 @@ def _(mo):
         start=0,
         stop=10,
         step=1,
-        value=[0, 6],
+        value=[0, 10],
         show_value=True,
         label="hydrodynamic period [year]",
     )
@@ -423,7 +423,7 @@ def _(mo):
         start=0,
         stop=10,
         step=1,
-        value=[0, 6],
+        value=[0, 10],
         show_value=True,
         label="final settlement [m]",
     )
