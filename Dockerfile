@@ -32,5 +32,8 @@ RUN chown -R app_user:app_user /app
 RUN chmod 755 /app
 USER app_user
 
+# Docker Health Check
+HEALTHCHECK CMD curl --fail http://localhost:8080 || exit 1
+
 # After container starts, run the marimo application
 CMD [ "marimo", "run", "app.py", "--host", "0.0.0.0", "-p", "8080" ]
