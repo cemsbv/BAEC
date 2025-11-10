@@ -219,7 +219,7 @@ loro==1.8.2
     # via marimo
 maplibre==0.3.5
     # via leafmap
-marimo==0.14.17
+marimo==0.16.4
     # via baec (pyproject.toml)
 markdown==3.10
     # via
