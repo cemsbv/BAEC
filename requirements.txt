@@ -11,7 +11,7 @@ anyio==4.11.0
     #   httpx
     #   openai
     #   starlette
-anywidget==0.9.18
+anywidget==0.9.21
     # via leafmap
 apeye==1.4.1
     # via sphinx-toolbox
