@@ -453,7 +453,7 @@ sphinxcontrib-qthelp==2.0.0
     # via sphinx
 sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
-sqlglot==27.29.0
+sqlglot==28.0.0
     # via marimo
 stack-data==0.6.3
     # via ipython
