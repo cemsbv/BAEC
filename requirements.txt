@@ -19,7 +19,7 @@ apeye-core==1.1.5
     # via apeye
 asteroid-sphinx-theme==0.0.3
     # via baec (pyproject.toml)
-asttokens==3.0.0
+asttokens==3.0.1
     # via stack-data
 attrs==25.4.0
     # via
