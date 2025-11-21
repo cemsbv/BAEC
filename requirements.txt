@@ -46,7 +46,7 @@ branca==0.8.2
     #   folium
     #   ipyleaflet
     #   maplibre
-cachecontrol==0.14.3
+cachecontrol==0.14.4
     # via sphinx-toolbox
 cems-nuclei==3.0.1
     # via baec (pyproject.toml)
