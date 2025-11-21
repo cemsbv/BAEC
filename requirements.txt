@@ -262,7 +262,7 @@ numpy==2.3.4
     #   pyogrio
     #   scipy
     #   shapely
-openai==2.7.1
+openai==2.8.1
     # via marimo
 orjson==3.11.4
     # via cems-nuclei
