@@ -331,7 +331,7 @@ pygments==2.19.2
     #   sphinx-tabs
 pyjwt==2.10.1
     # via cems-nuclei
-pymdown-extensions==10.16.1
+pymdown-extensions==10.17.1
     # via marimo
 pyogrio==0.11.1
     # via geopandas
