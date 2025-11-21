@@ -97,7 +97,7 @@ domdf-python-tools==3.10.0
     #   apeye-core
     #   dict2css
     #   sphinx-toolbox
-duckdb==1.4.1
+duckdb==1.4.2
     # via
     #   leafmap
     #   marimo
