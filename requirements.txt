@@ -120,7 +120,7 @@ folium==0.20.0
     #   leafmap
 fonttools==4.60.1
     # via matplotlib
-gdown==5.2.0
+gdown==5.2.2
     # via leafmap
 geojson==3.2.0
     # via leafmap
