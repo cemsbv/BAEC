@@ -329,7 +329,7 @@ pygments==2.19.2
     #   sphinx
     #   sphinx-prompt
     #   sphinx-tabs
-pyjwt==2.10.1
+pyjwt==2.13.0
     # via cems-nuclei
 pymdown-extensions==10.16.1
     # via marimo
