@@ -239,7 +239,7 @@ micropip==0.10.1
     # via baec (pyproject.toml)
 more-itertools==10.8.0
     # via cssutils
-msgpack==1.1.2
+msgpack==1.2.1
     # via cachecontrol
 narwhals==2.10.2
     # via
