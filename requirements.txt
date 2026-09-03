@@ -25,7 +25,7 @@ attrs==25.4.0
     # via
     #   jsonschema
     #   referencing
-autodocsumm==0.2.14
+autodocsumm==0.2.15
     # via sphinx-toolbox
 babel==2.17.0
     # via sphinx
