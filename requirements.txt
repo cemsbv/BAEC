@@ -166,7 +166,7 @@ ipyvue==1.11.3
     # via ipyvuetify
 ipyvuetify==1.11.3
     # via leafmap
-ipywidgets==8.1.8
+ipywidgets==8.1.9
     # via
     #   anywidget
     #   bqplot
