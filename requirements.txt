@@ -124,7 +124,7 @@ gdown==5.2.0
     # via leafmap
 geojson==3.2.0
     # via leafmap
-geopandas==1.1.1
+geopandas==1.1.2
     # via
     #   baec (pyproject.toml)
     #   leafmap
