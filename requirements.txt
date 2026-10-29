@@ -118,7 +118,7 @@ folium==0.20.0
     # via
     #   baec (pyproject.toml)
     #   leafmap
-fonttools==4.60.1
+fonttools==4.60.2
     # via matplotlib
 gdown==5.2.0
     # via leafmap
