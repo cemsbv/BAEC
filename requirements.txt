@@ -50,7 +50,7 @@ cachecontrol==0.14.3
     # via sphinx-toolbox
 cems-nuclei==3.0.1
     # via baec (pyproject.toml)
-certifi==2025.10.5
+certifi==2026.10.18
     # via
     #   httpcore
     #   httpx
