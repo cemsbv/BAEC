@@ -264,7 +264,7 @@ numpy==2.3.4
     #   shapely
 openai==2.7.1
     # via marimo
-orjson==3.11.4
+orjson==3.11.6
     # via cems-nuclei
 packaging==25.0
     # via
